@@ -2314,7 +2314,7 @@ const MeshplaySettingsEnvButtons = () => {
         })
       }),
       options: ['IMPORT', 'CANCEL'],
-      showInfoIcon: 'If your config has not been autodetected, you can manually upload your kubeconfig file (or any number of kubeconfig files). By default, Meshplay will attempt to connect to and deploy Meshplay Operator to each reachable context contained in the imported kubeconfig files. [See Managing Kubernetes Clusters for more information](https://docs.meshplay.io/installation/kubernetes).'
+      showInfoIcon: 'If your config has not been autodetected, you can manually upload your kubeconfig file (or any number of kubeconfig files). By default, Meshplay will attempt to connect to and deploy Meshplay Operator to each reachable context contained in the imported kubeconfig files. [See Managing Kubernetes Clusters for more information](https://docs.meshplay.khulnasoft.com/installation/kubernetes).'
     }));
     cov_e5k8tns().s[43]++;
 
@@ -10425,8 +10425,8 @@ function Connections(props) {
     notify
   } = (cov_7hu0uh8sl().s[59]++, (0,_utils_hooks_useNotification__WEBPACK_IMPORTED_MODULE_9__/* .useNotification */ .l)());
   const StyleClass = (cov_7hu0uh8sl().s[60]++, (0,_assets_styles_general_tool_styles__WEBPACK_IMPORTED_MODULE_11__/* ["default"] */ .Z)());
-  const url = (cov_7hu0uh8sl().s[61]++, `https://docs.meshplay.io/concepts/logical/connections#states-and-the-lifecycle-of-connections`);
-  const envUrl = (cov_7hu0uh8sl().s[62]++, `https://docs.meshplay.io/concepts/logical/environments`);
+  const url = (cov_7hu0uh8sl().s[61]++, `https://docs.meshplay.khulnasoft.com/concepts/logical/connections#states-and-the-lifecycle-of-connections`);
+  const envUrl = (cov_7hu0uh8sl().s[62]++, `https://docs.meshplay.khulnasoft.com/concepts/logical/environments`);
   const icons = (cov_7hu0uh8sl().s[63]++, {
     [_utils_Enum__WEBPACK_IMPORTED_MODULE_27__/* .CONNECTION_STATES.IGNORED */ .OF.IGNORED]: () => {
       cov_7hu0uh8sl().f[16]++;
@@ -10618,7 +10618,7 @@ function Connections(props) {
             children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_53__.jsx(_MeshplayMeshInterface_PatternService_CustomTextTooltip__WEBPACK_IMPORTED_MODULE_47__/* .CustomTextTooltip */ .y, {
               placement: "top",
               interactive: true,
-              title: "Learn more about connection status and how to [troubleshoot Kubernetes connections](https://docs.meshplay.io/guides/troubleshooting/meshplay-operator-meshsync)",
+              title: "Learn more about connection status and how to [troubleshoot Kubernetes connections](https://docs.meshplay.khulnasoft.com/guides/troubleshooting/meshplay-operator-meshsync)",
               children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_53__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__.IconButton, {
                 className: classes.infoIconButton,
                 color: "primary",
@@ -11341,7 +11341,7 @@ function Connections(props) {
       title: `Connection Status Transition`,
       subtitle: `Are you sure that you want to transition the connection status to ${e.target.value.toUpperCase()}?`,
       options: ['Confirm', 'Cancel'],
-      showInfoIcon: `Learn more about the [lifecycle of connections and the behavior of state transitions](https://docs.meshplay.io/concepts/logical/connections) in Meshplay Docs.` // variant: PROMPT_VARIANTS.CONFIRMATION,
+      showInfoIcon: `Learn more about the [lifecycle of connections and the behavior of state transitions](https://docs.meshplay.khulnasoft.com/concepts/logical/connections) in Meshplay Docs.` // variant: PROMPT_VARIANTS.CONFIRMATION,
 
     }));
     cov_7hu0uh8sl().s[196]++;
@@ -11370,7 +11370,7 @@ function Connections(props) {
         title: `Delete Connection`,
         subtitle: `Are you sure that you want to delete the connection?`,
         options: ['Delete', 'Cancel'],
-        showInfoIcon: `Learn more about the [lifecycle of connections and the behavior of state transitions](https://docs.meshplay.io/concepts/logical/connections) in Meshplay Docs.`,
+        showInfoIcon: `Learn more about the [lifecycle of connections and the behavior of state transitions](https://docs.meshplay.khulnasoft.com/concepts/logical/connections) in Meshplay Docs.`,
         variant: _PromptComponent__WEBPACK_IMPORTED_MODULE_14__/* .PROMPT_VARIANTS.DANGER */ .k.DANGER
       }));
       cov_7hu0uh8sl().s[202]++;
@@ -11402,7 +11402,7 @@ function Connections(props) {
         title: `Delete Connections`,
         subtitle: `Are you sure that you want to delete the connections?`,
         options: ['Delete', 'Cancel'],
-        showInfoIcon: `Learn more about the [lifecycle of connections and the behavior of state transitions](https://docs.meshplay.io/concepts/logical/connections) in Meshplay Docs.`,
+        showInfoIcon: `Learn more about the [lifecycle of connections and the behavior of state transitions](https://docs.meshplay.khulnasoft.com/concepts/logical/connections) in Meshplay Docs.`,
         variant: _PromptComponent__WEBPACK_IMPORTED_MODULE_14__/* .PROMPT_VARIANTS.DANGER */ .k.DANGER
       }));
       cov_7hu0uh8sl().s[208]++;

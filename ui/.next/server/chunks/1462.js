@@ -3343,7 +3343,7 @@ function getFormattedLink(url) {
 
 const LinkFormatters = (cov_29457fes12().s[40]++, {
   DOC: {
-    base_url: 'https://docs.meshplay.io',
+    base_url: 'https://docs.meshplay.khulnasoft.com',
     formatter: link => {
       cov_29457fes12().f[13]++;
       cov_29457fes12().s[41]++;

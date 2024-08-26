@@ -23,7 +23,7 @@ In this tutorial, we will learn how to deploy a **WordPress site and a MySQL dat
 ### Prerequisites
 
 - Basic understanding of Kubernetes concepts.
-- Access to the _Meshplay Playground_. If you don't have an account, sign up at [Meshplay Playground](https://play.meshplay.io/).
+- Access to the _Meshplay Playground_. If you don't have an account, sign up at [Meshplay Playground](https://play.meshplay.khulnasoft.com/).
 
 ### Lab Scenario
 

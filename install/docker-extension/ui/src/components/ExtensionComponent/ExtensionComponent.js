@@ -525,7 +525,7 @@ const ExtensionsComponent = () => {
                       <Typography variant="h5" sx={{ padding: '3rem 0 1rem 0', fontWeight: "bold" }}>
                         Designs
                       </Typography>
-                      <a href={user?.role_names?.includes(MESHMAP) ? "https://playground.meshplay.io/extension/meshmap" : "https://play.meshplay.io"} style={{ textDecoration: "none" }}>
+                      <a href={user?.role_names?.includes(MESHMAP) ? "https://playground.meshplay.khulnasoft.com/extension/meshmap" : "https://play.meshplay.khulnasoft.com"} style={{ textDecoration: "none" }}>
                       <PublishCard>
                         <PublishIcon width={"60"} height={"60"} />
                         <h5>Publish your own design</h5>

@@ -4188,7 +4188,7 @@ const TroubleshootingModal = props => {
                   className: classes.troubleshootListitem,
                   children: [' ', /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx("a", {
                     className: classes.troubleshootHelpLink,
-                    href: "http://discuss.meshplay.io/t/what-are-some-troubleshooting-tips-for-meshmap",
+                    href: "http://discuss.meshplay.khulnasoft.com/t/what-are-some-troubleshooting-tips-for-meshmap",
                     target: "_blank",
                     rel: "noreferrer",
                     children: "\"What are some troubleshooting tips for MeshMap?\""
@@ -4210,7 +4210,7 @@ const TroubleshootingModal = props => {
               children: "email"
             }), ' ', "or", ' ', /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx("a", {
               className: classes.contactHelpLink,
-              href: "http://discuss.meshplay.io",
+              href: "http://discuss.meshplay.khulnasoft.com",
               target: "_blank",
               rel: "noreferrer",
               children: "community forum"

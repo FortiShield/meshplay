@@ -129,8 +129,8 @@ COPY --from=ui-provider-builder /app/out /app/provider-ui/out
 COPY --from=wrk2 /wrk2 /app/server/cmd/wrk2
 COPY --from=wrk2 /wrk2/wrk /usr/local/bin
 COPY --from=seed_content /seed_content /home/appuser/.meshplay/seed_content
-COPY --from=khulnasoft/getnighthawk:v1.0.1 /usr/local/bin/nighthawk_service /app/server/cmd/
-COPY --from=khulnasoft/getnighthawk:v1.0.1 /usr/local/bin/nighthawk_output_transform /app/server/cmd/
+COPY --from=layer5/getnighthawk:v1.0.1 /usr/local/bin/nighthawk_service /app/server/cmd/
+COPY --from=layer5/getnighthawk:v1.0.1 /usr/local/bin/nighthawk_output_transform /app/server/cmd/
 
 RUN addgroup docker
 RUN mkdir -p /var/run; chown -R appuser:docker /var/run/

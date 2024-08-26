@@ -10,7 +10,7 @@ Please do! Thank you for your help in improving Meshplay! :balloon:
 
 All contributors are welcome. Not sure where to start? Please see the [newcomers welcome guide](https://khulnasoft.com/community/newcomers) for how, where, and why to contribute. This project is community-built and welcomes collaboration. Contributors are expected to adhere to our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-All set to contribute? Grab an open issue with the [help-wanted label](../../labels/help%20wanted) and jump in. Join our [Slack channel](https://slack.meshplay.io) and engage in conversation. Create a [new issue](/../../issues/new/choose) if needed. All [pull requests](/../../pulls) should ideally reference an open [issue](/../../issues). Include keywords in your pull request descriptions, as well as commit messages, to [automatically close related issues in GitHub](https://help.github.com/en/github/managing-your-work-on-github/closing-issues-using-keywords).
+All set to contribute? Grab an open issue with the [help-wanted label](../../labels/help%20wanted) and jump in. Join our [Slack channel](https://slack.meshplay.khulnasoft.com) and engage in conversation. Create a [new issue](/../../issues/new/choose) if needed. All [pull requests](/../../pulls) should ideally reference an open [issue](/../../issues). Include keywords in your pull request descriptions, as well as commit messages, to [automatically close related issues in GitHub](https://help.github.com/en/github/managing-your-work-on-github/closing-issues-using-keywords).
 
 **Sections**
 
@@ -335,7 +335,7 @@ We are using ES-Lint to maintain code quality & consistency in our UI Code. To m
 - Remember to run `make ui-lint` & `make ui-provider-lint` if you are making changes in Meshplay-UI & Provider-UI respectively.
 - The above commands will only fix some basic indenting rules. You will have to manually check your code to ensure there are no duplications, un-used variables or un-declared constants.
 - We will soon be adding Pre-Commit Hooks to make sure you get to know your errors before you commit the code.
-- In case you are unable to fix your lint errors, ping us on our [Slack](https://slack.meshplay.io).
+- In case you are unable to fix your lint errors, ping us on our [Slack](https://slack.meshplay.khulnasoft.com).
 
 
 # Using Sistent in Meshplay UI

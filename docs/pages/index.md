@@ -379,4 +379,4 @@ list: exclude
 
 </div>
 
-<p width="100%">Follow on <a href="https://twitter.com/meshplayio">Twitter</a> or subscribe to our <a href="https://meshplay.io/subscribe">newsletter</a> for the latest updates. Get support on our <a href="http://discuss.meshplay.io">forum</a>. Join our <a href="https://slack.meshplay.io">Slack</a> to interact directly with other users and contributors.</p>
+<p width="100%">Follow on <a href="https://twitter.com/meshplayio">Twitter</a> or subscribe to our <a href="https://meshplay.khulnasoft.com/subscribe">newsletter</a> for the latest updates. Get support on our <a href="http://discuss.meshplay.khulnasoft.com">forum</a>. Join our <a href="https://slack.meshplay.khulnasoft.com">Slack</a> to interact directly with other users and contributors.</p>

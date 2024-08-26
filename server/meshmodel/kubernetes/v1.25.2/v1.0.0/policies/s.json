@@ -1,6 +1,6 @@
 {
     "design": {
-        "schemaVersion": "designs.meshplay.io/v1beta1",
+        "schemaVersion": "designs.meshplay.khulnasoft.com/v1beta1",
         "id": "0e0160df-817c-42c8-b7ab-51f8d7c29d2e",
         "version": "v1",
         "name": "Untitled Design",
@@ -56,13 +56,13 @@
                         "user_id": "00000000-0000-0000-0000-000000000000"
                     },
                     "connection_id": "cdd66d14-bdd9-1a24-ba16-faec2953d9d5",
-                    "schemaVersion": "models.meshplay.io/v1beta1",
+                    "schemaVersion": "models.meshplay.khulnasoft.com/v1beta1",
                     "status": "enabled",
                     "version": "v1.0.0",
                     "components": null,
                     "relationships": null
                 },
-                "schemaVersion": "components.meshplay.io/v1beta1",
+                "schemaVersion": "components.meshplay.khulnasoft.com/v1beta1",
                 "status": "enabled",
                 "styles": {
                     "svgColor": "ui/public/static/img/meshmodels/kubernetes/color/clusterrole-color.svg",
@@ -135,13 +135,13 @@
                         "user_id": "00000000-0000-0000-0000-000000000000"
                     },
                     "connection_id": "cdd66d14-bdd9-1a24-ba16-faec2953d9d5",
-                    "schemaVersion": "models.meshplay.io/v1beta1",
+                    "schemaVersion": "models.meshplay.khulnasoft.com/v1beta1",
                     "status": "enabled",
                     "version": "v1.0.0",
                     "components": null,
                     "relationships": null
                 },
-                "schemaVersion": "components.meshplay.io/v1beta1",
+                "schemaVersion": "components.meshplay.khulnasoft.com/v1beta1",
                 "status": "enabled",
                 "styles": {
                     "svgColor": "ui/public/static/img/meshmodels/kubernetes/color/serviceaccount-color.svg",
@@ -214,13 +214,13 @@
                         "user_id": "00000000-0000-0000-0000-000000000000"
                     },
                     "connection_id": "cdd66d14-bdd9-1a24-ba16-faec2953d9d5",
-                    "schemaVersion": "models.meshplay.io/v1beta1",
+                    "schemaVersion": "models.meshplay.khulnasoft.com/v1beta1",
                     "status": "enabled",
                     "version": "v1.0.0",
                     "components": null,
                     "relationships": null
                 },
-                "schemaVersion": "components.meshplay.io/v1beta1",
+                "schemaVersion": "components.meshplay.khulnasoft.com/v1beta1",
                 "status": "enabled",
                 "styles": {
                     "svgColor": "ui/public/static/img/meshmodels/kubernetes/color/clusterrolebinding-color.svg",
@@ -280,7 +280,7 @@
                         "user_id": "00000000-0000-0000-0000-000000000000"
                     },
                     "connection_id": "cdd66d14-bdd9-1a24-ba16-faec2953d9d5",
-                    "schemaVersion": "models.meshplay.io/v1beta1",
+                    "schemaVersion": "models.meshplay.khulnasoft.com/v1beta1",
                     "status": "enabled",
                     "version": "v1.0.0",
                     "components": null,

@@ -407,7 +407,7 @@ function PlaygroundMeshDeploy(props) {
   const handlePage = e => {
     cov_12583qwve7().f[3]++;
     cov_12583qwve7().s[6]++;
-    window.open('https://meshplay.io/#getting-started', '_blank');
+    window.open('https://meshplay.khulnasoft.com/#getting-started', '_blank');
     cov_12583qwve7().s[7]++;
     e.stopPropagation();
   };

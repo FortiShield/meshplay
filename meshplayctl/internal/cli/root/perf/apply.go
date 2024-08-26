@@ -95,7 +95,7 @@ meshplayctl perf apply meshplay-profile --url https://192.168.1.15/productpage -
 
 // Execute a Performance test creating a new performance profile and pass options to the load generator used
 // If any options are already present in the profile or passed through flags, the --options flag will take precedence over the profile and flag options 
-// Options for nighthawk - https://github.com/khulnasoft/getnighthawk/blob/v1.0.5/pkg/proto/options.pb.go#L882-L1018
+// Options for nighthawk - https://github.com/layer5/getnighthawk/blob/v1.0.5/pkg/proto/options.pb.go#L882-L1018
 // Options for fortio - https://github.com/fortio/fortio/blob/v1.57.0/fhttp/httprunner.go#L77-L84
 // Options for wrk2 - https://github.com/khulnasoft/gowrk2/blob/v0.6.1/api/gowrk2.go#L47-L53
 meshplayctl perf apply meshplay-profile-new --url "https://google.com" --options [filepath|json-string]

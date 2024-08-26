@@ -4206,7 +4206,7 @@ const processDesign = design => {
   console.log('Design to process', design);
   cov_1hd9gfuvz8().s[119]++;
 
-  if (design.schemaVersion != 'designs.meshplay.io/v1beta1') {
+  if (design.schemaVersion != 'designs.meshplay.khulnasoft.com/v1beta1') {
     cov_1hd9gfuvz8().b[27][0]++;
     cov_1hd9gfuvz8().s[120]++;
     console.error('Invalid design schema version', design);

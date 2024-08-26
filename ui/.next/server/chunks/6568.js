@@ -20836,7 +20836,7 @@ const ErrorMetadataFormatter = ({
   const errorCode = (cov_f080muunj().s[8]++, (cov_f080muunj().b[3][0]++, metadata?.error_code) || (cov_f080muunj().b[3][1]++, ''));
   const code = (cov_f080muunj().s[9]++, (cov_f080muunj().b[4][0]++, metadata?.Code) || (cov_f080muunj().b[4][1]++, ''));
   const formattedErrorCode = (cov_f080muunj().s[10]++, errorCode ? (cov_f080muunj().b[5][0]++, `${errorCode}-${code}`) : (cov_f080muunj().b[5][1]++, code));
-  const errorLink = (cov_f080muunj().s[11]++, `https://docs.meshplay.io/reference/error-codes#${formattedErrorCode}`);
+  const errorLink = (cov_f080muunj().s[11]++, `https://docs.meshplay.khulnasoft.com/reference/error-codes#${formattedErrorCode}`);
   cov_f080muunj().s[12]++;
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__.Grid, {
     container: true,
@@ -23441,19 +23441,19 @@ const BasicMenu = (cov_23psq14i8e().s[23]++, (0,_General_ErrorBoundary__WEBPACK_
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_24__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__.Box, {
               className: classes.socialListItem,
               children: [/*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_24__.jsx(react_share__WEBPACK_IMPORTED_MODULE_15__.FacebookShareButton, {
-                url: 'https://meshplay.io',
+                url: 'https://meshplay.khulnasoft.com',
                 quote: (cov_23psq14i8e().b[4][0]++, event.description) || (cov_23psq14i8e().b[4][1]++, ''),
                 children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_24__.jsx(_assets_icons_FacebookIcon__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z, _objectSpread(_objectSpread({}, _css_icons_styles__WEBPACK_IMPORTED_MODULE_3__/* .iconMedium */ .hv), {}, {
                   fill: theme.palette.secondary.iconMain
                 }))
               }), /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_24__.jsx(react_share__WEBPACK_IMPORTED_MODULE_15__.LinkedinShareButton, {
-                url: 'https://meshplay.io',
+                url: 'https://meshplay.khulnasoft.com',
                 summary: (cov_23psq14i8e().b[5][0]++, event.description) || (cov_23psq14i8e().b[5][1]++, ''),
                 children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_24__.jsx(_assets_icons_LinkedInIcon__WEBPACK_IMPORTED_MODULE_6__/* ["default"] */ .Z, _objectSpread(_objectSpread({}, _css_icons_styles__WEBPACK_IMPORTED_MODULE_3__/* .iconMedium */ .hv), {}, {
                   fill: theme.palette.secondary.iconMain
                 }))
               }), /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_24__.jsx(react_share__WEBPACK_IMPORTED_MODULE_15__.TwitterShareButton, {
-                url: 'https://meshplay.io',
+                url: 'https://meshplay.khulnasoft.com',
                 title: (cov_23psq14i8e().b[6][0]++, event.description) || (cov_23psq14i8e().b[6][1]++, ''),
                 children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_24__.jsx(_assets_icons_TwitterIcon__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .C, _objectSpread(_objectSpread({}, _css_icons_styles__WEBPACK_IMPORTED_MODULE_3__/* .iconMedium */ .hv), {}, {
                   fill: theme.palette.secondary.iconMain

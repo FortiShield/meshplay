@@ -4368,7 +4368,7 @@ const InfoModal_ = (cov_1y1mji1azr().s[3]++, /*#__PURE__*/react__WEBPACK_IMPORTE
           })]
         })
       }), /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_30__.jsx(_khulnasoft_sistent__WEBPACK_IMPORTED_MODULE_23__.ModalFooter, {
-        helpText: 'Upon submitting your catalog item, an approval flow will be initiated. [Learn More](https://docs.meshplay.io/concepts/catalog)',
+        helpText: 'Upon submitting your catalog item, an approval flow will be initiated. [Learn More](https://docs.meshplay.khulnasoft.com/concepts/catalog)',
         variant: "filled",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_30__.jsxs)(_styles__WEBPACK_IMPORTED_MODULE_4__/* .ActionContainer */ .sX, {
           children: [/*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_30__.jsx(_utils_TooltipButton__WEBPACK_IMPORTED_MODULE_24__/* ["default"] */ .Z, {

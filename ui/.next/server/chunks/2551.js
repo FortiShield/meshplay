@@ -10151,7 +10151,7 @@ const ExternalLinkIcon = (cov_1t4pb00ghc().s[6]++, /*#__PURE__*/react_jsx_runtim
 }));
 const externlinks = (cov_1t4pb00ghc().s[7]++, [{
   id: 'doc',
-  href: 'https://docs.meshplay.io',
+  href: 'https://docs.meshplay.khulnasoft.com',
   title: 'Documentation',
   icon: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_50__.jsx(_assets_icons_DocumentIcon__WEBPACK_IMPORTED_MODULE_30__/* ["default"] */ .Z, {
     style: drawerIconsStyle
@@ -10159,7 +10159,7 @@ const externlinks = (cov_1t4pb00ghc().s[7]++, [{
   external_icon: ExternalLinkIcon
 }, {
   id: 'community',
-  href: 'https://slack.meshplay.io',
+  href: 'https://slack.meshplay.khulnasoft.com',
   title: 'Community',
   icon: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_50__.jsx(_assets_icons_SlackIcon__WEBPACK_IMPORTED_MODULE_31__/* ["default"] */ .Z, {
     style: _objectSpread(_objectSpread({}, drawerIconsStyle), {}, {
@@ -10171,7 +10171,7 @@ const externlinks = (cov_1t4pb00ghc().s[7]++, [{
   external_icon: ExternalLinkIcon
 }, {
   id: 'forum',
-  href: 'http://discuss.meshplay.io',
+  href: 'http://discuss.meshplay.khulnasoft.com',
   title: 'Discussion Forum',
   icon: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_50__.jsx(_assets_icons_ChatIcon__WEBPACK_IMPORTED_MODULE_33__/* ["default"] */ .Z, {
     style: drawerIconsStyle
@@ -11085,7 +11085,7 @@ class Navigator extends ((react__WEBPACK_IMPORTED_MODULE_0___default().Component
           marginLeft: '15px'
         },
         children: ['Update available ', /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_50__.jsx("a", {
-          href: `https://docs.meshplay.io/project/releases/${latest}`,
+          href: `https://docs.meshplay.khulnasoft.com/project/releases/${latest}`,
           target: "_blank",
           rel: "noreferrer",
           style: {
@@ -11135,7 +11135,7 @@ class Navigator extends ((react__WEBPACK_IMPORTED_MODULE_0___default().Component
       cov_1t4pb00ghc().b[60][0]++;
       cov_1t4pb00ghc().s[173]++;
       return /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_50__.jsx("a", {
-        href: "https://docs.meshplay.io/project/releases",
+        href: "https://docs.meshplay.khulnasoft.com/project/releases",
         target: "_blank",
         rel: "noreferrer",
         style: {
@@ -11154,7 +11154,7 @@ class Navigator extends ((react__WEBPACK_IMPORTED_MODULE_0___default().Component
 
     cov_1t4pb00ghc().s[174]++;
     return /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_50__.jsx("a", {
-      href: `https://docs.meshplay.io/project/releases/${build}`,
+      href: `https://docs.meshplay.khulnasoft.com/project/releases/${build}`,
       target: "_blank",
       rel: "noreferrer",
       style: {
@@ -24090,7 +24090,7 @@ function PlaygroundMeshDeploy(props) {
   const handlePage = e => {
     cov_12583qwve7().f[3]++;
     cov_12583qwve7().s[6]++;
-    window.open('https://meshplay.io/#getting-started', '_blank');
+    window.open('https://meshplay.khulnasoft.com/#getting-started', '_blank');
     cov_12583qwve7().s[7]++;
     e.stopPropagation();
   };

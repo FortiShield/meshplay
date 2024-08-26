@@ -3336,7 +3336,7 @@ const DryRunStep = ({
     })), /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx(_common__WEBPACK_IMPORTED_MODULE_4__.CheckBoxField, {
       label: "Include Dependencies",
       checked: includeDependencies,
-      helpText: "Deploys Custom Resource Definitions (CRDs) and operators based on the source from which a particular component was registered, [learn more](https://docs.meshplay.io/guides/infrastructure-management/overview#auto-deployment-of-crds-and-operators) about auto deployment of dependencies",
+      helpText: "Deploys Custom Resource Definitions (CRDs) and operators based on the source from which a particular component was registered, [learn more](https://docs.meshplay.khulnasoft.com/guides/infrastructure-management/overview#auto-deployment-of-crds-and-operators) about auto deployment of dependencies",
       onChange: toggleIncludeDependencies
     })]
   });
@@ -3389,7 +3389,7 @@ const UpdateDeploymentStepper = ({
         })
       }),
       icon: _assets_icons_CheckIcon__WEBPACK_IMPORTED_MODULE_7__/* ["default"] */ .Z,
-      helpText: `Validate the design before deploying, [learn more](https://docs.meshplay.io/guides/infrastructure-management/overview) about the validation process`,
+      helpText: `Validate the design before deploying, [learn more](https://docs.meshplay.khulnasoft.com/guides/infrastructure-management/overview) about the validation process`,
       label: 'Validate Design'
     }, {
       component: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsxs)(StepContent, {
@@ -3397,7 +3397,7 @@ const UpdateDeploymentStepper = ({
           handleClose: handleClose
         }), ' ']
       }),
-      helpText: 'Select the environment  and cluster to deploy the design,[learn more](https://docs.meshplay.io/guides/infrastructure-management/overview)  about the environment selection',
+      helpText: 'Select the environment  and cluster to deploy the design,[learn more](https://docs.meshplay.khulnasoft.com/guides/infrastructure-management/overview)  about the environment selection',
       icon: _khulnasoft_sistent__WEBPACK_IMPORTED_MODULE_3__.EnvironmentIcon,
       label: 'Identify Environments'
     }, {
@@ -3415,7 +3415,7 @@ const UpdateDeploymentStepper = ({
         })
       }),
       helpText: 'Dry Run is a simulation of the deployment process, it helps to identify potential errors before the actual deployment ,\
-          [learn more](https://docs.meshplay.io/guides/infrastructure-management/overview ) about Dry Run.',
+          [learn more](https://docs.meshplay.khulnasoft.com/guides/infrastructure-management/overview ) about Dry Run.',
       label: 'Dry Run',
       icon: _assets_icons_DryRunIcon__WEBPACK_IMPORTED_MODULE_5__/* ["default"] */ .Z
     }, {
@@ -3429,7 +3429,7 @@ const UpdateDeploymentStepper = ({
         })
       }),
       helpText: 'Finalize the deployment process and overview the configuration for your deployment.\
-          [Learn more](https://docs.meshplay.io/guides/infrastructure-management/overview) about the deployment process.',
+          [Learn more](https://docs.meshplay.khulnasoft.com/guides/infrastructure-management/overview) about the deployment process.',
       label: 'Finalize Deployment',
       icon: _assets_icons_DeploymentSelectorIcon__WEBPACK_IMPORTED_MODULE_6__/* .DeploymentSelectorIcon */ .Q
     }, {
@@ -3441,7 +3441,7 @@ const UpdateDeploymentStepper = ({
           autoOpenView: openInVisualizer
         }), ' ']
       }),
-      helpText: 'Receipt of your deployment,includes the deployment status of components within the design and error logs. [Learn more](https://docs.meshplay.io/guides/infrastructure-management/overview) about the deployment process.',
+      helpText: 'Receipt of your deployment,includes the deployment status of components within the design and error logs. [Learn more](https://docs.meshplay.khulnasoft.com/guides/infrastructure-management/overview) about the deployment process.',
       label: 'Finsh',
       icon: _assets_icons_FinishFlagIcon__WEBPACK_IMPORTED_MODULE_17__/* ["default"] */ .Z
     }]
