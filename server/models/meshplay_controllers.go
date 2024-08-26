@@ -18,9 +18,14 @@ import (
 )
 
 const (
-	ChartRepo                     = "https://meshplay.github.io/khulnasoft.com/charts"
+	ChartRepo                     = "https://meshplay.github.io/meshplay.io/charts"
 	MeshplayServerBrokerConnection = "meshplay-server"
 )
+
+type MeshplayControllerStatusAndVersion struct {
+	Status  controllers.MeshplayControllerStatus
+	Version string
+}
 
 type MeshplayController int
 
@@ -31,41 +36,46 @@ const (
 )
 
 type MeshplayControllersHelper struct {
-	//  maps each context with the controller handlers
-	// this map will be used as the source of truth
-	ctxControllerHandlersMap map[string]map[MeshplayController]controllers.IMeshplayController
-	// maps each context with it's operator status
-	ctxOperatorStatusMap map[string]controllers.MeshplayControllerStatus
-	// maps each context with a meshsync data handler
-	ctxMeshsyncDataHandlerMap map[string]MeshsyncDataHandler
+	// context that is being manged by a particular controllerHelper instance
+	contextID string
+	//  controller handlers for a particular context
+	// this will be used as the source of truth
+	ctxControllerHandlers map[MeshplayController]controllers.IMeshplayController
 
-	mu                sync.Mutex
+	// operator status for a particular context
+	ctxOperatorStatus controllers.MeshplayControllerStatus
+
+	// meshsync data handler for a particular context
+	ctxMeshsyncDataHandler *MeshsyncDataHandler
 
 	log          logger.Handler
 	oprDepConfig controllers.OperatorDeploymentConfig
 	dbHandler    *database.Handler
 }
 
-func (mch *MeshplayControllersHelper) GetControllerHandlersForEachContext() map[string]map[MeshplayController]controllers.IMeshplayController {
-	return mch.ctxControllerHandlersMap
+func (mch *MeshplayControllersHelper) GetControllerHandlersForEachContext() map[MeshplayController]controllers.IMeshplayController {
+	return mch.ctxControllerHandlers
 }
 
-func (mch *MeshplayControllersHelper) GetMeshSyncDataHandlersForEachContext() map[string]MeshsyncDataHandler {
-	return mch.ctxMeshsyncDataHandlerMap
+func (mch *MeshplayControllersHelper) GetMeshSyncDataHandlersForEachContext() *MeshsyncDataHandler {
+	return mch.ctxMeshsyncDataHandler
 }
 
-func (mch *MeshplayControllersHelper) GetOperatorsStatusMap() map[string]controllers.MeshplayControllerStatus {
-	return mch.ctxOperatorStatusMap
+func (mch *MeshplayControllersHelper) GetOperatorsStatusMap() controllers.MeshplayControllerStatus {
+	return mch.ctxOperatorStatus
 }
 
 func NewMeshplayControllersHelper(log logger.Handler, operatorDepConfig controllers.OperatorDeploymentConfig, dbHandler *database.Handler) *MeshplayControllersHelper {
 	return &MeshplayControllersHelper{
-		ctxControllerHandlersMap:  make(map[string]map[MeshplayController]controllers.IMeshplayController),
-		log:                       log,
-		oprDepConfig:              operatorDepConfig,
-		ctxOperatorStatusMap:      make(map[string]controllers.MeshplayControllerStatus),
-		ctxMeshsyncDataHandlerMap: make(map[string]MeshsyncDataHandler),
-		dbHandler:                 dbHandler,
+		ctxControllerHandlers: make(map[MeshplayController]controllers.IMeshplayController),
+		log:                   log,
+		oprDepConfig:          operatorDepConfig,
+		ctxOperatorStatus:     controllers.Unknown,
+		// The nil check is performed for the ctxMeshsyncDataHandler and if it is nil, then a new dataHandler for the context is assigned.
+		// The presence of a handler for a context in a map indicate that the meshsync data for that context is properly being handled.
+		// Resetting this value results in again subscribing to the Broker.
+		ctxMeshsyncDataHandler: nil,
+		dbHandler:              dbHandler,
 	}
 }
 
@@ -73,104 +83,110 @@ func NewMeshplayControllersHelper(log logger.Handler, operatorDepConfig controll
 // initialized yet. Apart from updating the map, it also runs the handler after
 // updating the map. The presence of a handler for a context in a map indicate that
 // the meshsync data for that context is properly being handled
-func (mch *MeshplayControllersHelper) UpdateMeshsynDataHandlers(ctx context.Context, connectionID, userID, meshplayInstanceID uuid.UUID, provider Provider) *MeshplayControllersHelper {
+func (mch *MeshplayControllersHelper) AddMeshsynDataHandlers(ctx context.Context, k8scontext K8sContext, userID, meshplayInstanceID uuid.UUID, provider Provider) *MeshplayControllersHelper {
 	// only checking those contexts whose MeshplayConrollers are active
-	go func(mch *MeshplayControllersHelper) {
-		mch.mu.Lock()
-		defer mch.mu.Unlock()
-		for ctxID, controllerHandlers := range mch.ctxControllerHandlersMap {
-			if _, ok := mch.ctxMeshsyncDataHandlerMap[ctxID]; !ok {
-				// brokerStatus := controllerHandlers[MeshplayBroker].GetStatus()
-				// do something if broker is being deployed , maybe try again after sometime
-				brokerEndpoint, err := controllerHandlers[MeshplayBroker].GetPublicEndpoint()
-				if brokerEndpoint == "" {
-					if err != nil {
-						mch.log.Warn(err)
-					}
-					mch.log.Info(fmt.Sprintf("Meshplay Broker unreachable for Kubernetes context (%v)", ctxID))
-					continue
-				}
-				mch.log.Info(fmt.Sprintf("Connected to Meshplay Broker (%s) for Kubernetes context (%s)", brokerEndpoint, ctxID))
-				brokerHandler, err := nats.New(nats.Options{
-					// URLS: []string{"localhost:4222"},
-					URLS:           []string{brokerEndpoint},
-					ConnectionName: MeshplayServerBrokerConnection,
-					Username:       "",
-					Password:       "",
-					ReconnectWait:  2 * time.Second,
-					MaxReconnect:   60,
-				})
-				if err != nil {
-					mch.log.Warn(err)
-					mch.log.Info(fmt.Sprintf("MeshSync not configured for Kubernetes context (%v) due to '%v'", ctxID, err.Error()))
-					continue
-				}
-				mch.log.Info(fmt.Sprintf("Connected to Meshplay Broker (%v) for Kubernetes context (%v)", brokerEndpoint, ctxID))
-				token, _ := ctx.Value(TokenCtxKey).(string)
-				msDataHandler := NewMeshsyncDataHandler(brokerHandler, *mch.dbHandler, mch.log, provider, userID, connectionID, meshplayInstanceID, token)
-				err = msDataHandler.Run()
-				if err != nil {
-					mch.log.Warn(err)
-					mch.log.Info(fmt.Sprintf("Unable to connect MeshSync for Kubernetes context (%s) due to: %s", ctxID, err.Error()))
-					continue
-				}
-				mch.ctxMeshsyncDataHandlerMap[ctxID] = *msDataHandler
-				mch.log.Info(fmt.Sprintf("MeshSync connected for Kubernetes context (%s)", ctxID))
+	// go func(mch *MeshplayControllersHelper) {
+
+	ctxID := k8scontext.ID
+	if mch.ctxMeshsyncDataHandler == nil {
+		controllerHandlers := mch.ctxControllerHandlers
+
+		// brokerStatus := controllerHandlers[MeshplayBroker].GetStatus()
+		// do something if broker is being deployed , maybe try again after sometime
+		brokerEndpoint, err := controllerHandlers[MeshplayBroker].GetPublicEndpoint()
+		if brokerEndpoint == "" {
+			if err != nil {
+				mch.log.Warn(err)
 			}
+			mch.log.Info(fmt.Sprintf("Meshplay Broker unreachable for Kubernetes context (%v)", ctxID))
+			return mch
 		}
-	}(mch)
+		brokerHandler, err := nats.New(nats.Options{
+			// URLS: []string{"localhost:4222"},
+			URLS:           []string{brokerEndpoint},
+			ConnectionName: MeshplayServerBrokerConnection,
+			Username:       "",
+			Password:       "",
+			ReconnectWait:  2 * time.Second,
+			MaxReconnect:   60,
+		})
+		if err != nil {
+			mch.log.Warn(err)
+			mch.log.Info(fmt.Sprintf("MeshSync not configured for Kubernetes context (%v) due to '%v'", ctxID, err.Error()))
+			return mch
+		}
+		mch.log.Info(fmt.Sprintf("Connected to Meshplay Broker (%v) for Kubernetes context (%v)", brokerEndpoint, ctxID))
+		token, _ := ctx.Value(TokenCtxKey).(string)
+		msDataHandler := NewMeshsyncDataHandler(brokerHandler, *mch.dbHandler, mch.log, provider, userID, uuid.FromStringOrNil(k8scontext.ConnectionID), meshplayInstanceID, token)
+		err = msDataHandler.Run()
+		if err != nil {
+			mch.log.Warn(err)
+			mch.log.Info(fmt.Sprintf("Unable to connect MeshSync for Kubernetes context (%s) due to: %s", ctxID, err.Error()))
+			return mch
+		}
+		mch.ctxMeshsyncDataHandler = msDataHandler
+		mch.log.Info(fmt.Sprintf("MeshSync connected for Kubernetes context (%s)", ctxID))
+
+	}
+
+	// }(mch)
 
 	return mch
+}
+
+func (mch *MeshplayControllersHelper) RemoveMeshSyncDataHandler(ctx context.Context, contextID string) {
+
+	mch.ctxMeshsyncDataHandler = nil
 }
 
 // attach a MeshplayController for each context if
 // 1. the config is valid
 // 2. if it is not already attached
-func (mch *MeshplayControllersHelper) UpdateCtxControllerHandlers(ctxs []K8sContext) *MeshplayControllersHelper {
-	go func(mch *MeshplayControllersHelper) {
-		mch.mu.Lock()
-		defer mch.mu.Unlock()
-		
-		// resetting this value as a specific controller handler instance does not have any significance opposed to
-		// a MeshsyncDataHandler instance where it signifies whether or not a listener is attached
-		mch.ctxControllerHandlersMap = make(map[string]map[MeshplayController]controllers.IMeshplayController)
-		for _, ctx := range ctxs {
-			
-			ctxID := ctx.ID
-			cfg, _ := ctx.GenerateKubeConfig()
-			client, err := meshplaykube.New(cfg)
-			// means that the config is invalid
-			if err != nil {
-				
-				// invalid configs are not added to the map
-				continue
-			}
-			mch.ctxControllerHandlersMap[ctxID] = map[MeshplayController]controllers.IMeshplayController{
-				MeshplayBroker:   controllers.NewMeshplayBrokerHandler(client),
-				MeshplayOperator: controllers.NewMeshplayOperatorHandler(client, mch.oprDepConfig),
-				Meshsync:        controllers.NewMeshsyncHandler(client),
-			}
-		}
-	}(mch)
+func (mch *MeshplayControllersHelper) AddCtxControllerHandlers(ctx K8sContext) *MeshplayControllersHelper {
+	// go func(mch *MeshplayControllersHelper) {
+
+	// resetting this value as a specific controller handler instance does not have any significance opposed to
+	// a MeshsyncDataHandler instance where it signifies whether or not a listener is attached
+
+	cfg, _ := ctx.GenerateKubeConfig()
+	client, err := meshplaykube.New(cfg)
+	// means that the config is invalid
+	if err != nil {
+		mch.log.Error(err)
+	}
+
+	mch.ctxControllerHandlers = map[MeshplayController]controllers.IMeshplayController{
+		MeshplayBroker:   controllers.NewMeshplayBrokerHandler(client),
+		MeshplayOperator: controllers.NewMeshplayOperatorHandler(client, mch.oprDepConfig),
+		Meshsync:        controllers.NewMeshsyncHandler(client),
+	}
+
+	// }(mch)
 	return mch
+}
+
+func (mch *MeshplayControllersHelper) RemoveCtxControllerHandler(ctx context.Context, contextID string) {
+	mch.ctxControllerHandlers = nil
 }
 
 // update the status of MeshplayOperator in all the contexts
 // for whom MeshplayControllers are attached
-// should be called after UpdateCtxControllerHandlers
+// should be called after AddCtxControllerHandlers
 func (mch *MeshplayControllersHelper) UpdateOperatorsStatusMap(ot *OperatorTracker) *MeshplayControllersHelper {
-	go func(mch *MeshplayControllersHelper) {
-		mch.mu.Lock()
-		defer mch.mu.Unlock()
-		mch.ctxOperatorStatusMap = make(map[string]controllers.MeshplayControllerStatus)
-		for ctxID, ctrlHandler := range mch.ctxControllerHandlersMap {
-			if ot.IsUndeployed(ctxID) {
-				mch.ctxOperatorStatusMap[ctxID] = controllers.Undeployed
-			} else {
-				mch.ctxOperatorStatusMap[ctxID] = ctrlHandler[MeshplayOperator].GetStatus()
+	// go func(mch *MeshplayControllersHelper) {
+
+	if ot.IsUndeployed(mch.contextID) {
+		mch.ctxOperatorStatus = controllers.Undeployed
+	} else {
+		if mch.ctxControllerHandlers != nil {
+			operatorHandler, ok := mch.ctxControllerHandlers[MeshplayOperator]
+			if ok {
+				mch.ctxOperatorStatus = operatorHandler.GetStatus()
 			}
 		}
-	}(mch)
+	}
+
+	// }(mch)
 	return mch
 }
 
@@ -192,19 +208,16 @@ func (ot *OperatorTracker) Undeployed(ctxID string, undeployed bool) {
 	if ot.DisableOperator { //no-op when operator is disabled
 		return
 	}
-	ot.mx.Lock()
-	defer ot.mx.Unlock()
 	if ot.ctxIDtoDeploymentStatus == nil {
 		ot.ctxIDtoDeploymentStatus = make(map[string]bool)
 	}
 	ot.ctxIDtoDeploymentStatus[ctxID] = undeployed
 }
+
 func (ot *OperatorTracker) IsUndeployed(ctxID string) bool {
 	if ot.DisableOperator { //Return true everytime so that operators stay in undeployed state across all contexts
 		return true
 	}
-	ot.mx.Lock()
-	defer ot.mx.Unlock()
 	if ot.ctxIDtoDeploymentStatus == nil {
 		ot.ctxIDtoDeploymentStatus = make(map[string]bool)
 		return false
@@ -218,46 +231,46 @@ func (mch *MeshplayControllersHelper) DeployUndeployedOperators(ot *OperatorTrac
 	if ot.DisableOperator { //Return true everytime so that operators stay in undeployed state across all contexts
 		return mch
 	}
-	go func(mch *MeshplayControllersHelper) {
-		mch.mu.Lock()
-		defer mch.mu.Unlock()
-		for ctxID, ctrlHandler := range mch.ctxControllerHandlersMap {
-			if oprStatus, ok := mch.ctxOperatorStatusMap[ctxID]; ok {
-				
-				if oprStatus == controllers.NotDeployed {
-					
-					err := ctrlHandler[MeshplayOperator].Deploy(false)
-					if err != nil {
-						mch.log.Error(err)
-					}
+	// go func(mch *MeshplayControllersHelper) {
+
+	if mch.ctxOperatorStatus == controllers.NotDeployed {
+		if mch.ctxControllerHandlers != nil {
+			operatorHandler, ok := mch.ctxControllerHandlers[MeshplayOperator]
+			if ok {
+				err := operatorHandler.Deploy(false)
+
+				if err != nil {
+					mch.log.Error(err)
 				}
 			}
 		}
-	}(mch)
+	}
+
+	// }(mch)
 
 	return mch
 }
 
 func (mch *MeshplayControllersHelper) UndeployDeployedOperators(ot *OperatorTracker) *MeshplayControllersHelper {
-	go func(mch *MeshplayControllersHelper) {
-		
-		mch.mu.Lock()
-		defer mch.mu.Unlock()
-		for ctxID, ctrlHandler := range mch.ctxControllerHandlersMap {
-					
-			if oprStatus, ok := mch.ctxOperatorStatusMap[ctxID]; ok {
-				
-				if oprStatus != controllers.Undeployed {
-					
-					err := ctrlHandler[MeshplayOperator].Undeploy()
-					
-					if err != nil {
-						mch.log.Error(err)
-					}
+	// go func(mch *MeshplayControllersHelper) {
+
+	oprStatus := mch.ctxOperatorStatus
+
+	if oprStatus != controllers.Undeployed {
+
+		if mch.ctxControllerHandlers != nil {
+			operatorHandler, ok := mch.ctxControllerHandlers[MeshplayOperator]
+			if ok {
+				err := operatorHandler.Undeploy()
+
+				if err != nil {
+					mch.log.Error(err)
 				}
 			}
 		}
-	}(mch)
+	}
+
+	// }(mch)
 	return mch
 }
 

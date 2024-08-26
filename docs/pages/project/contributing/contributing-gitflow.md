@@ -24,7 +24,7 @@ While this isn't a necessary step, if you plan on doing anything more than just 
 ## Add 'upstream' repo to list of remotes
 
 ```
-git remote add upstream https://github.com/khulnasoft/meshplay.git
+git remote add upstream https://github.com/meshplay/meshplay.git
 ```
 
 ("meshplay" is used as the example repo. Be sure to reference the _actual_ repo you're contributing to e.g. "meshplay-linkerd").
@@ -127,4 +127,3 @@ This will open up a text editor where you can specify which commits to squash.
 
 Once you've committed and pushed all of your changes to GitHub, go to the page for your fork on GitHub, select your development branch, and click the pull request button. If you need to make any adjustments to your pull request, just push the updates to GitHub. Your pull request will automatically track the changes in your development branch and update it.
 
-{% include suggested-reading.html %}

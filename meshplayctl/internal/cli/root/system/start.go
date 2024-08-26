@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"os"
 	"os/exec"
 	"path"
@@ -25,11 +26,9 @@ import (
 	"strings"
 	"time"
 
-	c "github.com/khulnasoft/meshplay/meshplayctl/pkg/constants"
-	"github.com/pkg/errors"
-
 	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/config"
 	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/constants"
+	pkgconstants "github.com/khulnasoft/meshplay/meshplayctl/pkg/constants"
 	"github.com/khulnasoft/meshplay/meshplayctl/pkg/utils"
 
 	dockerCmd "github.com/docker/cli/cli/command"
@@ -71,6 +70,9 @@ meshplayctl system start --reset
 
 // Specify Platform to deploy Meshplay to.
 meshplayctl system start -p docker
+
+// Specify Provider to use.
+meshplayctl system start --provider Meshplay
 	`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		//Check prerequisite
@@ -113,7 +115,7 @@ meshplayctl system start -p docker
 		return nil
 	},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		latestVersions, err := meshkitutils.GetLatestReleaseTagsSorted(c.GetMeshplayGitHubOrg(), c.GetMeshplayGitHubRepo())
+		latestVersions, err := meshkitutils.GetLatestReleaseTagsSorted(pkgconstants.GetMeshplayGitHubOrg(), pkgconstants.GetMeshplayGitHubRepo())
 		version := constants.GetMeshplayctlVersion()
 		if err == nil {
 			if len(latestVersions) == 0 {
@@ -123,8 +125,8 @@ meshplayctl system start -p docker
 			latest := latestVersions[len(latestVersions)-1]
 			if latest != version {
 				log.Printf("A new release of meshplayctl is available: %s → %s", version, latest)
-				log.Printf("https://github.com/khulnasoft/meshplay/releases/tag/%s", latest)
-				log.Print("Check https://docs.khulnasoft.com/guides/upgrade#upgrading-meshplay-cli for instructions on how to update meshplayctl\n")
+				log.Printf("https://github.com/meshplay/meshplay/releases/tag/%s", latest)
+				log.Print("Check https://docs-meshplay.khulnasoft.com/installation/upgrades#upgrading-meshplay-cli for instructions on how to update meshplayctl\n")
 			}
 		}
 	},
@@ -163,15 +165,19 @@ func start() error {
 	if utils.PlatformFlag != "" {
 		if utils.PlatformFlag == "docker" || utils.PlatformFlag == "kubernetes" {
 			currCtx.SetPlatform(utils.PlatformFlag)
-
-			// update the context to config
-			err = config.UpdateContextInConfig(currCtx, mctlCfg.GetCurrentContextName())
-			if err != nil {
-				return err
-			}
 		} else {
 			return ErrUnsupportedPlatform(utils.PlatformFlag, utils.CfgFile)
 		}
+	}
+
+	if providerFlag != "" {
+		currCtx.SetProvider(providerFlag)
+	}
+
+	// update the context to config
+	err = config.UpdateContextInConfig(currCtx, mctlCfg.GetCurrentContextName())
+	if err != nil {
+		return err
 	}
 
 	// Reset Meshplay config file to default settings
@@ -182,6 +188,8 @@ func start() error {
 		}
 	}
 
+	callbackURL := viper.GetString(pkgconstants.CallbackURLENV)
+	providerURL := viper.GetString(pkgconstants.ProviderURLsENV)
 	// deploy to platform specified in the config.yaml
 	switch currCtx.GetPlatform() {
 	case "docker":
@@ -233,7 +241,7 @@ func start() error {
 			if err != nil {
 				// failure while adding a service to docker compose file is not a fatal error
 				// meshplayctl will continue deploying with required services (meshplay, watchtower)
-				log.Infof("Encountered an error while adding `%s` service to Docker Compose file. Verify permission to write to `.khulnasoft/meshplay.yaml` file.", v)
+				log.Infof("Encountered an error while adding `%s` service to Docker Compose file. Verify permission to write to `.meshplay/meshplay.yaml` file.", v)
 			}
 		}
 
@@ -251,12 +259,26 @@ func start() error {
 			spliter := strings.Split(temp.Image, ":")
 			temp.Image = fmt.Sprintf("%s:%s-%s", spliter[0], currCtx.GetChannel(), "latest")
 			if v == "meshplay" {
-				if !utils.ContainsStringPrefix(temp.Environment, "MESHPLAY_SERVER_CALLBACK_URL") {
-					temp.Environment = append(temp.Environment, fmt.Sprintf("%s=%s", "MESHPLAY_SERVER_CALLBACK_URL", viper.GetString("MESHPLAY_SERVER_CALLBACK_URL")))
+				callbackEnvVaridx, ok := utils.FindInSlice(pkgconstants.CallbackURLENV, temp.Environment)
+				if !ok {
+					temp.Environment = append(temp.Environment, fmt.Sprintf("%s=%s", pkgconstants.CallbackURLENV, callbackURL))
+				} else if callbackURL != "" {
+					if ok {
+						temp.Environment[callbackEnvVaridx] = fmt.Sprintf("%s=%s", pkgconstants.CallbackURLENV, callbackURL)
+					}
 				}
 
-				if currCtx.GetProvider() != "" {
-					temp.Environment = append(temp.Environment, fmt.Sprintf("%s=%s", "PROVIDER", currCtx.GetProvider()))
+				providerEnvVar := currCtx.GetProvider()
+				// If user has specified provider using --provider flag use that.
+				if providerFlag != "" {
+					providerEnvVar = providerFlag
+				}
+				proivderEnvVaridx, ok := utils.FindInSlice(pkgconstants.ProviderENV, temp.Environment)
+
+				if !ok {
+					temp.Environment = append(temp.Environment, fmt.Sprintf("%s=%s", pkgconstants.ProviderENV, providerEnvVar))
+				} else if providerEnvVar != "" {
+					temp.Environment[proivderEnvVaridx] = fmt.Sprintf("%s=%s", pkgconstants.ProviderENV, providerEnvVar)
 				}
 
 				temp.Image = fmt.Sprintf("%s:%s-%s", spliter[0], currCtx.GetChannel(), meshplayImageVersion)
@@ -409,7 +431,7 @@ func start() error {
 		}
 
 		// Applying Meshplay Helm charts for installing Meshplay
-		if err = applyHelmCharts(kubeClient, currCtx, meshplayImageVersion, false, meshkitkube.INSTALL); err != nil {
+		if err = applyHelmCharts(kubeClient, currCtx, meshplayImageVersion, false, meshkitkube.INSTALL, callbackURL, providerURL); err != nil {
 			return err
 		}
 
@@ -442,12 +464,13 @@ func init() {
 	startCmd.Flags().BoolVarP(&skipUpdateFlag, "skip-update", "", false, "(optional) skip checking for new Meshplay's container images.")
 	startCmd.Flags().BoolVarP(&utils.ResetFlag, "reset", "", false, "(optional) reset Meshplay's configuration file to default settings.")
 	startCmd.Flags().BoolVarP(&skipBrowserFlag, "skip-browser", "", false, "(optional) skip opening of MeshplayUI in browser.")
+	startCmd.PersistentFlags().StringVar(&providerFlag, "provider", "", "(optional) Defaults to the provider specified in the current context")
 }
 
 // Apply Meshplay helm charts
-func applyHelmCharts(kubeClient *meshkitkube.Client, currCtx *config.Context, meshplayImageVersion string, dryRun bool, act meshkitkube.HelmChartAction) error {
+func applyHelmCharts(kubeClient *meshkitkube.Client, currCtx *config.Context, meshplayImageVersion string, dryRun bool, act meshkitkube.HelmChartAction, callbackURL, providerURL string) error {
 	// get value overrides to install the helm chart
-	overrideValues := utils.SetOverrideValues(currCtx, meshplayImageVersion)
+	overrideValues := utils.SetOverrideValues(currCtx, meshplayImageVersion, callbackURL, providerURL)
 
 	// install the helm charts with specified override values
 	var chartVersion string

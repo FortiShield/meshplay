@@ -30,11 +30,9 @@ Manage your kubernetes clusters with Meshplay. Deploy Meshplay in kubernetes [in
 - [In-cluster Installation](#in-cluster-installation)
   - [Preflight Checks](#preflight-checks)
     - [Preflight: Cluster Connectivity](#preflight-cluster-connectivity)
-    - [Preflight: Plan your access to Meshplay UI](#preflight-plan-your-access-to-meshplay-ui)
   - [Installation: Using `meshplayctl`](#installation-using-meshplayctl)
   - [Installation: Using Helm](#installation-using-helm)
-- [Post-Installation Steps](#post-installation-steps)
-  - [Access Meshplay UI](#access-meshplay-ui)
+  - [Post-Installation Steps](#post-installation-steps)
 - [Out-of-cluster Installation](#out-of-cluster-installation)
   - [Installation: Upload Config File in Meshplay Web UI](#installation-upload-config-file-in-meshplay-web-ui)
 
@@ -52,16 +50,6 @@ Verify your kubeconfig's current context is set the kubernetes cluster you want 
 {% capture code_content %}kubectl config current-context{% endcapture %}
 {% include code.html code=code_content %}
 
-### Preflight: Plan your access to Meshplay UI
-
-1. If you are using port-forwarding, please refer to the [port-forwarding](/tasks/accessing-meshplay-ui) guide for detailed instructions.
-2. Customize your Meshplay Provider Callback URL. Meshplay Server supports customizing authentication flow callback URL, which can be configured in the following way:
-
-{% capture code_content %}$ MESHPLAY_SERVER_CALLBACK_URL=https://custom-host meshplayctl system start{% endcapture %}
-{% include code.html code=code_content %}
-
-Meshplay should now be running in your Kubernetes cluster and Meshplay UI should be accessible at the `EXTERNAL IP` of `meshplay` service.
-
 ## Installation: Using `meshplayctl`
 
 Once configured, execute the following command to start Meshplay.
@@ -70,17 +58,17 @@ Before executing the below command, go to ~/.meshplay/config.yaml and ensure tha
 {% capture code_content %}$ meshplayctl system start{% endcapture %}
 {% include code.html code=code_content %}
 
-If you encounter any authentication issues, you can use `meshplayctl system login`. For more information, click [here](/guides/meshplayctl/authenticate-with-meshplay-via-cli) to learn more.
-
 ## Installation: Using Helm
 
 For detailed instructions on installing Meshplay using Helm V3, please refer to the [Helm Installation](/installation/kubernetes/helm) guide.
 
-# Post-Installation Steps
+## Post-Installation Steps
 
-## Access Meshplay UI
+Optionally, you can verify the health of your Meshplay deployment, using <a href='/reference/meshplayctl/system/check'>meshplayctl system check</a>.
 
-To access Meshplay's UI, please refer to the [instruction](/tasks/accessing-meshplay-ui) for detailed guidance.
+You're ready to use Meshplay! Open your browser and navigate to the Meshplay UI.
+
+{% include_cached installation/accessing-meshplay-ui.md display-title="true" %}
 
 # Out-of-cluster Installation
 
@@ -95,7 +83,5 @@ Install Meshplay on Docker (out-of-cluster) and connect it to your Kubernetes cl
  </pre>
 
 - Upload the generated config file by navigating to _Settings > Environment > Out of Cluster Deployment_ in the Web UI and using the _"Upload kubeconfig"_ option.
-
-{% include suggested-reading.html language="en" %}
 
 {% include related-discussions.html tag="meshplay" %}

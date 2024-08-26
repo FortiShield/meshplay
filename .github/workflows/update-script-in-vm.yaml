@@ -17,5 +17,5 @@ jobs:
             username: root
             key: ${{ secrets.METAL_SSH_KEY }}
             script: |
-                cd meshplay/install/playground; curl -O https://raw.githubusercontent.com/khulnasoft/meshplay/meshplay/install/playground-cleanup.sh
+                cd meshplay/install/playground; curl -O https://raw.githubusercontent.com/meshplay/meshplay/meshplay/install/playground-cleanup.sh
           

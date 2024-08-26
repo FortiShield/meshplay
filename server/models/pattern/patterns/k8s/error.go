@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	ErrDryRunCode = "1536"
+	ErrDryRunCode = "meshplay-server-1318"
 )
 
 func isErrKubeStatusErr(err error) bool {

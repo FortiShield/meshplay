@@ -1,5 +1,5 @@
 ---
-layout: enhanced
+layout: default
 title: MeshMap Snapshot
 permalink: extensions/snapshot
 language: en
@@ -64,9 +64,9 @@ jobs:
       - uses: actions/checkout@v3 #this step would go and would be no longer needed to be written
         with:
           path: action
-          repository: khulnasoftlabs/meshmap-snapshot
+          repository: khulnasofts/meshmap-snapshot
       - id: test_result
-        uses: khulnasoftlabs/MeshMap-Snapshot@v0.0.4
+        uses: khulnasofts/MeshMap-Snapshot@v0.0.4
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }} # github's personal access token example: "ghp_...."
           providerToken: ${{ secrets.PROVIDER_TOKEN }} # Meshplay Cloud Authentication token, signin to meshplay-cloud to get one, example: ey.....
@@ -99,15 +99,15 @@ jobs:
       - uses: actions/checkout@v3 #this step would go and would be no longer needed to be written
         with:
           path: action
-          repository: khulnasoftlabs/meshmap-snapshot
+          repository: khulnasofts/meshmap-snapshot
       - id: test_result
-        uses: khulnasoftlabs/MeshMap-Snapshot@v0.0.4
+        uses: khulnasofts/MeshMap-Snapshot@v0.0.4
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }} # github's personal access token example: "ghp_...."
           providerToken: ${{ secrets.PROVIDER_TOKEN }} # Meshplay Cloud Authentication token, signin to meshplay-cloud to get one, example: ey.....
           prNumber: ${{ env.PULL_NO }} # auto-filled from the above step
           application_type: "Helm Chart" # your application type, could be any of three: "Kubernetes Manifest", "Docker Compose", "Helm Chart"
-          application_url: "https://github.com/khulnasoft/meshplay.io/raw/master/charts/meshplay-v0.6.88.tgz"
+          application_url: "https://github.com/meshplay/meshplay.io/raw/master/charts/meshplay-v0.6.88.tgz"
 ```
 
 #### FileSystem Approach Notes
@@ -203,11 +203,11 @@ After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/
 
 # General Upgrade Guide
 
-[MeshMap Snapshot Release Page](https://github.com/khulnasoftlabs/meshmap-snapshot/releases)
+[MeshMap Snapshot Release Page](https://github.com/khulnasofts/meshmap-snapshot/releases)
 
 ```
  - id: test_result
-        uses: khulnasoftlabs/MeshMap-Snapshot@v0.0.5 # <-- Update the version to latest from the MeshMap-Snapshot release page
+        uses: khulnasofts/MeshMap-Snapshot@v0.0.5 # <-- Update the version to latest from the MeshMap-Snapshot release page
         with:
         ...
 ```

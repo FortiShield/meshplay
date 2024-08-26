@@ -38,7 +38,7 @@ A core team of maintainers steward Meshplay, however, Meshplay is comprised of a
 
 ### Becoming a Maintainer
 
-Maintainers will be added to the GitHub @meshplay/maintainers team, and made a GitHub maintainer of that team. They will be given write permission to the Meshplay GitHub repository <https://github.com/khulnasoft/meshplay> repo. To do so they need to open an issue in khulnasoft/meshplay showing that they fill the above requirements. Sponsors express their support by adding `+1` as a comment.
+Maintainers will be added to the GitHub @meshplay/maintainers team, and made a GitHub maintainer of that team. They will be given write permission to the Meshplay GitHub repository <https://github.com/meshplay/meshplay> repo. To do so they need to open an issue in meshplay/meshplay showing that they fill the above requirements. Sponsors express their support by adding `+1` as a comment.
 
 ### Emeritus Maintainers
 

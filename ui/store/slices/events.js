@@ -1,10 +1,10 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { SEVERITY, STATUS, validateEvents } from '../../components/NotificationCenter/constants';
+import { SEVERITY, STATUS } from '../../components/NotificationCenter/constants';
 
 const initialState = {
   current_view: {
-    page: 1,
-    page_size: 10,
+    page: 0,
+    pagesize: 10,
     filters: {
       initial: true,
     },
@@ -81,7 +81,6 @@ export const eventsSlice = createSlice({
           checked: payload,
         },
       }));
-      console.log('updates', updates);
       eventsEntityAdapter.updateMany(state, updates);
     },
 
@@ -133,11 +132,11 @@ export const loadEvents = (fetch, page, filters) => async (dispatch, getState) =
         filters,
       }),
     );
-    if (page <= 1) {
-      dispatch(setEvents(validateEvents(data?.events || [])));
+    if (page <= 0) {
+      dispatch(setEvents(data?.events || []));
       return;
     }
-    dispatch(pushEvents(validateEvents(data?.events || [])));
+    dispatch(pushEvents(data?.events || []));
   } catch (e) {
     console.error('Error while setting events in store --loadEvents', e);
     return;
@@ -220,4 +219,8 @@ export const selectIsEventVisible = (state, id) => {
     : true;
   const isDeleted = event.is_deleted || false;
   return !isDeleted && shouldBeInCurrentFilteredView;
+};
+export const selectSeverity = (state) => {
+  const currentSeverityList = state.events?.current_view?.filters?.severity;
+  return currentSeverityList ? currentSeverityList[0] : undefined;
 };

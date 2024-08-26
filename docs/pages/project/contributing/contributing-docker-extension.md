@@ -2,7 +2,7 @@
 layout: page
 title: Contributing to Meshplay Docker Extension
 permalink: project/contributing/contributing-docker-extension
-redirect_from: project/contributing/contributing-docker-extension/
+# redirect_from: project/contributing/contributing-docker-extension/
 abstract: How to contribute to Meshplay Docker Extension
 language: en
 type: project
@@ -14,7 +14,7 @@ list: include
 To start contributing to Meshplay Docker Extension, make sure you have [Docker](https://docs.docker.com/get-docker/) installed on your system.
 ### Docker Extension for Meshplay
 
-The Docker Extension for Meshplay extends Docker Desktop’s position as the cloud native developer’s go-to Kubernetes environment with easy access to the next layer of cloud native infrastructure: service meshes.
+The Docker Extension for Meshplay extends Docker Desktop’s position as the cloud native developer’s go-to Kubernetes environment with easy access to the next layer of cloud native infrastructure. The extension provides a seamless experience for developers to manage and monitor their Kubernetes applications and services.
 
 #### Using Docker Desktop
 
@@ -34,13 +34,13 @@ The Docker Extension for Meshplay extends Docker Desktop’s position as the clo
 
 OR
 
-You can visit the [Docker Hub](https://hub.docker.com/extensions/khulnasoft/docker-extension-meshplay) marketplace to directly install Meshplay extension in your Docker Desktop.
+You can visit the [Docker Hub](https://hub.docker.com/extensions/meshplay/docker-extension-meshplay) marketplace to directly install Meshplay extension in your Docker Desktop.
 
 #### Using `Docker CLI`
 
 Meshplay runs as a set of containers inside your Docker Desktop virtual machine.
 
-{% capture code_content %}docker extension install khulnasoft/docker-extension-meshplay{% endcapture %}
+{% capture code_content %}docker extension install meshplay/docker-extension-meshplay{% endcapture %}
 {% include code.html code=code_content %}
 
 

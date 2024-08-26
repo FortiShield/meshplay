@@ -1,42 +1,52 @@
 // @ts-nocheck
 import React, { useEffect, useState, useRef } from 'react';
-import PromptComponent, { PROMPT_VARIANTS } from '../PromptComponent';
-import CloseIcon from '@material-ui/icons/Close';
-import PerformanceProfileGrid from './PerformanceProfileGrid';
-import dataFetch from '../../lib/data-fetch';
-import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/AddCircleOutline';
+import Moment from 'react-moment';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { updateProgress } from '../../lib/store';
-import GenericModal from '../GenericModal';
-import MeshplayPerformanceComponent from './index';
-import { Paper, Typography, Button, DialogTitle, TableCell, TableRow } from '@material-ui/core';
-import fetchPerformanceProfiles from '../graphql/queries/PerformanceProfilesQuery';
-import { withStyles } from '@material-ui/core/styles';
-import { iconMedium } from '../../css/icons.styles';
-import subscribePerformanceProfiles from '../graphql/subscriptions/PerformanceProfilesSubscription';
-import { useNotification } from '@/utils/hooks/useNotification';
-import { EVENT_TYPES } from '../../lib/event-types';
-import { ResponsiveDataTable } from '@khulnasoft/sistent-components';
-import Moment from 'react-moment';
-import { withSnackbar } from 'notistack';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import PerformanceResults from './PerformanceResults';
+
+import {
+  Button,
+  IconButton,
+  Paper,
+  TableCell,
+  TableRow,
+  TableSortLabel,
+  Typography,
+  withStyles,
+} from '@material-ui/core';
+import AddIcon from '@material-ui/icons/AddCircleOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import ReusableTooltip from '../reusable-tooltip';
-import CustomColumnVisibilityControl from '../../utils/custom-column';
+
+import {
+  CustomColumnVisibilityControl,
+  Modal,
+  ResponsiveDataTable,
+  SearchBar,
+} from '@khulnasoft/sistent';
+import MeshplayPerformanceComponent from './index';
+import PerformanceProfileGrid from './PerformanceProfileGrid';
+import PerformanceResults from './PerformanceResults';
+import PromptComponent, { PROMPT_VARIANTS } from '../PromptComponent';
 import ViewSwitch from '../ViewSwitch';
-import SearchBar from '@/utils/custom-search';
+import { UsesSistent } from '../SistentWrapper';
+
+import { updateProgress } from '../../lib/store';
+import { EVENT_TYPES } from '../../lib/event-types';
+import fetchPerformanceProfiles from '../graphql/queries/PerformanceProfilesQuery';
+import subscribePerformanceProfiles from '../graphql/subscriptions/PerformanceProfilesSubscription';
 import useStyles from '../../assets/styles/general/tool.styles';
+import { iconMedium } from '../../css/icons.styles';
+
+import { useDeletePerformanceProfileMutation } from '@/rtk-query/performance-profile';
+import { useNotification } from '@/utils/hooks/useNotification';
+import ReusableTooltip from '../reusable-tooltip';
 import { updateVisibleColumns } from '@/utils/responsive-column';
 import { useWindowDimensions } from '@/utils/dimension';
 import { ConditionalTooltip } from '@/utils/utils';
 import CAN from '@/utils/can';
 import { keys } from '@/utils/permission_constants';
 
-const MESHPLAY_PERFORMANCE_URL = '/api/user/performance/profiles';
 const styles = (theme) => ({
   title: {
     textAlign: 'center',
@@ -128,12 +138,14 @@ function PerformanceProfile({ updateProgress, classes, user, handleDelete }) {
   const [search, setSearch] = useState('');
   const [sortOrder, setSortOrder] = useState('');
   const [count, setCount] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState();
   const [testProfiles, setTestProfiles] = useState([]);
   const [profileForModal, setProfileForModal] = useState();
   const { notify } = useNotification();
   const { width } = useWindowDimensions();
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+
+  const [deletePerformanceProfile] = useDeletePerformanceProfileMutation();
   // const [loading, setLoading] = useState(false);
   /**
    * fetch performance profiles when the page loads
@@ -157,7 +169,7 @@ function PerformanceProfile({ updateProgress, classes, user, handleDelete }) {
           pageSize: `${pageSize}`,
           page: `${page}`,
           search: `${encodeURIComponent(search)}`,
-          order: `${encodeURIComponent(sortOrder)}`,
+          order: `${sortOrder}`,
         },
       },
     );
@@ -187,7 +199,7 @@ function PerformanceProfile({ updateProgress, classes, user, handleDelete }) {
         pageSize: `${pageSize}`,
         page: `${page}`,
         search: `${encodeURIComponent(search)}`,
-        order: `${encodeURIComponent(sortOrder)}`,
+        order: `${sortOrder}`,
       },
     }).subscribe({
       next: (res) => {
@@ -219,19 +231,14 @@ function PerformanceProfile({ updateProgress, classes, user, handleDelete }) {
   }
 
   function deleteProfile(id) {
-    dataFetch(
-      `${MESHPLAY_PERFORMANCE_URL}/${id}`,
-      {
-        method: 'DELETE',
-        credentials: 'include',
-      },
-      () => {
+    deletePerformanceProfile({ id: id })
+      .unwrap()
+      .then(() => {
         updateProgress({ showProgress: false });
         notify({ message: 'Performance Profile Deleted!', event_type: EVENT_TYPES.SUCCESS });
         fetchTestProfiles(page, pageSize, search, sortOrder);
-      },
-      handleError('Failed To Delete Profile'),
-    );
+      })
+      .catch(() => handleError('Failed To Delete Profile'));
   }
 
   function handleError(msg) {
@@ -461,10 +468,9 @@ function PerformanceProfile({ updateProgress, classes, user, handleDelete }) {
     responsive: 'standard',
     resizableColumns: true,
     serverSide: true,
-    selectableRows: true,
+    selectableRows: 'multiple',
     count,
     rowsPerPage: pageSize,
-    rowsPerPageOptions: [10, 20, 25],
     fixedHeader: true,
     page,
     print: false,
@@ -477,7 +483,6 @@ function PerformanceProfile({ updateProgress, classes, user, handleDelete }) {
 
     onRowsDelete: async function handleDeleteRow(row) {
       let response = await showModal(Object.keys(row.lookup).length);
-      console.log(response);
       if (response === 'Yes') {
         const pids = Object.keys(row.lookup).map((idx) => testProfiles[idx]?.id);
         pids.forEach((pid) => handleDelete(pid));
@@ -571,23 +576,25 @@ function PerformanceProfile({ updateProgress, classes, user, handleDelete }) {
             </>
           )}
           <div className={classes.viewSwitchButton}>
-            <SearchBar
-              onSearch={(value) => {
-                setSearch(value);
-                fetchTestProfiles(page, pageSize, value, sortOrder);
-              }}
-              expanded={isSearchExpanded}
-              setExpanded={setIsSearchExpanded}
-              placeholder="Search Profiles..."
-            />
-            {viewType === 'table' && (
-              <CustomColumnVisibilityControl
-                id="ref"
-                classes={classes}
-                columns={columns}
-                customToolsProps={{ columnVisibility, setColumnVisibility }}
+            <UsesSistent>
+              <SearchBar
+                onSearch={(value) => {
+                  setSearch(value);
+                  fetchTestProfiles(page, pageSize, value, sortOrder);
+                }}
+                expanded={isSearchExpanded}
+                setExpanded={setIsSearchExpanded}
+                placeholder="Search Profiles..."
               />
-            )}
+              {viewType === 'table' && (
+                <CustomColumnVisibilityControl
+                  id="ref"
+                  classes={classes}
+                  columns={columns}
+                  customToolsProps={{ columnVisibility, setColumnVisibility }}
+                />
+              )}
+            </UsesSistent>
             <ViewSwitch view={viewType} changeView={setViewType} />
           </div>
         </div>
@@ -600,15 +607,17 @@ function PerformanceProfile({ updateProgress, classes, user, handleDelete }) {
             setPage={setPage}
           />
         ) : (
-          <ResponsiveDataTable
-            data={testProfiles}
-            columns={columns}
-            // @ts-ignore
-            options={options}
-            tableCols={tableCols}
-            updateCols={updateCols}
-            columnVisibility={columnVisibility}
-          />
+          <UsesSistent>
+            <ResponsiveDataTable
+              data={testProfiles}
+              columns={columns}
+              // @ts-ignore
+              options={options}
+              tableCols={tableCols}
+              updateCols={updateCols}
+              columnVisibility={columnVisibility}
+            />
+          </UsesSistent>
         )}
         {testProfiles.length === 0 && viewType === 'grid' && (
           <Paper className={classes.noProfilePaper}>
@@ -631,44 +640,32 @@ function PerformanceProfile({ updateProgress, classes, user, handleDelete }) {
             </div>
           </Paper>
         )}
-        <GenericModal
-          open={!!profileForModal}
-          Content={
-            <Paper className={classes.addProfileModal}>
-              <div className={classes.dialogHeader}>
-                <DialogTitle className={classes.title}>Performance Profile Wizard</DialogTitle>
-                <IconButton
-                  aria-label="close"
-                  style={{ color: 'white' }}
-                  onClick={() => setProfileForModal(undefined)}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </div>
-
-              <MeshplayPerformanceComponent
-                loadAsPerformanceProfile
-                performanceProfileID={profileForModal?.id}
-                profileName={profileForModal?.name}
-                meshName={profileForModal?.service_mesh}
-                url={profileForModal?.endpoints?.[0]}
-                qps={profileForModal?.qps}
-                loadGenerator={profileForModal?.load_generators?.[0]}
-                t={profileForModal?.duration}
-                c={profileForModal?.concurrent_request}
-                reqBody={profileForModal?.request_body}
-                headers={profileForModal?.request_headers}
-                cookies={profileForModal?.request_cookies}
-                contentType={profileForModal?.content_type}
-                runTestOnMount={!!profileForModal?.runTest}
-                metadata={profileForModal?.metadata}
-              />
-            </Paper>
-          }
-          handleClose={() => {
-            setProfileForModal(undefined);
-          }}
-        />
+        <UsesSistent>
+          <Modal
+            open={!!profileForModal}
+            title="Performance Profile Wizard"
+            closeModal={() => setProfileForModal(undefined)}
+            maxWidth="md"
+          >
+            <MeshplayPerformanceComponent
+              loadAsPerformanceProfile
+              performanceProfileID={profileForModal?.id}
+              profileName={profileForModal?.name}
+              meshName={profileForModal?.service_mesh}
+              url={profileForModal?.endpoints?.[0]}
+              qps={profileForModal?.qps}
+              loadGenerator={profileForModal?.load_generators?.[0]}
+              t={profileForModal?.duration}
+              c={profileForModal?.concurrent_request}
+              reqBody={profileForModal?.request_body}
+              headers={profileForModal?.request_headers}
+              cookies={profileForModal?.request_cookies}
+              contentType={profileForModal?.content_type}
+              runTestOnMount={!!profileForModal?.runTest}
+              metadata={profileForModal?.metadata}
+            />
+          </Modal>
+        </UsesSistent>
       </div>
 
       <PromptComponent ref={modalRef} />
@@ -682,6 +679,4 @@ const mapDispatchToProps = (dispatch) => ({
   updateProgress: bindActionCreators(updateProgress, dispatch),
 });
 
-export default withStyles(styles)(
-  connect(mapStateToProps, mapDispatchToProps)(withSnackbar(PerformanceProfile)),
-);
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(PerformanceProfile));

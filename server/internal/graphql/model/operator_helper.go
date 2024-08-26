@@ -13,10 +13,11 @@ import (
 	"github.com/khulnasoft/meshplay/server/models"
 	brokerpkg "github.com/khulnasoft/meshkit/broker"
 	"github.com/khulnasoft/meshkit/broker/nats"
+	"github.com/khulnasoft/meshkit/logger"
+
 	"github.com/khulnasoft/meshkit/models/controllers"
 	"github.com/khulnasoft/meshkit/utils"
 	meshplaykube "github.com/khulnasoft/meshkit/utils/kubernetes"
-	"github.com/sirupsen/logrus"
 	kubeerror "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -27,10 +28,6 @@ const (
 	MeshsyncSubject          = "meshplay.meshsync.core"
 	BrokerQueue              = "meshplay"
 	MeshSyncBrokerConnection = "meshsync"
-)
-
-var (
-	meshsyncVersion string
 )
 
 type Connections struct {
@@ -73,35 +70,17 @@ func GetOperator(kubeclient *meshplaykube.Client) (string, string, error) {
 	return dep.ObjectMeta.Name, version, nil
 }
 
-func GetControllersInfo(meshplayKubeClient *meshplaykube.Client, brokerConn brokerpkg.Handler) ([]*OperatorControllerStatus, error) {
-	controllers := make([]*OperatorControllerStatus, 0)
-
-	meshplayclient, err := operatorClient.New(&meshplayKubeClient.RestConfig)
-	if err != nil {
-		if meshplayclient == nil {
-			return controllers, ErrMeshplayClientNil
-		}
-		return controllers, ErrMeshplayClient(err)
-	}
-
-	broker := GetBrokerInfo(meshplayKubeClient)
-
-	controllers = append(controllers, &broker)
-
-	meshsync := GetMeshSyncInfo(meshplayKubeClient, nil)
-	controllers = append(controllers, &meshsync)
-
-	return controllers, nil
-}
-
-func GetBrokerInfo(meshplayKubeClient *meshplaykube.Client) OperatorControllerStatus {
-	broker := controllers.NewMeshplayBrokerHandler(meshplayKubeClient)
+func GetBrokerInfo(broker controllers.IMeshplayController, log logger.Handler) OperatorControllerStatus {
 	brokerStatus := broker.GetStatus().String()
+	monitorEndpoint, err := broker.GetEndpointForPort("monitor")
+	log.Debug("broker monitor endpoint", monitorEndpoint, err)
 
 	if brokerStatus == controllers.Connected.String() {
 		brokerEndpoint, _ := broker.GetPublicEndpoint()
 		brokerStatus = fmt.Sprintf("%s %s", brokerStatus, brokerEndpoint)
 	}
+	// change the type of IMeshplayController GetName() to to models.MeshplayController
+	// and use MeshplayControllersStatusListItem instead of OperatorControllerStatus
 	brokerControllerStatus := OperatorControllerStatus{
 		Name:   broker.GetName(),
 		Status: Status(brokerStatus),
@@ -112,21 +91,25 @@ func GetBrokerInfo(meshplayKubeClient *meshplaykube.Client) OperatorControllerSt
 	return brokerControllerStatus
 }
 
-func GetMeshSyncInfo(meshplayKubeClient *meshplaykube.Client, broker controllers.IMeshplayController) OperatorControllerStatus {
-	meshsync := controllers.NewMeshsyncHandler(meshplayKubeClient)
+func GetMeshSyncInfo(meshsync controllers.IMeshplayController, broker controllers.IMeshplayController, log logger.Handler) OperatorControllerStatus {
 	meshsyncStatus := meshsync.GetStatus().String()
-	if broker == nil {
-		broker = controllers.NewMeshplayBrokerHandler(meshplayKubeClient)
+
+	// Debug block
+	if broker != nil {
+		monitorEndpoint, err := broker.GetEndpointForPort("monitor")
+		log.Debug("broker monitor endpoint", monitorEndpoint, err)
 	}
 
-	if meshsyncStatus == controllers.Connected.String() {
+	// change the type of IMeshplayController GetName() to to models.MeshplayController
+	// and use MeshplayControllersStatusListItem instead of OperatorControllerStatus
+	if meshsyncStatus == controllers.Connected.String() && broker != nil {
 		brokerEndpoint, _ := broker.GetPublicEndpoint()
 		meshsyncStatus = fmt.Sprintf("%s %s", meshsyncStatus, brokerEndpoint)
 	}
-
+	version, _ := meshsync.GetVersion()
 	meshsyncControllerStatus := OperatorControllerStatus{
 		Name:    meshsync.GetName(),
-		Version: meshsyncVersion,
+		Version: version,
 		Status:  Status(meshsyncStatus),
 	}
 
@@ -224,34 +207,9 @@ func SubscribeToBroker(_ models.Provider, meshplayKubeClient *meshplaykube.Clien
 		},
 	})
 
-	go getVersion(brokerConn)
-
 	if err != nil {
 		return endpoint, ErrPublishBroker(err)
 	}
 
 	return endpoint, nil
-}
-
-func getVersion(brokerConn brokerpkg.Handler) {
-	versionch := make(chan *brokerpkg.Message)
-
-	err := brokerConn.SubscribeWithChannel("meshsync-meta", "meshplay", versionch) // what is this queue used for now just using "meshplay"
-
-	if err != nil {
-		logrus.Error(err.Error())
-		return
-	}
-	err = brokerConn.Publish(RequestSubject, &brokerpkg.Message{
-		Request: &brokerpkg.RequestObject{
-			Entity: "meshsync-meta",
-		},
-	})
-	if err != nil {
-		logrus.Error(err.Error())
-		return
-	}
-
-	ch := <-versionch
-	meshsyncVersion = ch.Object.(string)
 }

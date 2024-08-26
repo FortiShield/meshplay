@@ -11,6 +11,7 @@ import (
 	"github.com/khulnasoft/meshplay/server/machines/prometheus"
 	"github.com/khulnasoft/meshplay/server/models"
 	"github.com/khulnasoft/meshplay/server/models/connections"
+	"github.com/khulnasoft/meshkit/database"
 	"github.com/khulnasoft/meshkit/logger"
 )
 
@@ -33,7 +34,7 @@ func StatusToEvent(status connections.ConnectionStatus) machines.EventType {
 	}
 	return machines.EventType(machines.DefaultState)
 }
-func getMachine(initialState machines.StateType, mtype, id string, userID uuid.UUID, log logger.Handler) (*machines.StateMachine, error) {
+func getMachine(initialState machines.StateType, mtype, id string, userID uuid.UUID, log logger.Handler, dbHandler *database.Handler) (*machines.StateMachine, error) {
 	switch mtype {
 	case "kubernetes":
 		return kubernetes.New(id, userID, log)
@@ -81,7 +82,7 @@ func InitializeMachineWithContext(
 		return inst, nil
 	}
 
-	inst, err := getMachine(initialState, mtype, ID.String(), userID, log)
+	inst, err := getMachine(initialState, mtype, ID.String(), userID, log, provider.GetGenericPersister())
 	if err != nil {
 		log.Error(err)
 		return nil, err

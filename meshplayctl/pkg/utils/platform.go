@@ -172,7 +172,7 @@ func DownloadManifests(manifestArr []Manifest, rawManifestsURL string) error {
 			// download the manifest files to ~/.meshplay/manifests folder
 			filepath := filepath.Join(MeshplayFolder, ManifestsFolder, manifest.Path)
 			if err := meshkitutils.DownloadFile(filepath, manifestFile); err != nil {
-				return errors.Wrapf(err, SystemError(fmt.Sprintf("failed to download %s file from %s", filepath, manifestFile)))
+				return errors.Wrapf(err, "failed to download %s file from %s", filepath, manifestFile)
 			}
 		}
 	}
@@ -184,19 +184,19 @@ func DownloadOperatorManifest() error {
 	operatorFilepath := filepath.Join(MeshplayFolder, ManifestsFolder, MeshplayOperator)
 	err := meshkitutils.DownloadFile(operatorFilepath, OperatorURL)
 	if err != nil {
-		return errors.Wrapf(err, SystemError(fmt.Sprintf("failed to download %s file from %s operator file", operatorFilepath, MeshplayOperator)))
+		return errors.Wrapf(err, "failed to download %s file from %s operator file", operatorFilepath, MeshplayOperator)
 	}
 
 	brokerFilepath := filepath.Join(MeshplayFolder, ManifestsFolder, MeshplayOperatorBroker)
 	err = meshkitutils.DownloadFile(brokerFilepath, BrokerURL)
 	if err != nil {
-		return errors.Wrapf(err, SystemError(fmt.Sprintf("failed to download %s file from %s operator file", brokerFilepath, MeshplayOperatorBroker)))
+		return errors.Wrapf(err, "failed to download %s file from %s operator file", brokerFilepath, MeshplayOperatorBroker)
 	}
 
 	meshsyncFilepath := filepath.Join(MeshplayFolder, ManifestsFolder, MeshplayOperatorMeshsync)
 	err = meshkitutils.DownloadFile(meshsyncFilepath, MeshsyncURL)
 	if err != nil {
-		return errors.Wrapf(err, SystemError(fmt.Sprintf("failed to download %s file from %s operator file", meshsyncFilepath, MeshplayOperatorMeshsync)))
+		return errors.Wrapf(err, "failed to download %s file from %s operator file", meshsyncFilepath, MeshplayOperatorMeshsync)
 	}
 
 	return nil
@@ -403,7 +403,7 @@ func DownloadDockerComposeFile(ctx *config.Context, force bool) error {
 		}
 
 		if err := meshkitutils.DownloadFile(DockerComposeFile, fileURL); err != nil {
-			return errors.Wrapf(err, SystemError(fmt.Sprintf("failed to download %s file from %s", DockerComposeFile, fileURL)))
+			return errors.Wrapf(err, "failed to download %s file from %s", DockerComposeFile, fileURL)
 		}
 	}
 	return nil
@@ -452,8 +452,8 @@ func ApplyManifestFiles(manifestArr []Manifest, requestedAdapters []string, clie
 		}
 
 		return append(envVarI, map[string]interface{}{
-			"name":  "MESHPLAY_SERVER_CALLBACK_URL",
-			"value": viper.GetString("MESHPLAY_SERVER_CALLBACK_URL"),
+			"name":  constants.CallbackURLENV,
+			"value": viper.GetString(constants.CallbackURLENV),
 		}), nil
 	}, "spec", "template", "spec", "containers", "0", "env")
 	if err != nil {
@@ -475,7 +475,7 @@ func ApplyManifestFiles(manifestArr []Manifest, requestedAdapters []string, clie
 	// loop through the required components as specified in the config.yaml file and apply/update/delete each
 	for _, component := range requestedAdapters {
 		// for each component, there is a meshplay-componentName-deployment.yaml and meshplay-componentName-service.yaml
-		// manifest file. See- https://github.com/khulnasoft/meshplay/tree/master/install/deployment_yamls/k8s
+		// manifest file. See- https://github.com/meshplay/meshplay/tree/master/install/deployment_yamls/k8s
 		componentFile := filepath.Join(manifestFiles, component)
 		componentDeployment := componentFile + "-deployment.yaml"
 		componentService := componentFile + "-service.yaml"
@@ -615,7 +615,7 @@ func CreateManifestsFolder() error {
 	log.Debug("creating " + ManifestsFolder + "folder...")
 	// create a manifests folder under ~/.meshplay to store the manifest files
 	if err := os.MkdirAll(filepath.Join(MeshplayFolder, ManifestsFolder), os.ModePerm); err != nil {
-		return errors.Wrapf(err, SystemError(fmt.Sprintf("failed to make %s directory", ManifestsFolder)))
+		return errors.Wrapf(err, "failed to make %s directory", ManifestsFolder)
 	}
 	log.Debug("created manifests folder...")
 

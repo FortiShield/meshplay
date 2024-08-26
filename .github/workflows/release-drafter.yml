@@ -8,7 +8,7 @@ on:
       - '.github/**'
 jobs:
   update_release_draft:
-    if: github.repository == 'khulnasoft/meshplay'
+    if: github.repository == 'meshplay/meshplay'
     runs-on: ubuntu-22.04
     steps:
       - name: Drafting release

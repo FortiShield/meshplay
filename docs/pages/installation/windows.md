@@ -14,7 +14,7 @@ abstract: Install Meshplay CLI on Windows
 ---
 
 
-On Windows systems, `meshplayctl` can be installed via Scoop or can be [downloaded directly](https://github.com/khulnasoft/meshplay/releases/latest).
+On Windows systems, `meshplayctl` can be installed via Scoop or can be [downloaded directly](https://github.com/meshplay/meshplay/releases/latest).
 
 {% include meshplayctl/installation-scoop.md %}
 
@@ -50,10 +50,8 @@ Guides to using Meshplay's various features and components.
     </li>
     {% endif %}
   {% endfor %}
-    <li><a href="{{ site.baseurl }}/guides/upgrade#upgrading-meshplay-cli">Upgrading Meshplay CLI</a></li>
+    <li><a href="{{ site.baseurl }}/installation/upgrades#upgrading-meshplay-cli">Upgrading Meshplay CLI</a></li>
 </ul>
-
-{% include suggested-reading.html language="en" %}
 
 {% include related-discussions.html tag="meshplayctl" %}
 

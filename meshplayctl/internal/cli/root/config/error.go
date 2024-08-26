@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ package config
 import "github.com/khulnasoft/meshkit/errors"
 
 const (
-	ErrInvalidMeshConfigCode = "1086"
-	ErrUpdateConfigCode      = "1087"
+	ErrInvalidMeshConfigCode = "meshplayctl-1008"
+	ErrUpdateConfigCode      = "meshplayctl-1009"
 )
 
 func ErrInvalidMeshConfig(err error) error {

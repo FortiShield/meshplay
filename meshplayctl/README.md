@@ -4,7 +4,7 @@
 
 # Contributing
 
-Please refer the [Meshplay Contributing Guidelines](https://github.com/khulnasoft/meshplay/blob/master/CONTRIBUTING.md) for setting up your development environment.
+Please refer the [Meshplay Contributing Guidelines](https://github.com/meshplay/meshplay/blob/master/CONTRIBUTING.md) for setting up your development environment.
 
 Refer the [meshplayctl- Command Reference and Tracker](https://docs.google.com/spreadsheets/d/1q63sIGAuCnIeDs8PeM-0BAkNj8BBgPUXhLbe1Y-318o/edit#gid=0) for current status of `meshplayctl`.
 
@@ -12,7 +12,7 @@ For a quick introduction to `meshplayctl`, checkout [Beginner's guide to contrib
 
 ## Building and running `meshplayctl`
 
-The [`/meshplayctl`](https://github.com/khulnasoft/meshplay/tree/master/meshplayctl) folder contains the complete code for `meshplayctl`.
+The [`/meshplayctl`](https://github.com/meshplay/meshplay/tree/master/meshplayctl) folder contains the complete code for `meshplayctl`.
 
 `meshplayctl` is written in Golang or the Go Programming Language. For development use Go version 1.15+.
 
@@ -22,7 +22,7 @@ Refer the [Meshplay CLI Commands and Documentation](https://docs.google.com/docu
 
 ## `meshplayctl` command reference
 
-Detailed documentation of the `meshplayctl` commands is available in the [Meshplay Docs](https://docs.khulnasoft.com/reference/meshplayctl).
+Detailed documentation of the `meshplayctl` commands is available in the [Meshplay Docs](https://docs-meshplay.khulnasoft.com/reference/meshplayctl).
 
 ## General guidelines and resources
 
@@ -47,4 +47,4 @@ For logs, `meshplayctl` uses [Logrus](https://github.com/sirupsen/logrus). Going
 
 `meshplayctl` uses [golangci-lint](https://github.com/golangci/golangci-lint). Refer it for lint checks.
 
-All contributors are invited to review [pull requests](https://github.com/khulnasoft/meshplay/pulls) on `meshplayctl` as on other Khulnasoft projects.
+All contributors are invited to review [pull requests](https://github.com/meshplay/meshplay/pulls) on `meshplayctl` as on other KhulnaSoft projects.

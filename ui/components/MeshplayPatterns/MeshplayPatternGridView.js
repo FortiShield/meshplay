@@ -3,30 +3,39 @@ import { Pagination } from '@material-ui/lab';
 import React, { useState } from 'react';
 import MeshplayPatternCard from './MeshplayPatternCard';
 import DesignConfigurator from '../configuratorComponents/MeshModel';
-import { FILE_OPS, ACTIONS } from '../../utils/Enum';
-import ConfirmationMsg from '../ConfirmationModal';
-import { getComponentsinFile } from '../../utils/utils';
+import { FILE_OPS } from '../../utils/Enum';
+import { EVENT_TYPES } from '../../lib/event-types';
 import useStyles from './Grid.styles';
-import Validation from '../Validation';
-import Modal from '../Modal';
-import PublicIcon from '@material-ui/icons/Public';
-import DryRunComponent from '../DryRun/DryRunComponent';
+import { RJSFModalWrapper } from '../Modal';
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { updateProgress } from '../../lib/store';
+import ExportModal from '../ExportModal';
+import downloadContent from '@/utils/fileDownloader';
+import { useNotification } from '@/utils/hooks/useNotification';
+import { Modal as SistentModal } from '@khulnasoft/sistent';
+import { UsesSistent } from '../SistentWrapper';
+import Pattern from '../../public/static/img/drawer-icons/pattern_svg';
 const INITIAL_GRID_SIZE = { xl: 4, md: 6, xs: 12 };
 
 function PatternCardGridItem({
   pattern,
   handleDeploy,
   handleVerify,
+  handleDryRun,
   handlePublishModal,
   handleUnpublishModal,
   handleUnDeploy,
   handleClone,
   handleSubmit,
+  handleDownload,
   setSelectedPatterns,
   canPublishPattern = false,
   user,
   handleInfoModal,
+  hideVisibility = false,
+  isReadOnly = false,
 }) {
   const [gridProps, setGridProps] = useState(INITIAL_GRID_SIZE);
   const [yaml, setYaml] = useState(pattern.pattern_file);
@@ -45,11 +54,13 @@ function PatternCardGridItem({
         requestSizeRestore={() => setGridProps(INITIAL_GRID_SIZE)}
         handleDeploy={handleDeploy}
         handleVerify={handleVerify}
+        handleDryRun={handleDryRun}
         handlePublishModal={handlePublishModal}
         handleUnDeploy={handleUnDeploy}
         handleUnpublishModal={handleUnpublishModal}
         handleClone={handleClone}
         handleInfoModal={handleInfoModal}
+        handleDownload={handleDownload}
         deleteHandler={() =>
           handleSubmit({
             data: yaml,
@@ -73,6 +84,8 @@ function PatternCardGridItem({
         description={pattern.description}
         visibility={pattern.visibility}
         pattern={pattern}
+        hideVisibility={hideVisibility}
+        isReadOnly={isReadOnly}
       />
     </Grid>
   );
@@ -111,11 +124,8 @@ function PatternCardGridItem({
 
 function MeshplayPatternGrid({
   patterns = [],
-  handleVerify,
   handlePublish,
   handleUnpublishModal,
-  handleDeploy,
-  handleUnDeploy,
   handleClone,
   handleSubmit,
   setSelectedPattern,
@@ -123,16 +133,21 @@ function MeshplayPatternGrid({
   pages = 1,
   setPage,
   selectedPage,
-  patternErrors,
   canPublishPattern = false,
   publishModal,
   setPublishModal,
-  selectedK8sContexts,
   publishSchema,
   user,
   handleInfoModal,
+  openDeployModal,
+  openValidationModal,
+  openUndeployModal,
+  openDryRunModal,
+  hideVisibility = false,
+  arePatternsReadOnly = false,
 }) {
   const classes = useStyles();
+  const { notify } = useNotification();
   const handlePublishModal = (pattern) => {
     if (canPublishPattern) {
       setPublishModal({
@@ -150,59 +165,37 @@ function MeshplayPatternGrid({
     });
   };
 
-  const [modalOpen, setModalOpen] = useState({
+  const [downloadModal, setDownloadModal] = useState({
     open: false,
-    deploy: false,
-    pattern_file: null,
-    pattern_id: '',
-    name: '',
-    count: 0,
-    dryRunComponent: null,
+    content: null,
   });
-
-  const handleModalClose = () => {
-    setModalOpen({
+  const handleDownload = (e, design, source_type, params) => {
+    e.stopPropagation();
+    try {
+      let id = design.id;
+      let name = design.name;
+      downloadContent({ id, name, type: 'pattern', source_type, params });
+      notify({ message: `"${name}" design downloaded`, event_type: EVENT_TYPES.INFO });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  const handleDownloadDialogClose = () => {
+    setDownloadModal((prevState) => ({
+      ...prevState,
       open: false,
-      pattern_file: null,
-      name: '',
-      pattern_id: '',
-      count: 0,
-    });
+      content: null,
+    }));
   };
 
-  const handleModalOpen = (pattern, action) => {
-    const compCount = getComponentsinFile(pattern.pattern_file);
-    const validationBody = (
-      <Validation
-        errors={patternErrors.get(pattern.id)}
-        compCount={compCount}
-        handleClose={() => setModalOpen({ ...modalOpen, open: false })}
-      />
-    );
-
-    const dryRunComponent = (
-      <DryRunComponent
-        design={JSON.stringify({
-          pattern_file: pattern.pattern_file,
-          pattern_id: pattern.id,
-        })}
-        noOfElements={compCount}
-        selectedContexts={selectedK8sContexts}
-      />
-    );
-    setModalOpen({
+  const handleDesignDownloadModal = (e, pattern) => {
+    e.stopPropagation();
+    setDownloadModal((prevState) => ({
+      ...prevState,
       open: true,
-      action: action,
-      pattern_file: pattern.pattern_file,
-      name: pattern.name,
-      pattern_id: pattern.id,
-      count: compCount,
-      validationBody: validationBody,
-      dryRunComponent: dryRunComponent,
-    });
+      content: pattern,
+    }));
   };
-
-  console.log('user-->', user);
 
   return (
     <div>
@@ -222,14 +215,26 @@ function MeshplayPatternGrid({
               pattern={pattern}
               canPublishPattern={canPublishPattern}
               handleClone={() => handleClone(pattern.id, pattern.name)}
-              handleDeploy={() => handleModalOpen(pattern, ACTIONS.DEPLOY)}
-              handleUnDeploy={() => handleModalOpen(pattern, ACTIONS.UNDEPLOY)}
-              handleVerify={(e) => handleVerify(e, pattern.pattern_file, pattern.id)}
+              handleDeploy={(e) => {
+                openDeployModal(e, pattern.pattern_file, pattern.name, pattern.id);
+              }}
+              handleUnDeploy={(e) => {
+                openUndeployModal(e, pattern.pattern_file, pattern.name, pattern.id);
+              }}
+              handleDryRun={(e) =>
+                openDryRunModal(e, pattern.pattern_file, pattern.name, pattern.id)
+              }
+              handleVerify={(e) =>
+                openValidationModal(e, pattern.pattern_file, pattern.name, pattern.id)
+              }
               handlePublishModal={() => handlePublishModal(pattern)}
               handleUnpublishModal={(e) => handleUnpublishModal(e, pattern)()}
               handleInfoModal={() => handleInfoModal(pattern)}
               handleSubmit={handleSubmit}
+              handleDownload={(e) => handleDesignDownloadModal(e, pattern)}
               setSelectedPatterns={setSelectedPattern}
+              hideVisibility={hideVisibility}
+              isReadOnly={arePatternsReadOnly}
             />
           ))}
         </Grid>
@@ -267,39 +272,46 @@ function MeshplayPatternGrid({
           />
         </div>
       ) : null}
-      <ConfirmationMsg
-        open={modalOpen.open}
-        handleClose={handleModalClose}
-        submit={{
-          deploy: () => handleDeploy(modalOpen.pattern_file, modalOpen.pattern_id, modalOpen.name),
-          unDeploy: () =>
-            handleUnDeploy(modalOpen.pattern_file, modalOpen.pattern_id, modalOpen.name),
-        }}
-        title={modalOpen.name}
-        componentCount={modalOpen.count}
-        tab={modalOpen.action}
-        dryRunComponent={modalOpen.dryRunComponent}
-        validationBody={modalOpen.validationBody}
-      />
+
       {canPublishPattern && publishModal.open && (
-        <Modal
-          open={true}
-          schema={publishSchema.rjsfSchema}
-          uiSchema={publishSchema.uiSchema}
-          handleClose={handlePublishModalClose}
-          aria-label="catalog publish"
-          title={publishModal.pattern?.name}
-          handleSubmit={handlePublish}
-          showInfoIcon={{
-            text: 'Upon submitting your catalog item, an approval flow will be initiated.',
-            link: 'https://docs.khulnasoft.com/concepts/catalog',
-          }}
-          submitBtnText="Submit for Approval"
-          submitBtnIcon={<PublicIcon />}
-        />
+        <UsesSistent>
+          <SistentModal
+            open={true}
+            title={publishModal.pattern?.name}
+            closeModal={handlePublishModalClose}
+            aria-label="catalog publish"
+            maxWidth="sm"
+            headerIcon={
+              <Pattern
+                fill="#fff"
+                style={{ height: '24px', width: '24px', fonSize: '1.45rem' }}
+                className={undefined}
+              />
+            }
+          >
+            <RJSFModalWrapper
+              schema={publishSchema.rjsfSchema}
+              uiSchema={publishSchema.uiSchema}
+              submitBtnText="Submit for Approval"
+              handleSubmit={handlePublish}
+              helpText="Upon submitting your catalog item, an approval flow will be initiated.[Learn more](https://docs-meshplay.khulnasoft.com/concepts/catalog)"
+              handleClose={handlePublishModalClose}
+            />
+          </SistentModal>
+        </UsesSistent>
       )}
+      <ExportModal
+        downloadModal={downloadModal}
+        handleDownloadDialogClose={handleDownloadDialogClose}
+        handleDesignDownload={handleDownload}
+      />
     </div>
   );
 }
 
-export default MeshplayPatternGrid;
+const mapDispatchToProps = (dispatch) => ({
+  updateProgress: bindActionCreators(updateProgress, dispatch),
+});
+
+// @ts-ignore
+export default connect(mapDispatchToProps)(MeshplayPatternGrid);

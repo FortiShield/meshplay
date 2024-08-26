@@ -18,7 +18,7 @@ play-prod-run:
 	-e PROVIDER_BASE_URLS=$(REMOTE_PROVIDER) \
 	-e DEBUG=$(DEBUG) \
 	-e PLAYGROUND=true \
-	-e MESHPLAY_SERVER_CALLBACK_URL=https://playground.khulnasoft.com/api/user/token \ 
+	-e MESHPLAY_SERVER_CALLBACK_URL=https://playground.meshplay.io/api/user/token \ 
 	-p $(PROD_PLAYGROUND_PORT):8080 \
 	khulnasoft/meshplay:playground-latest ./meshplay
 	

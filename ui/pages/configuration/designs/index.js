@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { NoSsr, withStyles } from '@material-ui/core';
-import MeshplayPatterns from '../../../components/MeshplayPatterns';
 import { updatepagepath } from '../../../lib/store';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Head from 'next/head';
 import { getPath } from '../../../lib/path';
+import MeshplayPatterns from '../../../components/MeshplayPatterns';
 
 const styles = {
   paper: {
@@ -17,7 +17,6 @@ const styles = {
 
 function Patterns({ updatepagepath }) {
   useEffect(() => {
-    console.log(`path: ${getPath()}`);
     updatepagepath({ path: getPath() });
   }, [updatepagepath]);
 

@@ -6,28 +6,31 @@ To install or upgrade `meshplayctl` using `bash`, execute anyone of the followin
  <pre class="codeblock-pre">
  <div class="codeblock">
  <div class="clipboardjs">
-  $ curl -L https://khulnasoft.com/install | DEPLOY_MESHPLAY=false bash -
+  $ curl -L https://meshplay.io/install | DEPLOY_MESHPLAY=false bash -
  </div></div>
  </pre>
-
+<br />
+<br />
 #### Option 2: Install `meshplayctl` binary and deploy Meshplay on Docker
 
  <pre class="codeblock-pre">
  <div class="codeblock">
  <div class="clipboardjs">
-  $ curl -L https://khulnasoft.com/install | PLATFORM=docker bash -
+  $ curl -L https://meshplay.io/install | PLATFORM=docker bash -
  </div></div>
  </pre>
-
+<br />
+<br />
 #### Option 3: Install `meshplayctl` binary and deploy Meshplay on Kubernetes
 
  <pre class="codeblock-pre">
  <div class="codeblock">
  <div class="clipboardjs">
-  $ curl -L https://khulnasoft.com/install | PLATFORM=kubernetes bash -
+  $ curl -L https://meshplay.io/install | PLATFORM=kubernetes bash -
  </div></div>
  </pre>
-
+<br />
+<br />
 #### Option 4: Install `meshplayctl` binary and Meshplay adapter(s)
 
 Install `meshplayctl` binary and include one or more [adapters]({{ site.baseurl }}/concepts/architecture/adapters) to be deployed
@@ -35,11 +38,13 @@ Install `meshplayctl` binary and include one or more [adapters]({{ site.baseurl 
  <pre class="codeblock-pre">
  <div class="codeblock">
  <div class="clipboardjs">
-  $ curl -L https://khulnasoft.com/install | ADAPTERS=consul PLATFORM=kubernetes bash -
+  $ curl -L https://meshplay.io/install | ADAPTERS=consul PLATFORM=kubernetes bash -
  </div></div>
  </pre>
-
-You are ready to deploy Meshplay `meshplayctl``. To do so, execute the following command.
+<br />
+<br />
+### Start Meshplay
+You are ready to deploy Meshplay `meshplayctl`. To do so, execute the following command.
 
  <pre class="codeblock-pre"><div class="codeblock">
  <div class="clipboardjs">meshplayctl system start</div></div>

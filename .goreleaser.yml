@@ -112,18 +112,18 @@ scoops:
 
   # Repository to push the app manifest to.
   - repository:
-     owner: khulnasoft
+     owner: meshplay
      name: scoop-bucket
 
   # Git author used to commit to the repository.
   # Defaults are shown.
     commit_author:
       name: meshplayctl releaser
-      email: community@khulnasoft.com
+      email: community@meshplay.khulnasoft.com
 
     # Your app's homepage.
     # Default is empty.
-    homepage: "https://khulnasoft.com"
+    homepage: "https://meshplay.khulnasoft.com"
 
     # Your app's description.
     # Default is empty.

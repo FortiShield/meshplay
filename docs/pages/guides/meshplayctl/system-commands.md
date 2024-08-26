@@ -1,10 +1,10 @@
 ---
-layout : default
-title : Meshplayctl system commands
-permalink : guides/meshplayctl/system-commands
-language : en
-type : Guides
-category : meshplayctl
+layout: default
+title: Meshplayctl system commands
+permalink: guides/meshplayctl/system-commands
+language: en
+type: guides
+category: meshplayctl
 abstract: Meshplayctl system commands for managing Meshplay deployments.
 ---
 

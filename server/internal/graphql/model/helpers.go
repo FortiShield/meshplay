@@ -18,7 +18,7 @@ import (
 
 // to be moved elsewhere
 const (
-	chartRepo = "https://meshplay.github.io/khulnasoft.com/charts"
+	chartRepo = "https://meshplay.github.io/meshplay.io/charts"
 )
 
 var (

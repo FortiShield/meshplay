@@ -4,18 +4,26 @@ import (
 	"fmt"
 
 	"github.com/gofrs/uuid"
+	"github.com/khulnasoft/meshplay/server/helpers"
 	"github.com/khulnasoft/meshplay/server/machines"
 	"github.com/khulnasoft/meshplay/server/models"
+	"github.com/khulnasoft/meshkit/logger"
 	"github.com/khulnasoft/meshkit/models/events"
 	"github.com/khulnasoft/meshkit/utils/kubernetes"
+	"github.com/spf13/viper"
 )
 
-func GenerateClientSetAction(k8sContext *models.K8sContext, eventBuilder *events.EventBuilder) (*kubernetes.Client, error) {
+var (
+	adapterURLs    = viper.GetStringSlice("ADAPTER_URLS")
+	adapterTracker = helpers.NewAdaptersTracker(adapterURLs)
+)
+
+func GenerateClientSetAction(k8sContext *models.K8sContext, eventBuilder *events.EventBuilder, log logger.Handler) (*kubernetes.Client, error) {
 	eventBuilder.ActedUpon(uuid.FromStringOrNil(k8sContext.ConnectionID))
 
 	eventMetadata := map[string]interface{}{}
 
-	handler, err := models.GenerateK8sClientSet(k8sContext, eventBuilder, eventMetadata)
+	handler, err := models.GenerateK8sClientSet(k8sContext, eventBuilder, eventMetadata, log)
 	if handler == nil {
 		return nil, err
 	}
@@ -43,11 +51,15 @@ func AssignClientSetToContext(machinectx *MachineCtx, eventBuilder *events.Event
 	k8sContext := machinectx.K8sContext
 	eventBuilder.ActedUpon(uuid.FromStringOrNil(k8sContext.ConnectionID))
 
-	handler, err := GenerateClientSetAction(&k8sContext, eventBuilder)
+	handler, err := GenerateClientSetAction(&k8sContext, eventBuilder, machinectx.log)
 	if err != nil {
 		// perofmr event publishinh and err handling
 		return err
 	}
 	machinectx.clientset = handler
 	return nil
+}
+
+func AssignControllerHandlers(machinectx *MachineCtx) {
+	machinectx.MeshplayCtrlsHelper = models.NewMeshplayControllersHelper(machinectx.log, models.NewOperatorDeploymentConfig(adapterTracker), models.GetDBInstance())
 }

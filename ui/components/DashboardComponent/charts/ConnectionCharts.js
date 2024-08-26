@@ -1,34 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import React from 'react';
+import { Box, Typography, IconButton } from '@material-ui/core';
 import { donut } from 'billboard.js';
 import BBChart from '../../BBChart';
 import { dataToColors, isValidColumnName } from '../../../utils/charts';
-import { getConnectionStatusSummary } from '../../../api/connections';
 import ConnectClustersBtn from '../../General/ConnectClustersBtn';
 import Link from 'next/link';
 import theme from '../../../themes/app';
 import { iconSmall } from '../../../css/icons.styles';
-import InfoIcon from '@material-ui/icons/Info';
 import { CustomTextTooltip } from '@/components/MeshplayMeshInterface/PatternService/CustomTextTooltip';
+import { useGetAllConnectionStatusQuery } from '@/rtk-query/connection';
+import { InfoOutlined } from '@material-ui/icons';
+import CAN from '@/utils/can';
+import { keys } from '@/utils/permission_constants';
+import { useRouter } from 'next/router';
 
 export default function ConnectionStatsChart({ classes }) {
-  const [chartData, setChartData] = useState([]);
+  const { data: statusData } = useGetAllConnectionStatusQuery();
+  const router = useRouter();
 
-  useEffect(() => {
-    getConnectionStatusSummary().then((json) => {
-      setChartData(
-        json.connections_status
-          .filter((data) => isValidColumnName(data.status))
-          .map((data) => [data.status, data.count]),
-      );
-    });
-  }, []);
+  const chartData =
+    statusData?.connections_status
+      ?.filter((data) => isValidColumnName(data.status))
+      .map((data) => [data.status, data.count]) || [];
 
   const chartOptions = {
     data: {
       columns: chartData,
       type: donut(),
       colors: dataToColors(chartData),
+      onclick: function () {
+        router.push('/management/connections');
+      },
     },
     arc: {
       cornerRadius: {
@@ -53,25 +55,41 @@ export default function ConnectionStatsChart({ classes }) {
     },
   };
 
-  const url = `https://docs.khulnasoft.com/concepts/connections`;
-
   return (
-    <Link href="/management/connections">
+    <Link
+      href="/management/connections"
+      style={{
+        pointerEvents: !CAN(keys.VIEW_CONNECTIONS.action, keys.VIEW_CONNECTIONS.subject)
+          ? 'none'
+          : 'auto',
+      }}
+    >
       <div className={classes.dashboardSection}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h6" gutterBottom className={classes.link}>
             Connections
           </Typography>
-          <CustomTextTooltip title="Learn more about Connections" placement="left">
-            <InfoIcon
-              color={theme.palette.secondary.iconMain}
-              style={{ ...iconSmall, marginLeft: '0.5rem', cursor: 'pointer' }}
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(url, '_blank');
-              }}
-            />
-          </CustomTextTooltip>
+          <div onClick={(e) => e.stopPropagation()}>
+            <CustomTextTooltip
+              interactive={true}
+              variant="standard"
+              title={`Meshplay Connections are managed and unmanaged resources that either through discovery or manual entry can be assigned to one or more Environments. [Learn More](https://docs-meshplay.khulnasoft.com/concepts/logical/connections)`}
+              placement="left"
+            >
+              <IconButton
+                disableRipple={true}
+                disableFocusRipple={true}
+                disableTouchRipple={true}
+                sx={{ padding: '0px' }}
+              >
+                <InfoOutlined
+                  color={theme.palette.secondary.iconMain}
+                  style={{ ...iconSmall, marginLeft: '0.5rem', cursor: 'pointer' }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </IconButton>
+            </CustomTextTooltip>
+          </div>
         </div>
         <Box
           sx={{

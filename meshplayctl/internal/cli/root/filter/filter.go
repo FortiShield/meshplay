@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ var FilterCmd = &cobra.Command{
 	Use:   "filter",
 	Short: "Cloud Native Filter Management",
 	Long: `Cloud Native Filter Management
-Find more information at: https://docs.khulnasoft.com/reference/meshplayctl#command-reference`,
+Find more information at: https://docs-meshplay.khulnasoft.com/reference/meshplayctl#command-reference`,
 	Example: `
 // Base command for WASM filters:
 meshplayctl filter [subcommands]

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: meshplay-operator
 description: Meshplay Operator chart.
-icon: https://khulnasoft.com/images/logos/meshplay-logo.png
+icon: https://meshplay.io/images/logos/meshplay-logo.png
 source:
   - https://github.com/khulnasoft/meshplay-operator
 keywords:
@@ -37,7 +37,7 @@ dependencies:
     condition: meshplay-meshsync.enabled
 
 maintainers:
-  - name: Khulnasoft Authors
+  - name: KhulnaSoft Authors
     email: community@khulnasoft.com
   - name: aisuko
     email: urakiny@gmail.com

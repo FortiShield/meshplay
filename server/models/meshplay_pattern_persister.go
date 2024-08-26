@@ -7,9 +7,10 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid"
-	"gorm.io/gorm"
+	"gopkg.in/yaml.v2"
 
 	"github.com/khulnasoft/meshkit/database"
+	"github.com/khulnasoft/meshkit/models/patterns"
 )
 
 // MeshplayPatternPersister is the persister for persisting
@@ -37,10 +38,13 @@ func (mpp *MeshplayPatternPersister) GetMeshplayPatterns(search, order string, p
 
 	count := int64(0)
 	patterns := []*MeshplayPattern{}
-	var query *gorm.DB
-	if len(visibility) == 0 {
-		query = mpp.DB.Where("visibility in (?)", visibility)
+
+	query := mpp.DB.Table("meshplay_patterns")
+
+	if len(visibility) > 0 {
+		query = query.Where("visibility in (?)", visibility)
 	}
+
 	query = query.Where("updated_at > ?", updatedAfter).Order(order)
 
 	if search != "" {
@@ -48,8 +52,7 @@ func (mpp *MeshplayPatternPersister) GetMeshplayPatterns(search, order string, p
 		query = query.Where("(lower(meshplay_patterns.name) like ?)", like)
 	}
 
-	query.Table("meshplay_patterns").Count(&count)
-
+	query.Count(&count)
 	Paginate(uint(page), uint(pageSize))(query).Find(&patterns)
 
 	meshplayPatternPage := &MeshplayPatternPage{
@@ -170,6 +173,11 @@ func (mpp *MeshplayPatternPersister) DeleteMeshplayPatterns(patterns MeshplayPat
 }
 
 func (mpp *MeshplayPatternPersister) SaveMeshplayPattern(pattern *MeshplayPattern) ([]byte, error) {
+	pf, err := patterns.GetPatternFormat(pattern.PatternFile)
+	if err != nil {
+		return nil, err
+	}
+
 	if pattern.Visibility == "" {
 		pattern.Visibility = Private
 	}
@@ -179,17 +187,36 @@ func (mpp *MeshplayPatternPersister) SaveMeshplayPattern(pattern *MeshplayPatter
 			return nil, ErrGenerateUUID(err)
 		}
 
+		patterns.AssignVersion(pf)
+
 		pattern.ID = &id
+	} else {
+		nextVersion, err := patterns.GetNextVersion(pf)
+		if err != nil {
+			return nil, err
+		}
+		pf.Version = nextVersion
+		byt, err := yaml.Marshal(pf)
+		if err != nil {
+			return nil, err
+		}
+		pattern.PatternFile = string(byt)
 	}
 
 	return marshalMeshplayPatterns([]MeshplayPattern{*pattern}), mpp.DB.Save(pattern).Error
 }
 
 // SaveMeshplayPatterns batch inserts the given patterns
-func (mpp *MeshplayPatternPersister) SaveMeshplayPatterns(patterns []MeshplayPattern) ([]byte, error) {
+func (mpp *MeshplayPatternPersister) SaveMeshplayPatterns(meshplayPatterns []MeshplayPattern) ([]byte, error) {
 	finalPatterns := []MeshplayPattern{}
 	nilUserID := ""
-	for _, pattern := range patterns {
+	for _, pattern := range meshplayPatterns {
+
+		pf, err := patterns.GetPatternFormat(pattern.PatternFile)
+		if err != nil {
+			return nil, err
+		}
+
 		if pattern.Visibility == "" {
 			pattern.Visibility = Private
 		}
@@ -199,8 +226,14 @@ func (mpp *MeshplayPatternPersister) SaveMeshplayPatterns(patterns []MeshplayPat
 			if err != nil {
 				return nil, ErrGenerateUUID(err)
 			}
-
+			patterns.AssignVersion(pf)
 			pattern.ID = &id
+		} else {
+			nextVersion, err := patterns.GetNextVersion(pf)
+			if err != nil {
+				return nil, err
+			}
+			pf.Version = nextVersion
 		}
 
 		finalPatterns = append(finalPatterns, pattern)

@@ -4,8 +4,10 @@ import (
 	"time"
 
 	"database/sql"
+
 	"github.com/gofrs/uuid"
 	isql "github.com/khulnasoft/meshplay/server/internal/sql"
+	"github.com/khulnasoft/meshkit/models/catalog/v1alpha1"
 	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
@@ -89,14 +91,20 @@ type MeshplayPattern struct {
 	// but the remote provider is allowed to provide one
 	UserID *string `json:"user_id"`
 
-	Location      isql.Map       `json:"location"`
-	Visibility    string         `json:"visibility"`
-	CatalogData   isql.Map       `json:"catalog_data,omitempty"`
-	Type          sql.NullString `json:"type"`
-	SourceContent []byte         `json:"source_content"`
+	Location      isql.Map             `json:"location"`
+	Visibility    string               `json:"visibility"`
+	CatalogData   v1alpha1.CatalogData `json:"catalog_data,omitempty" gorm:"type:bytes;serializer:json"`
+	Type          sql.NullString       `json:"type"`
+	SourceContent []byte               `json:"source_content"`
 
 	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 	CreatedAt *time.Time `json:"created_at,omitempty"`
+
+	ViewCount       int `json:"view_count" db:"view_count"`
+	ShareCount      int `json:"share_count" db:"share_count"`
+	DownloadCount   int `json:"download_count" db:"download_count"`
+	CloneCount      int `json:"clone_count" db:"clone_count"`
+	DeploymentCount int `json:"deployment_count" db:"deployment_count"`
 }
 
 // MeshplayCatalogPatternRequestBody refers to the type of request body
@@ -127,4 +135,9 @@ func GetPatternName(stringifiedFile string) (string, error) {
 	}
 
 	return name, nil
+}
+
+type MeshplayPatternFileDeployPayload struct {
+	PatternFile string    `json:"pattern_file"`
+	PatternID   uuid.UUID `json:"pattern_id"`
 }

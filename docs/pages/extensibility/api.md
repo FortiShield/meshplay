@@ -1,5 +1,5 @@
 ---
-layout: enhanced
+layout: default
 title: "Extensibility: APIs"
 permalink: extensibility/api
 type: Extensibility
@@ -10,16 +10,16 @@ language: en
 
 ## Meshplay's APIs
 
-Each of Meshplay's APIs are subject to the following authentication and authorization system. The REST and GraphQL APIs are available on the same network port you use to connect to Meshplay UI, which is `9081/tcp` by default. Each of the API endpoints are exposed through [server.go](https://github.com/khulnasoft/meshplay/blob/master/server/router/server.go). Endpoints are grouped by function (e.g. `/api/system/version`). Additionally, [Remote Providers](./providers) can extend Meshplay's endpoints behind the `/api/extensions/` endpoint.
+Each of Meshplay's APIs are subject to the following authentication and authorization system. The REST and GraphQL APIs are available on the same network port you use to connect to Meshplay UI, which is `9081/tcp` by default. Each of the API endpoints are exposed through [server.go](https://github.com/meshplay/meshplay/blob/master/server/router/server.go). Endpoints are grouped by function (e.g. `/api/system/version`). Additionally, [Remote Providers](./providers) can extend Meshplay's endpoints behind the `/api/extensions/` endpoint.
 
 ### API Reference
 
 <main>
   
-<input id="tab1" type="radio" name="tabs" checked>
+<input id="tab1" type="radio" name="tabs" checked hidden>
 <label for="tab1">REST API</label>
 
-<input id="tab2" type="radio" name="tabs">
+<input id="tab2" type="radio" name="tabs" hidden>
 <label for="tab2">GraphQL API</label>
 
 <section class="tabbed" id="content1">
@@ -79,7 +79,7 @@ token: your token"%}
 
 ### Endpoints
 
-Each of the API endpoints are exposed through [server.go](https://github.com/khulnasoft/meshplay/blob/master/router/server.go). Endpoints are grouped by function (e.g. /api/mesh or /api/perf).
+Each of the API endpoints are exposed through [server.go](https://github.com/meshplay/meshplay/blob/master/router/server.go). Endpoints are grouped by function (e.g. /api/mesh or /api/perf).
 
 Alternatively, [Remote Providers](./providers) can extend Meshplay's endpoints behind the `/api/extensions/` endpoint.
 
@@ -87,4 +87,3 @@ Alternatively, [Remote Providers](./providers) can extend Meshplay's endpoints b
 
 While Meshplay only requires a valid token in order to allow clients to invoke its APIs, Remote Providers can optionally enforce key-based permissions.
 
-{% include suggested-reading.html language="en" %}

@@ -39,6 +39,16 @@ export const EXTENSIONS = {
   MESHMAP: 'meshmap',
 };
 
+export const REGISTRY_ITEM_STATES = {
+  ENABLED: 'enabled',
+  IGNORED: 'ignored',
+};
+
+export const REGISTRY_ITEM_STATES_TO_TRANSITION_MAP = {
+  [REGISTRY_ITEM_STATES.ENABLED]: 'Enable',
+  [REGISTRY_ITEM_STATES.IGNORED]: 'Ignore',
+};
+
 export const CONNECTION_STATES = {
   DISCOVERED: 'discovered',
   REGISTERED: 'registered',
@@ -104,3 +114,6 @@ export const CONNECTION_STATE_TO_TRANSITION_MAP = {
   [CONNECTION_STATES.DISCONNECTED]: 'Disconnect',
   [CONNECTION_STATES.NOTFOUND]: 'Not Found',
 };
+
+export const FILTER = 'filter';
+export const PATTERN = 'pattern';

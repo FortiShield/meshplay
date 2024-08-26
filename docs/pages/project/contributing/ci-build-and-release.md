@@ -11,9 +11,11 @@ list: include
 
 Meshplay’s build and release system incorporates many tools, organized into different workflows each triggered by different events. Meshplay’s build and release system does not run on a schedule, but is event-driven. GitHub Actions are used to define Meshplay’s CI workflows. New builds of Meshplay and its various components are automatically generated upon push, release, and other similar events, typically in relation to their respective master branches.
 
+{% include alert.html type="info" title="Meshplay Test Plan" content="The <a href='https://docs.google.com/document/d/1GrVdGHZAYeu6wHNLLoiaKNqBtk7enXE9XeDRCvdA4bY/edit#'>Meshplay Test Plan</a> is a comprehensive document that outlines the testing strategy for Meshplay and specific integration test cases. It includes a list of GitHub workflows and their purpose." %}
+
 ## Artifacts
 
-Today, Meshplay and Meshplay adapters are released as Docker container images, available on Docker Hub. Meshplay adapters are out-of-process adapters (meaning not compiled into the main Meshplay binary), and as such, are independent build artifacts and Helm charts. The Docker images are created and tagged with the git commit SHA, then pushed to Docker Hub automatically using GitHub Actions. Subsequently, when contributions containing content for the Helm charts of Meshplay and Meshplay Adapter are linted and merged, they will be pushed and released to [khulnasoft.com](https://github.com/khulnasoft/meshplay.io) Github page by GitHub Action automatically.
+Today, Meshplay and Meshplay adapters are released as Docker container images, available on Docker Hub. Meshplay adapters are out-of-process adapters (meaning not compiled into the main Meshplay binary), and as such, are independent build artifacts and Helm charts. The Docker images are created and tagged with the git commit SHA, then pushed to Docker Hub automatically using GitHub Actions. Subsequently, when contributions containing content for the Helm charts of Meshplay and Meshplay Adapter are linted and merged, they will be pushed and released to [meshplay.io](https://github.com/meshplay/meshplay.io) Github page by GitHub Action automatically.
 
 ### Artifact Repositories
 
@@ -21,12 +23,12 @@ Artifacts produced in the build processes are published and persisted in differe
 
 | Location   | Project                                         | Repository                                                                                                           |
 | ---------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Docker Hub | Meshplay                                         | [https://hub.docker.com/r/khulnasoft/meshplay](https://hub.docker.com/r/khulnasoft/meshplay)                                   |
-| GitHub     | meshplayctl                                      | [https://github.com/khulnasoft/meshplay/releases](https://github.com/khulnasoft/meshplay/releases)                         |
-| Docker Hub | Meshplay Adapter for \<service-mesh\>            | https://hub.docker.com/r/khulnasoft/meshplay-\<service-mesh\>                                                             |
-| Docs       | Meshplay Documentation                           | [https://docs.khulnasoft.com](https://docs.khulnasoft.com)                                                                   |
-| GitHub     | [Service Mesh Performance](https://smp-spec.io) | [https://github.com/khulnasoft/service-mesh-performance](https://github.com/khulnasoft/service-mesh-performance)         |
-| Github     | Helm charts                                     | [https://github.com/khulnasoft/meshplay.io/tree/master/charts](https://github.com/khulnasoft/meshplay.io/tree/master/charts) |
+| Docker Hub | Meshplay                                         | [https://hub.docker.com/r/meshplay/meshplay](https://hub.docker.com/r/meshplay/meshplay)                                   |
+| GitHub     | meshplayctl                                      | [https://github.com/meshplay/meshplay/releases](https://github.com/meshplay/meshplay/releases)                         |
+| Docker Hub | Meshplay Adapter for \<adapter-name\>            | https://hub.docker.com/r/meshplay/meshplay-\<adapter-name>\>                                                             |
+| Docs       | Meshplay Documentation                           | [https://docs-meshplay.khulnasoft.com](https://docs-meshplay.khulnasoft.com)                                                                   |
+| GitHub     | [Cloud Native Performance](https://smp-spec.io) | [https://github.com/service-mesh-performance](https://github.com/service-mesh-performance/service-mesh-performance)         |
+| Github     | Helm charts                                     | [https://github.com/meshplay/meshplay.io/tree/master/charts](https://github.com/meshplay/meshplay.io/tree/master/charts) |
 
 ## Secrets
 
@@ -34,11 +36,30 @@ Some portions of the workflow require secrets to accomplish their tasks. These s
 
 - `DOCKER_USERNAME`: Username of the Docker Hub user with the right privileges to push images
 - `DOCKER_PASSWORD`: Password for the Docker Hub user
-- `GO_VERSION`: As of July 21st 2021 it is 1.16
+- `GO_VERSION`: As of March, 2024 is 1.21
 - `IMAGE_NAME`: appropriate image name for each of the Docker container images. All are under the `khulnasoft` org.
 - `SLACK_BOT_TOKEN`: Used for notification of new GitHub stars given to the Meshplay repo.
-- `CYPRESS_RECORD_KEY`: Used for integration with the Khulnasoft account on Cypress.
+- `CYPRESS_RECORD_KEY`: Used for integration with the KhulnaSoft account on Cypress.
 - `GLOBAL_TOKEN`: Used for securely transmitting performance test results for the None Provider.
+- `NPM_TOKEN`: npm authentication token, used to perform authentication against the npm registry in meshplay deployment workflow.
+- `GH_ACCESS_TOKEN`: GitHub access token for various operations
+- `INTEGRATION_SPREADSHEET_CRED`: Credentials for integration spreadsheet access
+- `MAIL_PASSWORD`: Password for email notifications
+- `MAIL_USERNAME`: Username for email notifications
+- `MESHPLAY_PROVIDER_TOKEN`: Token for Meshplay provider authentication
+- `MESHPLAY_TOKEN`: General Meshplay authentication token
+- `METAL_AUTH_TOKEN`: Authentication token for metal provider
+- `METAL_SERVER1`: Configuration for metal server 1
+- `METAL_SERVER2`: Configuration for metal server 2
+- `METAL_SERVER3`: Configuration for metal server 3
+- `NETLIFY_AUTH_TOKEN`: Authentication token for Netlify
+- `NETLIFY_SITE_ID`: Site ID for Netlify deployments
+- `PLAYGROUND_CONFIG`: Configuration for playground environments
+- `PROVIDER_TOKEN`: General provider authentication token
+- `RELEASEDRAFTER_PAT`: Personal access token for Release Drafter
+- `RELEASE_NOTES_PAT`: Personal access token for release notes generation
+- `REMOTE_PROVIDER_USER_EMAIL`: Email used for authentication in Playwright tests
+- `REMOTE_PROVIDER_USER_PASS`: Password used for authentication in Playwright tests
 
 The Docker Hub user, `meshplayci`, belongs to the "ciusers" team in Docker Hub and acts as the service account under which these automated builds are being pushed. Every time a new Docker Hub repository is created we have to grant “Admin” (in order to update the README in the Docker Hub repository) permissions to the ciusers team.
 
@@ -96,14 +117,14 @@ tests in adapters are end-to-end tests and use patternfile. The reusable workflo
 1. Checks out the code of the repository(on the ref of latest commit of branch which made the PR) in which it is referenced.
 2. Starts a minikube cluster
 3. Builds a docker image of the adapter and sets minikube to use docker's registry.
-4. Starts the adapter and meshplay server (The url to deployment and service yaml of adapter are configurable).
-   NOTE: The service mesh name( whose adapter we are testing ) has to passed in:
+4. Starts the adapter and Meshplay Server (The url to deployment and service yaml of adapter are configurable).
+   NOTE: The adapter name has to passed in:
 
 ---
 
       ...
       with:
-         adapter_name: < NAME OF THE SERVICE MESH >
+         adapter_name: < NAME OF THE ADAPTER >
 
 5. The uploaded patternfile is deployed.
 6. Workflow sleeps for some time.
@@ -167,13 +188,13 @@ All Meshplay GitHub repositories are configured with GitHub Actions. Everytime a
 1. assign each of these two tags to the new container image as well as the latest tag.
 1. push the new Docker tags and image to Docker Hub.
 
-### Building `meshplayctl`
+### `meshplayctl`
 
-As a special case, the meshplay repository contains an additional artifact produced during each build. This artifact is meshplayctl which is built as an executable binary. In order to make the job of building meshplayctl easier for a combination of different platform architectures and operating systems, we are using [GoReleaser](https://goreleaser.com). Irrespective of branch, for every git commit and git push to the meshplay repository, GoReleaser will execute and generate the OS and arch-specific binaries ( but will NOT publish them to GitHub). Even though meshplayctl binaries are built each time a pull request is merged to master, only stable channel artifacts are published (persisted).
+As a special case, the `meshplay` repository contains an additional artifact produced during each build. This artifact is `meshplayctl`, which is built as an executable binary. In order to make the job of building `meshplayctl` easier for a combination of different platform architectures and operating systems, we are using [GoReleaser](https://goreleaser.com). Irrespective of branch, for every git commit and git push to the `meshplay` repository, GoReleaser will execute and generate the OS and arch-specific binaries (but will NOT persist these artifacts in GitHub). Even though meshplayctl binaries are built each time a pull request is merged to master, only stable channel artifacts are published (persisted).
 
-### Releasing `meshplayctl` to GitHub
+#### Releasing `meshplayctl` to GitHub
 
-Only when a git tag containing a semantic version number is present (is a commit in the master branch) will GoReleaser execute, generate the archives, and also publish the archives to [Meshplay’s GitHub releases](https://github.com/khulnasoft/meshplay/releases) automatically. GoReleaser is configured to generate artifacts for the following OS, ARCH combination:
+Only when a git tag containing a semantic version number is present (is a commit in the master branch) will GoReleaser execute, generate the archives, and also publish the archives to [Meshplay’s GitHub releases](https://github.com/meshplay/meshplay/releases) automatically. GoReleaser is configured to generate artifacts for the following OS, ARCH combination:
 
 - Darwin - i386, x86_64
 - Linux - i386, x86_64
@@ -182,13 +203,13 @@ Only when a git tag containing a semantic version number is present (is a commit
 
 The artifacts will be made available as a tar.gz archive for all the operating systems. meshplayctl is bundled into packages for commonly used package managers: homebrew and scoop.
 
-#### Homebrew
+##### Homebrew
 
-GoReleaser facilitates the creation of a brew formula for meshplayctl. The [homebrew-tap](https://github.com/khulnasoft/homebrew-tap) repository is the location for Khulnasoft’s brew formulas.
+GoReleaser facilitates the creation of a brew formula for meshplayctl. The [homebrew-tap](https://github.com/meshplay/homebrew-tap) repository is the location for `meshplayctl`'s brew formulas. Releases of meshplayctl are  published in the official homebrew-core tap at https://github.com/Homebrew/homebrew-core/pkgs/container/core%2Fmeshplayctl.
 
-#### Scoop
+##### Scoop
 
-GoReleaser facilitates the creation of a Scoop app for meshplayctl. The [scoop-bucket](https://github.com/khulnasoft/scoop-bucket) repository is the location of Khulnasoft’s Scoop bucket.
+GoReleaser facilitates the creation of a Scoop app for meshplayctl. The [scoop-bucket](https://github.com/khulnasoft/scoop-bucket) repository is the location of KhulnaSoft’s Scoop bucket.
 
 ## Helm Charts Lint Check, Build, and Release
 
@@ -196,11 +217,11 @@ The charts lint check, charts build, and charts release workflows are all trigge
 
 ### Check Helm Charts
 
-Every PR which includes changes to the files under `install/kubernetes/` directory in the `khulnasoft/meshplay` will trigger a Github Action to check for any mistakes in Helm charts using the `helm lint` command.
+Every PR which includes changes to the files under `install/kubernetes/` directory in the `meshplay/meshplay` will trigger a Github Action to check for any mistakes in Helm charts using the `helm lint` command.
 
 ### Release Helm Charts to Github and Artifact Hub
 
-New Meshplay Helm charts are published upon trigger of a release event in the `khulnasoft/meshplay` repo. New versions of Meshplay's Helm charts are published to [Meshplay's Helm charts release page](https://github.com/khulnasoft/meshplay.io/tree/master/charts). [Artifact Hub] (https://artifacthub.io/packages/helm/khulnasoft/meshplay) syncs with these updated Meshplay Helm charts.
+New Meshplay Helm charts are published upon trigger of a release event in the `meshplay/meshplay` repo. New versions of Meshplay's Helm charts are published to [Meshplay's Helm charts release page](https://github.com/meshplay/meshplay.io/tree/master/charts). [Artifact Hub] (https://artifacthub.io/packages/helm/meshplay/meshplay) syncs with these updated Meshplay Helm charts.
 
 ## Release Versioning
 
@@ -213,7 +234,7 @@ Meshplay and its components follow the commonly used, semantic versioning for it
 
 ### Component Versioning
 
-Meshplay comprises a number of components including a server, adapters, UI, and CLI. As an application, Meshplay is a composition of these different functional components. While all of Meshplay’s components generally deploy as a collective unit (together), each component is versioned independently, so as to allow them to be loosely coupled and iterate on functionality independently. Some of the components must be upgraded simultaneously, while others may be upgraded independently. See [Upgrading Meshplay](/guide/upgrade) for more information.
+Meshplay comprises a number of components including a server, adapters, UI, and CLI. As an application, Meshplay is a composition of these different functional components. While all of Meshplay’s components generally deploy as a collective unit (together), each component is versioned independently, so as to allow them to be loosely coupled and iterate on functionality independently. Some of the components must be upgraded simultaneously, while others may be upgraded independently. See [Upgrading Meshplay](/guides/installation/upgrades) for more information.
 
 GitHub release tags will contain a semantic version number. Semantic version numbers will have to be managed manually by tagging a relevant commit in the master branch with a semantic version number (example: v1.2.3).
 
@@ -248,7 +269,7 @@ The publishing of release notes to Meshplay Docs is automated. Triggered by a re
 
 #### Automated Release Notes Sending
 
-The sending of release notes is now automated as a step in the stable release channel workflow. The release notes are automatically sent to the [developers@khulnasoft.com mailing list](https://groups.google.com/a/khulnasoft.com/g/developers).
+The sending of release notes is now automated as a step in the stable release channel workflow. The release notes are automatically sent to the [developers@meshplay.io mailing list](https://groups.google.com/a/meshplay.io/g/developers).
 
 #### Automated Pull Request Labeler
 
@@ -310,7 +331,7 @@ Minor releases of the Meshplay project are release frequently (on a monthly basi
 
 ### Release Support
 
-General community support and commercial support from Khulnasoft is available. Separately, third parties and partners may offer longer-term support solutions.
+General community support and commercial support from KhulnaSoft is available. Separately, third parties and partners may offer longer-term support solutions.
 
 #### Pre v1.0
 
@@ -365,7 +386,5 @@ For older releases we have to travel back in time. Using the `Tags` in github we
 
 ## Bi-Weekly Meetings
 
-If you are passionate about CI/CD pipelines, DevOps, automated testing, managing deployments, or if you want to learn how to use Meshplay and its features, you are invited to join the bi-weekly Build and Release meetings. Find meeting details and agenda in the [community calendar](https://khulnasoft.com/calendar) and the [meeting minutes document](https://docs.google.com/document/d/1GrVdGHZAYeu6wHNLLoiaKNqBtk7enXE9XeDRCvdA4bY/edit#). The meetings are open to everyone and recorded for later viewing. We hope to see you there!
-
-These [steps]({{site.baseurl}}/project/build-and-release#in-the-v0x-folder) for replacing all the instances of direct path are to be followed.
+If you are passionate about CI/CD pipelines, DevOps, automated testing, managing deployments, or if you want to learn how to use Meshplay and its features, you are invited to join the bi-weekly Build and Release meetings. Find meeting details and agenda in the [community calendar](https://meshplay.io/calendar) and the [meeting minutes document](https://docs.google.com/document/d/1GrVdGHZAYeu6wHNLLoiaKNqBtk7enXE9XeDRCvdA4bY/edit#). The meetings are open to everyone and recorded for later viewing. We hope to see you there!
 

@@ -28,13 +28,11 @@ export function isOperatorStateSubscriptionDataUpdated(currentState, newData) {
 }
 
 export function isMeshplayControllerStateSubscriptionDataUpdated(currentState, newData) {
-  console.log('isMeshplayControllerStateSubscriptionDataUpdated', currentState, newData);
   if (!currentState) {
     return true;
   }
 
   const oldData = currentState.filter((data) => {
-    console.log('CONTROLLER INSIDE COMPARATOR FILTER', data);
     for (let newControllerData of newData) {
       if (isControllerObjectEqual(newControllerData, data)) {
         return true;
@@ -45,6 +43,5 @@ export function isMeshplayControllerStateSubscriptionDataUpdated(currentState, n
   if (!oldData) {
     return true;
   }
-  console.log('CONTROLLER OLD DATA NEW DATA AFTER COMPARATOR', oldData, newData);
   return !_.isEqual(oldData, newData);
 }

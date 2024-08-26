@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,50 +22,50 @@ import (
 )
 
 // Please reference the following before contributing an error code:
-// https://docs.khulnasoft.com/project/contributing/contributing-error
-// https://github.com/khulnasoft/meshkit/blob/master/errors/errors.go
+// https://docs-meshplay.khulnasoft.com/project/contributing/contributing-error
+// https://github.com/meshplay/meshkit/blob/master/errors/errors.go
 const (
-	ErrHealthCheckFailedCode             = "1133"
-	ErrDownloadFileCode                  = "1134"
-	ErrStopMeshplayCode                   = "1135"
-	ErrResetMeshconfigCode               = "1136"
-	ErrApplyManifestCode                 = "1137"
-	ErrApplyOperatorManifestCode         = "1138"
-	ErrCreateDirCode                     = "1139"
-	ErrUnsupportedPlatformCode           = "1140"
-	ErrRetrievingCurrentContextCode      = "1141"
-	ErrSettingDefaultContextToConfigCode = "1142"
-	ErrSettingTemporaryContextCode       = "1143"
-	ErrCreateManifestsFolderCode         = "1144"
-	ErrRestartMeshplayCode                = "1145"
-	ErrK8sQueryCode                      = "1146"
-	ErrK8sConfigCode                     = "1147"
-	ErrInitPortForwardCode               = "1148"
-	ErrRunPortForwardCode                = "1149"
-	ErrFailedGetEphemeralPortCode        = "1150"
-	ErrUnmarshalDockerComposeCode        = "1151"
-	ErrCreatingDockerClientCode          = "1152"
-	ErrWriteConfigCode                   = "1153"
-	ErrContextContentCode                = "1154"
-	ErrSwitchChannelResponseCode         = "1155"
-	ErrGetCurrentContextCode             = "1156"
-	ErrSetCurrentContextCode             = "1157"
-	ErrTokenContextCode                  = "1158"
-	ErrProviderInfoCode                  = "1159"
-	ErrValidProviderCode                 = "1160"
-	ErrUnmarshallConfigCode              = "1161"
-	ErrUploadFileParamsCode              = "1162"
+	ErrHealthCheckFailedCode             = "meshplayctl-1060"
+	ErrDownloadFileCode                  = "meshplayctl-1061"
+	ErrStopMeshplayCode                   = "meshplayctl-1062"
+	ErrResetMeshconfigCode               = "meshplayctl-1063"
+	ErrApplyManifestCode                 = "meshplayctl-1064"
+	ErrApplyOperatorManifestCode         = "meshplayctl-1065"
+	ErrCreateDirCode                     = "meshplayctl-1066"
+	ErrUnsupportedPlatformCode           = "meshplayctl-1067"
+	ErrRetrievingCurrentContextCode      = "meshplayctl-1068"
+	ErrSettingDefaultContextToConfigCode = "meshplayctl-1069"
+	ErrSettingTemporaryContextCode       = "meshplayctl-1070"
+	ErrCreateManifestsFolderCode         = "meshplayctl-1071"
+	ErrRestartMeshplayCode                = "meshplayctl-1072"
+	ErrK8sQueryCode                      = "meshplayctl-1073"
+	ErrK8sConfigCode                     = "meshplayctl-1074"
+	ErrInitPortForwardCode               = "meshplayctl-1075"
+	ErrRunPortForwardCode                = "meshplayctl-1076"
+	ErrFailedGetEphemeralPortCode        = "meshplayctl-1077"
+	ErrUnmarshalDockerComposeCode        = "meshplayctl-1078"
+	ErrCreatingDockerClientCode          = "meshplayctl-1079"
+	ErrWriteConfigCode                   = "meshplayctl-1080"
+	ErrContextContentCode                = "meshplayctl-1081"
+	ErrSwitchChannelResponseCode         = "meshplayctl-1082"
+	ErrGetCurrentContextCode             = "meshplayctl-1083"
+	ErrSetCurrentContextCode             = "meshplayctl-1084"
+	ErrTokenContextCode                  = "meshplayctl-1085"
+	ErrProviderInfoCode                  = "meshplayctl-1086"
+	ErrValidProviderCode                 = "meshplayctl-1087"
+	ErrUnmarshallConfigCode              = "meshplayctl-1088"
+	ErrUploadFileParamsCode              = "meshplayctl-1089"
 )
 
 var (
 	cmdType     string
-	contextdocs string = "See https://docs.khulnasoft.com/reference/meshplayctl/system/context for usage details."
+	contextdocs string = "See https://docs-meshplay.khulnasoft.com/reference/meshplayctl/system/context for usage details."
 	contextDir  string = "see that you have a correct context in your  meshconfig at `$HOME/.meshplay/config.yaml`."
 )
 
 // A Format reference that returns Meshplayctl's URL docs for system command and sub commands
 func FormatErrorReference() string {
-	baseURL := "https://docs.khulnasoft.com/reference/meshplayctl/system"
+	baseURL := "https://docs-meshplay.khulnasoft.com/reference/meshplayctl/system"
 	switch cmdType {
 	case "channel":
 		return fmt.Sprintf("\nSee %s for usage details\n", baseURL+"/channel")
@@ -187,11 +187,11 @@ func ErrRestartMeshplay(err error) error {
 }
 
 func ErrK8sConfig(err error) error {
-	return errors.New(ErrK8sConfigCode, errors.Alert, []string{"The Kubernetes cluster is not accessible."}, []string{err.Error(), "\nThe Kubernetes cluster is not accessible", " Please confirm that the cluster is running", " See https://docs.khulnasoft.com/installation/quick-start for additional instructions."}, []string{"Kubernetes cluster isn't running or inaccessible"}, []string{"Verify kubernetes and Meshplay connectivity or Verify kubeconfig certificates."})
+	return errors.New(ErrK8sConfigCode, errors.Alert, []string{"The Kubernetes cluster is not accessible."}, []string{err.Error(), "\nThe Kubernetes cluster is not accessible", " Please confirm that the cluster is running", " See https://docs-meshplay.khulnasoft.com/installation/quick-start for additional instructions."}, []string{"Kubernetes cluster isn't running or inaccessible"}, []string{"Verify kubernetes and Meshplay connectivity or Verify kubeconfig certificates."})
 }
 
 func ErrK8SQuery(err error) error {
-	return errors.New(ErrK8sQueryCode, errors.Alert, []string{"The Kubernetes cluster is not accessible."}, []string{err.Error(), "\nThe Kubernetes cluster is not accessible", " Please confirm that the token is valid", " See https://docs.khulnasoft.com/installation/quick-start for additional instructions"}, []string{"Kubernetes cluster is unavailable and that the token is invalid"}, []string{"Please confirm that your cluster is available and that the token is valid. See https://docs.khulnasoft.com/installation/quick-start for additional instructions"})
+	return errors.New(ErrK8sQueryCode, errors.Alert, []string{"The Kubernetes cluster is not accessible."}, []string{err.Error(), "\nThe Kubernetes cluster is not accessible", " Please confirm that the token is valid", " See https://docs-meshplay.khulnasoft.com/installation/quick-start for additional instructions"}, []string{"Kubernetes cluster is unavailable and that the token is invalid"}, []string{"Please confirm that your cluster is available and that the token is valid. See https://docs-meshplay.khulnasoft.com/installation/quick-start for additional instructions"})
 }
 
 func ErrInitPortForward(err error) error {

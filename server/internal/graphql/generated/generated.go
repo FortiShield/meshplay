@@ -203,7 +203,7 @@ type ComplexityRoot struct {
 		DeploymentType     func(childComplexity int) int
 		ID                 func(childComplexity int) int
 		KubernetesServerID func(childComplexity int) int
-		MeshplayInstanceID func(childComplexity int) int
+		MeshplayInstanceID  func(childComplexity int) int
 		Name               func(childComplexity int) int
 		Owner              func(childComplexity int) int
 		Server             func(childComplexity int) int
@@ -244,22 +244,22 @@ type ComplexityRoot struct {
 	}
 
 	MeshSyncEvent struct {
-		ContextID func(childComplexity int) int
-		Object    func(childComplexity int) int
-		Type      func(childComplexity int) int
+		ConnectionID func(childComplexity int) int
+		Object       func(childComplexity int) int
+		Type         func(childComplexity int) int
 	}
 
 	MeshplayControllersStatusListItem struct {
-		ContextID  func(childComplexity int) int
-		Controller func(childComplexity int) int
-		Status     func(childComplexity int) int
-		Version    func(childComplexity int) int
+		ConnectionID func(childComplexity int) int
+		Controller   func(childComplexity int) int
+		Status       func(childComplexity int) int
+		Version      func(childComplexity int) int
 	}
 
 	MeshplayResult struct {
 		CreatedAt          func(childComplexity int) int
 		Mesh               func(childComplexity int) int
-		MeshplayID         func(childComplexity int) int
+		MeshplayID          func(childComplexity int) int
 		Name               func(childComplexity int) int
 		PerformanceProfile func(childComplexity int) int
 		RunnerResults      func(childComplexity int) int
@@ -285,39 +285,12 @@ type ComplexityRoot struct {
 		Valid  func(childComplexity int) int
 	}
 
-	OAMCapability struct {
-		Host          func(childComplexity int) int
-		ID            func(childComplexity int) int
-		Metadata      func(childComplexity int) int
-		OamDefinition func(childComplexity int) int
-		OamRefSchema  func(childComplexity int) int
-		Restricted    func(childComplexity int) int
-	}
-
 	OperatorControllerStatus struct {
-		ContextID func(childComplexity int) int
-		Error     func(childComplexity int) int
-		Name      func(childComplexity int) int
-		Status    func(childComplexity int) int
-		Version   func(childComplexity int) int
-	}
-
-	OperatorControllerStatusPerK8sContext struct {
-		ContextID                func(childComplexity int) int
-		OperatorControllerStatus func(childComplexity int) int
-	}
-
-	OperatorStatus struct {
-		ContextID   func(childComplexity int) int
-		Controllers func(childComplexity int) int
-		Error       func(childComplexity int) int
-		Status      func(childComplexity int) int
-		Version     func(childComplexity int) int
-	}
-
-	OperatorStatusPerK8sContext struct {
-		ContextID      func(childComplexity int) int
-		OperatorStatus func(childComplexity int) int
+		ConnectionID func(childComplexity int) int
+		Error        func(childComplexity int) int
+		Name         func(childComplexity int) int
+		Status       func(childComplexity int) int
+		Version      func(childComplexity int) int
 	}
 
 	PatternPageResult struct {
@@ -392,7 +365,7 @@ type ComplexityRoot struct {
 		GetMeshModelSummary        func(childComplexity int, selector model.MeshModelSummarySelector) int
 		GetMeshsyncStatus          func(childComplexity int, connectionID string) int
 		GetNatsStatus              func(childComplexity int, connectionID string) int
-		GetOperatorStatus          func(childComplexity int, k8scontextID string) int
+		GetOperatorStatus          func(childComplexity int, connectionID string) int
 		GetPerfResult              func(childComplexity int, id string) int
 		GetPerformanceProfiles     func(childComplexity int, selector model.PageFilter) int
 		ResyncCluster              func(childComplexity int, selector *model.ReSyncActions, k8scontextID string) int
@@ -404,16 +377,15 @@ type ComplexityRoot struct {
 	}
 
 	Subscription struct {
-		ListenToOperatorState              func(childComplexity int, k8scontextIDs []string) int
-		SubscribeClusterResources          func(childComplexity int, k8scontextIDs []string, namespace string) int
-		SubscribeConfiguration             func(childComplexity int, patternSelector model.PageFilter, filterSelector model.PageFilter) int
-		SubscribeEvents                    func(childComplexity int) int
-		SubscribeK8sContext                func(childComplexity int, selector model.PageFilter) int
-		SubscribeMeshModelSummary          func(childComplexity int, selector model.MeshModelSummarySelector) int
-		SubscribeMeshSyncEvents            func(childComplexity int, k8scontextIDs []string, eventTypes []model.MeshSyncEventType) int
-		SubscribeMeshplayControllersStatus func(childComplexity int, k8scontextIDs []string) int
-		SubscribePerfProfiles              func(childComplexity int, selector model.PageFilter) int
-		SubscribePerfResults               func(childComplexity int, selector model.PageFilter, profileID string) int
+		SubscribeClusterResources         func(childComplexity int, k8scontextIDs []string, namespace string) int
+		SubscribeConfiguration            func(childComplexity int, patternSelector model.PageFilter, filterSelector model.PageFilter) int
+		SubscribeEvents                   func(childComplexity int) int
+		SubscribeK8sContext               func(childComplexity int, selector model.PageFilter) int
+		SubscribeMeshModelSummary         func(childComplexity int, selector model.MeshModelSummarySelector) int
+		SubscribeMeshSyncEvents           func(childComplexity int, connectionIDs []string, eventTypes []model.MeshSyncEventType) int
+		SubscribeMeshplayControllersStatus func(childComplexity int, connectionIDs []string) int
+		SubscribePerfProfiles             func(childComplexity int, selector model.PageFilter) int
+		SubscribePerfResults              func(childComplexity int, selector model.PageFilter, profileID string) int
 	}
 
 	TelemetryComp struct {
@@ -431,7 +403,7 @@ type QueryResolver interface {
 	GetAvailableAddons(ctx context.Context, filter *model.ServiceMeshFilter) ([]*model.AddonList, error)
 	GetControlPlanes(ctx context.Context, filter *model.ServiceMeshFilter) ([]*model.ControlPlane, error)
 	GetDataPlanes(ctx context.Context, filter *model.ServiceMeshFilter) ([]*model.DataPlane, error)
-	GetOperatorStatus(ctx context.Context, k8scontextID string) (*model.MeshplayControllersStatusListItem, error)
+	GetOperatorStatus(ctx context.Context, connectionID string) (*model.MeshplayControllersStatusListItem, error)
 	ResyncCluster(ctx context.Context, selector *model.ReSyncActions, k8scontextID string) (model.Status, error)
 	GetMeshsyncStatus(ctx context.Context, connectionID string) (*model.OperatorControllerStatus, error)
 	GetNatsStatus(ctx context.Context, connectionID string) (*model.OperatorControllerStatus, error)
@@ -448,11 +420,10 @@ type QueryResolver interface {
 	FetchTelemetryComponents(ctx context.Context, contexts []string) ([]*model.TelemetryComp, error)
 }
 type SubscriptionResolver interface {
-	ListenToOperatorState(ctx context.Context, k8scontextIDs []string) (<-chan *model.OperatorStatusPerK8sContext, error)
 	SubscribePerfProfiles(ctx context.Context, selector model.PageFilter) (<-chan *model.PerfPageProfiles, error)
 	SubscribePerfResults(ctx context.Context, selector model.PageFilter, profileID string) (<-chan *model.PerfPageResult, error)
-	SubscribeMeshplayControllersStatus(ctx context.Context, k8scontextIDs []string) (<-chan []*model.MeshplayControllersStatusListItem, error)
-	SubscribeMeshSyncEvents(ctx context.Context, k8scontextIDs []string, eventTypes []model.MeshSyncEventType) (<-chan *model.MeshSyncEvent, error)
+	SubscribeMeshplayControllersStatus(ctx context.Context, connectionIDs []string) (<-chan []*model.MeshplayControllersStatusListItem, error)
+	SubscribeMeshSyncEvents(ctx context.Context, connectionIDs []string, eventTypes []model.MeshSyncEventType) (<-chan *model.MeshSyncEvent, error)
 	SubscribeConfiguration(ctx context.Context, patternSelector model.PageFilter, filterSelector model.PageFilter) (<-chan *model.ConfigurationPage, error)
 	SubscribeClusterResources(ctx context.Context, k8scontextIDs []string, namespace string) (<-chan *model.ClusterResources, error)
 	SubscribeK8sContext(ctx context.Context, selector model.PageFilter) (<-chan *model.K8sContextsPage, error)
@@ -1326,12 +1297,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.MeshModelSummary.Relationships(childComplexity), true
 
-	case "MeshSyncEvent.contextId":
-		if e.complexity.MeshSyncEvent.ContextID == nil {
+	case "MeshSyncEvent.connectionID":
+		if e.complexity.MeshSyncEvent.ConnectionID == nil {
 			break
 		}
 
-		return e.complexity.MeshSyncEvent.ContextID(childComplexity), true
+		return e.complexity.MeshSyncEvent.ConnectionID(childComplexity), true
 
 	case "MeshSyncEvent.object":
 		if e.complexity.MeshSyncEvent.Object == nil {
@@ -1347,12 +1318,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.MeshSyncEvent.Type(childComplexity), true
 
-	case "MeshplayControllersStatusListItem.contextId":
-		if e.complexity.MeshplayControllersStatusListItem.ContextID == nil {
+	case "MeshplayControllersStatusListItem.connectionID":
+		if e.complexity.MeshplayControllersStatusListItem.ConnectionID == nil {
 			break
 		}
 
-		return e.complexity.MeshplayControllersStatusListItem.ContextID(childComplexity), true
+		return e.complexity.MeshplayControllersStatusListItem.ConnectionID(childComplexity), true
 
 	case "MeshplayControllersStatusListItem.controller":
 		if e.complexity.MeshplayControllersStatusListItem.Controller == nil {
@@ -1504,54 +1475,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.NullString.Valid(childComplexity), true
 
-	case "OAMCapability.host":
-		if e.complexity.OAMCapability.Host == nil {
+	case "OperatorControllerStatus.connectionID":
+		if e.complexity.OperatorControllerStatus.ConnectionID == nil {
 			break
 		}
 
-		return e.complexity.OAMCapability.Host(childComplexity), true
-
-	case "OAMCapability.id":
-		if e.complexity.OAMCapability.ID == nil {
-			break
-		}
-
-		return e.complexity.OAMCapability.ID(childComplexity), true
-
-	case "OAMCapability.metadata":
-		if e.complexity.OAMCapability.Metadata == nil {
-			break
-		}
-
-		return e.complexity.OAMCapability.Metadata(childComplexity), true
-
-	case "OAMCapability.oam_definition":
-		if e.complexity.OAMCapability.OamDefinition == nil {
-			break
-		}
-
-		return e.complexity.OAMCapability.OamDefinition(childComplexity), true
-
-	case "OAMCapability.oam_ref_schema":
-		if e.complexity.OAMCapability.OamRefSchema == nil {
-			break
-		}
-
-		return e.complexity.OAMCapability.OamRefSchema(childComplexity), true
-
-	case "OAMCapability.restricted":
-		if e.complexity.OAMCapability.Restricted == nil {
-			break
-		}
-
-		return e.complexity.OAMCapability.Restricted(childComplexity), true
-
-	case "OperatorControllerStatus.contextID":
-		if e.complexity.OperatorControllerStatus.ContextID == nil {
-			break
-		}
-
-		return e.complexity.OperatorControllerStatus.ContextID(childComplexity), true
+		return e.complexity.OperatorControllerStatus.ConnectionID(childComplexity), true
 
 	case "OperatorControllerStatus.error":
 		if e.complexity.OperatorControllerStatus.Error == nil {
@@ -1580,69 +1509,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.OperatorControllerStatus.Version(childComplexity), true
-
-	case "OperatorControllerStatusPerK8sContext.contextID":
-		if e.complexity.OperatorControllerStatusPerK8sContext.ContextID == nil {
-			break
-		}
-
-		return e.complexity.OperatorControllerStatusPerK8sContext.ContextID(childComplexity), true
-
-	case "OperatorControllerStatusPerK8sContext.OperatorControllerStatus":
-		if e.complexity.OperatorControllerStatusPerK8sContext.OperatorControllerStatus == nil {
-			break
-		}
-
-		return e.complexity.OperatorControllerStatusPerK8sContext.OperatorControllerStatus(childComplexity), true
-
-	case "OperatorStatus.contextID":
-		if e.complexity.OperatorStatus.ContextID == nil {
-			break
-		}
-
-		return e.complexity.OperatorStatus.ContextID(childComplexity), true
-
-	case "OperatorStatus.controllers":
-		if e.complexity.OperatorStatus.Controllers == nil {
-			break
-		}
-
-		return e.complexity.OperatorStatus.Controllers(childComplexity), true
-
-	case "OperatorStatus.error":
-		if e.complexity.OperatorStatus.Error == nil {
-			break
-		}
-
-		return e.complexity.OperatorStatus.Error(childComplexity), true
-
-	case "OperatorStatus.status":
-		if e.complexity.OperatorStatus.Status == nil {
-			break
-		}
-
-		return e.complexity.OperatorStatus.Status(childComplexity), true
-
-	case "OperatorStatus.version":
-		if e.complexity.OperatorStatus.Version == nil {
-			break
-		}
-
-		return e.complexity.OperatorStatus.Version(childComplexity), true
-
-	case "OperatorStatusPerK8sContext.contextID":
-		if e.complexity.OperatorStatusPerK8sContext.ContextID == nil {
-			break
-		}
-
-		return e.complexity.OperatorStatusPerK8sContext.ContextID(childComplexity), true
-
-	case "OperatorStatusPerK8sContext.operatorStatus":
-		if e.complexity.OperatorStatusPerK8sContext.OperatorStatus == nil {
-			break
-		}
-
-		return e.complexity.OperatorStatusPerK8sContext.OperatorStatus(childComplexity), true
 
 	case "PatternPageResult.page":
 		if e.complexity.PatternPageResult.Page == nil {
@@ -2116,7 +1982,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetOperatorStatus(childComplexity, args["k8scontextID"].(string)), true
+		return e.complexity.Query.GetOperatorStatus(childComplexity, args["connectionID"].(string)), true
 
 	case "Query.getPerfResult":
 		if e.complexity.Query.GetPerfResult == nil {
@@ -2167,18 +2033,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Resource.Kind(childComplexity), true
-
-	case "Subscription.listenToOperatorState":
-		if e.complexity.Subscription.ListenToOperatorState == nil {
-			break
-		}
-
-		args, err := ec.field_Subscription_listenToOperatorState_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Subscription.ListenToOperatorState(childComplexity, args["k8scontextIDs"].([]string)), true
 
 	case "Subscription.subscribeClusterResources":
 		if e.complexity.Subscription.SubscribeClusterResources == nil {
@@ -2245,7 +2099,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.SubscribeMeshSyncEvents(childComplexity, args["k8scontextIDs"].([]string), args["eventTypes"].([]model.MeshSyncEventType)), true
+		return e.complexity.Subscription.SubscribeMeshSyncEvents(childComplexity, args["connectionIDs"].([]string), args["eventTypes"].([]model.MeshSyncEventType)), true
 
 	case "Subscription.subscribeMeshplayControllersStatus":
 		if e.complexity.Subscription.SubscribeMeshplayControllersStatus == nil {
@@ -2257,7 +2111,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.SubscribeMeshplayControllersStatus(childComplexity, args["k8scontextIDs"].([]string)), true
+		return e.complexity.Subscription.SubscribeMeshplayControllersStatus(childComplexity, args["connectionIDs"].([]string)), true
 
 	case "Subscription.subscribePerfProfiles":
 		if e.complexity.Subscription.SubscribePerfProfiles == nil {
@@ -2511,16 +2365,16 @@ enum MeshplayControllerStatus {
   }
 
 type MeshplayControllersStatusListItem {
-    contextId: String!
+    connectionID: String!
     controller: MeshplayController! 
     status: MeshplayControllerStatus!
-    version: String
+    version: String!
   }
 
 type MeshSyncEvent {
     type: String!
     object: Any!
-    contextId: String!
+    connectionID: String!
   }
 
 
@@ -2710,31 +2564,6 @@ input OperatorStatusInput {
   contextID: String!
 }
 
-type OperatorStatusPerK8sContext{
-  contextID: String!
-  operatorStatus: OperatorStatus!
-}
-type OperatorControllerStatusPerK8sContext{
-  contextID: String!
-  OperatorControllerStatus: OperatorControllerStatus!
-}
-# Status of Meshplay Operator and its controllers
-type OperatorStatus {
-  # Status of Meshplay Operator
-  status: Status!
-
-  # Verion of Meshplay Operator
-  version: String!
-
-  # Details about various Controllers of Meshplay Operator
-  controllers: [OperatorControllerStatus!]!
-
-  # Error Logs encountered by Meshplay Operator
-  error: Error
-
-  contextID: String!
-}
-
 # Controllers of Meshplay Operator
 type OperatorControllerStatus {
   # Controller Name
@@ -2749,7 +2578,7 @@ type OperatorControllerStatus {
   # Controller Error Log
   error: Error
 
-  contextID: String!
+  connectionID: String!
 
 }
 
@@ -2958,6 +2787,7 @@ input PageFilter {
   to: String
   updated_after: String
   visibility: [String!]
+  metrics: String
 }
 
 # ============== CATALOG =============================
@@ -2967,6 +2797,7 @@ input CatalogSelector {
   pagesize: String!
   search: String!
   order: String!
+  metrics: String
 }
 
 # ================ TELEMETRY ==================== 
@@ -3031,7 +2862,7 @@ type Query {
 
   # Query status of Meshplay Operator in your cluster
   getOperatorStatus(
-        k8scontextID: String!
+        connectionID: String!
   ): MeshplayControllersStatusListItem @KubernetesMiddleware
 
   # Query to resync the cluster discovery
@@ -3113,11 +2944,6 @@ type Mutation {
 }
 
 type Subscription {
-  # Listen to changes in status of Meshplay Operator in your cluster
-  listenToOperatorState(
-    k8scontextIDs: [String!]
-  ): OperatorStatusPerK8sContext @KubernetesMiddleware
-
   # Listen to changes in Performance Profiles
   subscribePerfProfiles(selector: PageFilter!): PerfPageProfiles!
 
@@ -3126,13 +2952,13 @@ type Subscription {
 
   # Listen to changes in the status of meshplay controllers
   subscribeMeshplayControllersStatus(
-    k8scontextIDs: [String!]
+    connectionIDs: [String!]
   ): [MeshplayControllersStatusListItem!]! @KubernetesMiddleware
 
   # Listen to the events that MeshSync is sending through Meshplay Broker.
   # Note: It does not listen to the changes in meshplay database, but to meshsync events
   subscribeMeshSyncEvents(
-    k8scontextIDs: [String!]
+    connectionIDs: [String!]
     eventTypes: [MeshSyncEventType!]
   ) : MeshSyncEvent! @KubernetesMiddleware
 
@@ -3149,15 +2975,6 @@ type Subscription {
 
   # Publish events to user
   subscribeEvents : Event!
-}
-
-type OAMCapability {
-  oam_definition: Any
-  id: String
-  oam_ref_schema: String
-  host: String
-  restricted: Boolean
-  metadata: Any
 }
 
 type KctlDescribeDetails {
@@ -3459,14 +3276,14 @@ func (ec *executionContext) field_Query_getOperatorStatus_args(ctx context.Conte
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["k8scontextID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("k8scontextID"))
+	if tmp, ok := rawArgs["connectionID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connectionID"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["k8scontextID"] = arg0
+	args["connectionID"] = arg0
 	return args, nil
 }
 
@@ -3521,21 +3338,6 @@ func (ec *executionContext) field_Query_resyncCluster_args(ctx context.Context, 
 		}
 	}
 	args["k8scontextID"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Subscription_listenToOperatorState_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 []string
-	if tmp, ok := rawArgs["k8scontextIDs"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("k8scontextIDs"))
-		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["k8scontextIDs"] = arg0
 	return args, nil
 }
 
@@ -3621,14 +3423,14 @@ func (ec *executionContext) field_Subscription_subscribeMeshSyncEvents_args(ctx 
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []string
-	if tmp, ok := rawArgs["k8scontextIDs"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("k8scontextIDs"))
+	if tmp, ok := rawArgs["connectionIDs"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connectionIDs"))
 		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["k8scontextIDs"] = arg0
+	args["connectionIDs"] = arg0
 	var arg1 []model.MeshSyncEventType
 	if tmp, ok := rawArgs["eventTypes"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventTypes"))
@@ -3645,14 +3447,14 @@ func (ec *executionContext) field_Subscription_subscribeMeshplayControllersStatu
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []string
-	if tmp, ok := rawArgs["k8scontextIDs"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("k8scontextIDs"))
+	if tmp, ok := rawArgs["connectionIDs"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connectionIDs"))
 		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["k8scontextIDs"] = arg0
+	args["connectionIDs"] = arg0
 	return args, nil
 }
 
@@ -9267,8 +9069,8 @@ func (ec *executionContext) fieldContext_MeshSyncEvent_object(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _MeshSyncEvent_contextId(ctx context.Context, field graphql.CollectedField, obj *model.MeshSyncEvent) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_MeshSyncEvent_contextId(ctx, field)
+func (ec *executionContext) _MeshSyncEvent_connectionID(ctx context.Context, field graphql.CollectedField, obj *model.MeshSyncEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeshSyncEvent_connectionID(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -9281,7 +9083,7 @@ func (ec *executionContext) _MeshSyncEvent_contextId(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ContextID, nil
+		return obj.ConnectionID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9298,7 +9100,7 @@ func (ec *executionContext) _MeshSyncEvent_contextId(ctx context.Context, field 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MeshSyncEvent_contextId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MeshSyncEvent_connectionID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MeshSyncEvent",
 		Field:      field,
@@ -9311,8 +9113,8 @@ func (ec *executionContext) fieldContext_MeshSyncEvent_contextId(ctx context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _MeshplayControllersStatusListItem_contextId(ctx context.Context, field graphql.CollectedField, obj *model.MeshplayControllersStatusListItem) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_MeshplayControllersStatusListItem_contextId(ctx, field)
+func (ec *executionContext) _MeshplayControllersStatusListItem_connectionID(ctx context.Context, field graphql.CollectedField, obj *model.MeshplayControllersStatusListItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MeshplayControllersStatusListItem_connectionID(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -9325,7 +9127,7 @@ func (ec *executionContext) _MeshplayControllersStatusListItem_contextId(ctx con
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ContextID, nil
+		return obj.ConnectionID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9342,7 +9144,7 @@ func (ec *executionContext) _MeshplayControllersStatusListItem_contextId(ctx con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_MeshplayControllersStatusListItem_contextId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_MeshplayControllersStatusListItem_connectionID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "MeshplayControllersStatusListItem",
 		Field:      field,
@@ -9464,11 +9266,14 @@ func (ec *executionContext) _MeshplayControllersStatusListItem_version(ctx conte
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_MeshplayControllersStatusListItem_version(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -10258,252 +10063,6 @@ func (ec *executionContext) fieldContext_NullString_Valid(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _OAMCapability_oam_definition(ctx context.Context, field graphql.CollectedField, obj *model.OAMCapability) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OAMCapability_oam_definition(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.OamDefinition, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(interface{})
-	fc.Result = res
-	return ec.marshalOAny2interface(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OAMCapability_oam_definition(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OAMCapability",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Any does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OAMCapability_id(ctx context.Context, field graphql.CollectedField, obj *model.OAMCapability) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OAMCapability_id(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OAMCapability_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OAMCapability",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OAMCapability_oam_ref_schema(ctx context.Context, field graphql.CollectedField, obj *model.OAMCapability) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OAMCapability_oam_ref_schema(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.OamRefSchema, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OAMCapability_oam_ref_schema(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OAMCapability",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OAMCapability_host(ctx context.Context, field graphql.CollectedField, obj *model.OAMCapability) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OAMCapability_host(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Host, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OAMCapability_host(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OAMCapability",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OAMCapability_restricted(ctx context.Context, field graphql.CollectedField, obj *model.OAMCapability) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OAMCapability_restricted(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Restricted, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OAMCapability_restricted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OAMCapability",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OAMCapability_metadata(ctx context.Context, field graphql.CollectedField, obj *model.OAMCapability) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OAMCapability_metadata(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Metadata, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(interface{})
-	fc.Result = res
-	return ec.marshalOAny2interface(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OAMCapability_metadata(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OAMCapability",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Any does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _OperatorControllerStatus_name(ctx context.Context, field graphql.CollectedField, obj *model.OperatorControllerStatus) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_OperatorControllerStatus_name(ctx, field)
 	if err != nil {
@@ -10683,8 +10242,8 @@ func (ec *executionContext) fieldContext_OperatorControllerStatus_error(ctx cont
 	return fc, nil
 }
 
-func (ec *executionContext) _OperatorControllerStatus_contextID(ctx context.Context, field graphql.CollectedField, obj *model.OperatorControllerStatus) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorControllerStatus_contextID(ctx, field)
+func (ec *executionContext) _OperatorControllerStatus_connectionID(ctx context.Context, field graphql.CollectedField, obj *model.OperatorControllerStatus) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OperatorControllerStatus_connectionID(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -10697,7 +10256,7 @@ func (ec *executionContext) _OperatorControllerStatus_contextID(ctx context.Cont
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ContextID, nil
+		return obj.ConnectionID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -10714,7 +10273,7 @@ func (ec *executionContext) _OperatorControllerStatus_contextID(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_OperatorControllerStatus_contextID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_OperatorControllerStatus_connectionID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "OperatorControllerStatus",
 		Field:      field,
@@ -10722,441 +10281,6 @@ func (ec *executionContext) fieldContext_OperatorControllerStatus_contextID(ctx 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OperatorControllerStatusPerK8sContext_contextID(ctx context.Context, field graphql.CollectedField, obj *model.OperatorControllerStatusPerK8sContext) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorControllerStatusPerK8sContext_contextID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ContextID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OperatorControllerStatusPerK8sContext_contextID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OperatorControllerStatusPerK8sContext",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OperatorControllerStatusPerK8sContext_OperatorControllerStatus(ctx context.Context, field graphql.CollectedField, obj *model.OperatorControllerStatusPerK8sContext) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorControllerStatusPerK8sContext_OperatorControllerStatus(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.OperatorControllerStatus, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.OperatorControllerStatus)
-	fc.Result = res
-	return ec.marshalNOperatorControllerStatus2ᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐOperatorControllerStatus(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OperatorControllerStatusPerK8sContext_OperatorControllerStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OperatorControllerStatusPerK8sContext",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "name":
-				return ec.fieldContext_OperatorControllerStatus_name(ctx, field)
-			case "version":
-				return ec.fieldContext_OperatorControllerStatus_version(ctx, field)
-			case "status":
-				return ec.fieldContext_OperatorControllerStatus_status(ctx, field)
-			case "error":
-				return ec.fieldContext_OperatorControllerStatus_error(ctx, field)
-			case "contextID":
-				return ec.fieldContext_OperatorControllerStatus_contextID(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type OperatorControllerStatus", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OperatorStatus_status(ctx context.Context, field graphql.CollectedField, obj *model.OperatorStatus) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorStatus_status(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Status, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(model.Status)
-	fc.Result = res
-	return ec.marshalNStatus2githubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐStatus(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OperatorStatus_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OperatorStatus",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Status does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OperatorStatus_version(ctx context.Context, field graphql.CollectedField, obj *model.OperatorStatus) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorStatus_version(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Version, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OperatorStatus_version(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OperatorStatus",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OperatorStatus_controllers(ctx context.Context, field graphql.CollectedField, obj *model.OperatorStatus) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorStatus_controllers(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Controllers, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.OperatorControllerStatus)
-	fc.Result = res
-	return ec.marshalNOperatorControllerStatus2ᚕᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐOperatorControllerStatusᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OperatorStatus_controllers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OperatorStatus",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "name":
-				return ec.fieldContext_OperatorControllerStatus_name(ctx, field)
-			case "version":
-				return ec.fieldContext_OperatorControllerStatus_version(ctx, field)
-			case "status":
-				return ec.fieldContext_OperatorControllerStatus_status(ctx, field)
-			case "error":
-				return ec.fieldContext_OperatorControllerStatus_error(ctx, field)
-			case "contextID":
-				return ec.fieldContext_OperatorControllerStatus_contextID(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type OperatorControllerStatus", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OperatorStatus_error(ctx context.Context, field graphql.CollectedField, obj *model.OperatorStatus) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorStatus_error(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Error, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.Error)
-	fc.Result = res
-	return ec.marshalOError2ᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐError(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OperatorStatus_error(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OperatorStatus",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "code":
-				return ec.fieldContext_Error_code(ctx, field)
-			case "description":
-				return ec.fieldContext_Error_description(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Error", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OperatorStatus_contextID(ctx context.Context, field graphql.CollectedField, obj *model.OperatorStatus) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorStatus_contextID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ContextID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OperatorStatus_contextID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OperatorStatus",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OperatorStatusPerK8sContext_contextID(ctx context.Context, field graphql.CollectedField, obj *model.OperatorStatusPerK8sContext) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorStatusPerK8sContext_contextID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ContextID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OperatorStatusPerK8sContext_contextID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OperatorStatusPerK8sContext",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _OperatorStatusPerK8sContext_operatorStatus(ctx context.Context, field graphql.CollectedField, obj *model.OperatorStatusPerK8sContext) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_OperatorStatusPerK8sContext_operatorStatus(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.OperatorStatus, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.OperatorStatus)
-	fc.Result = res
-	return ec.marshalNOperatorStatus2ᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐOperatorStatus(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_OperatorStatusPerK8sContext_operatorStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "OperatorStatusPerK8sContext",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "status":
-				return ec.fieldContext_OperatorStatus_status(ctx, field)
-			case "version":
-				return ec.fieldContext_OperatorStatus_version(ctx, field)
-			case "controllers":
-				return ec.fieldContext_OperatorStatus_controllers(ctx, field)
-			case "error":
-				return ec.fieldContext_OperatorStatus_error(ctx, field)
-			case "contextID":
-				return ec.fieldContext_OperatorStatus_contextID(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type OperatorStatus", field.Name)
 		},
 	}
 	return fc, nil
@@ -13248,7 +12372,7 @@ func (ec *executionContext) _Query_getOperatorStatus(ctx context.Context, field 
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().GetOperatorStatus(rctx, fc.Args["k8scontextID"].(string))
+			return ec.resolvers.Query().GetOperatorStatus(rctx, fc.Args["connectionID"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.KubernetesMiddleware == nil {
@@ -13289,8 +12413,8 @@ func (ec *executionContext) fieldContext_Query_getOperatorStatus(ctx context.Con
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "contextId":
-				return ec.fieldContext_MeshplayControllersStatusListItem_contextId(ctx, field)
+			case "connectionID":
+				return ec.fieldContext_MeshplayControllersStatusListItem_connectionID(ctx, field)
 			case "controller":
 				return ec.fieldContext_MeshplayControllersStatusListItem_controller(ctx, field)
 			case "status":
@@ -13437,8 +12561,8 @@ func (ec *executionContext) fieldContext_Query_getMeshsyncStatus(ctx context.Con
 				return ec.fieldContext_OperatorControllerStatus_status(ctx, field)
 			case "error":
 				return ec.fieldContext_OperatorControllerStatus_error(ctx, field)
-			case "contextID":
-				return ec.fieldContext_OperatorControllerStatus_contextID(ctx, field)
+			case "connectionID":
+				return ec.fieldContext_OperatorControllerStatus_connectionID(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type OperatorControllerStatus", field.Name)
 		},
@@ -13504,8 +12628,8 @@ func (ec *executionContext) fieldContext_Query_getNatsStatus(ctx context.Context
 				return ec.fieldContext_OperatorControllerStatus_status(ctx, field)
 			case "error":
 				return ec.fieldContext_OperatorControllerStatus_error(ctx, field)
-			case "contextID":
-				return ec.fieldContext_OperatorControllerStatus_contextID(ctx, field)
+			case "connectionID":
+				return ec.fieldContext_OperatorControllerStatus_connectionID(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type OperatorControllerStatus", field.Name)
 		},
@@ -14475,98 +13599,6 @@ func (ec *executionContext) fieldContext_Resource_count(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Subscription_listenToOperatorState(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
-	fc, err := ec.fieldContext_Subscription_listenToOperatorState(ctx, field)
-	if err != nil {
-		return nil
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = nil
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Subscription().ListenToOperatorState(rctx, fc.Args["k8scontextIDs"].([]string))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			if ec.directives.KubernetesMiddleware == nil {
-				return nil, errors.New("directive KubernetesMiddleware is not implemented")
-			}
-			return ec.directives.KubernetesMiddleware(ctx, nil, directive0)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(<-chan *model.OperatorStatusPerK8sContext); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be <-chan *github.com/khulnasoft/meshplay/server/internal/graphql/model.OperatorStatusPerK8sContext`, tmp)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return nil
-	}
-	if resTmp == nil {
-		return nil
-	}
-	return func(ctx context.Context) graphql.Marshaler {
-		select {
-		case res, ok := <-resTmp.(<-chan *model.OperatorStatusPerK8sContext):
-			if !ok {
-				return nil
-			}
-			return graphql.WriterFunc(func(w io.Writer) {
-				w.Write([]byte{'{'})
-				graphql.MarshalString(field.Alias).MarshalGQL(w)
-				w.Write([]byte{':'})
-				ec.marshalOOperatorStatusPerK8sContext2ᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐOperatorStatusPerK8sContext(ctx, field.Selections, res).MarshalGQL(w)
-				w.Write([]byte{'}'})
-			})
-		case <-ctx.Done():
-			return nil
-		}
-	}
-}
-
-func (ec *executionContext) fieldContext_Subscription_listenToOperatorState(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Subscription",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "contextID":
-				return ec.fieldContext_OperatorStatusPerK8sContext_contextID(ctx, field)
-			case "operatorStatus":
-				return ec.fieldContext_OperatorStatusPerK8sContext_operatorStatus(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type OperatorStatusPerK8sContext", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Subscription_listenToOperatorState_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Subscription_subscribePerfProfiles(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
 	fc, err := ec.fieldContext_Subscription_subscribePerfProfiles(ctx, field)
 	if err != nil {
@@ -14740,7 +13772,7 @@ func (ec *executionContext) _Subscription_subscribeMeshplayControllersStatus(ctx
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Subscription().SubscribeMeshplayControllersStatus(rctx, fc.Args["k8scontextIDs"].([]string))
+			return ec.resolvers.Subscription().SubscribeMeshplayControllersStatus(rctx, fc.Args["connectionIDs"].([]string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.KubernetesMiddleware == nil {
@@ -14798,8 +13830,8 @@ func (ec *executionContext) fieldContext_Subscription_subscribeMeshplayControlle
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "contextId":
-				return ec.fieldContext_MeshplayControllersStatusListItem_contextId(ctx, field)
+			case "connectionID":
+				return ec.fieldContext_MeshplayControllersStatusListItem_connectionID(ctx, field)
 			case "controller":
 				return ec.fieldContext_MeshplayControllersStatusListItem_controller(ctx, field)
 			case "status":
@@ -14839,7 +13871,7 @@ func (ec *executionContext) _Subscription_subscribeMeshSyncEvents(ctx context.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Subscription().SubscribeMeshSyncEvents(rctx, fc.Args["k8scontextIDs"].([]string), fc.Args["eventTypes"].([]model.MeshSyncEventType))
+			return ec.resolvers.Subscription().SubscribeMeshSyncEvents(rctx, fc.Args["connectionIDs"].([]string), fc.Args["eventTypes"].([]model.MeshSyncEventType))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.KubernetesMiddleware == nil {
@@ -14901,8 +13933,8 @@ func (ec *executionContext) fieldContext_Subscription_subscribeMeshSyncEvents(ct
 				return ec.fieldContext_MeshSyncEvent_type(ctx, field)
 			case "object":
 				return ec.fieldContext_MeshSyncEvent_object(ctx, field)
-			case "contextId":
-				return ec.fieldContext_MeshSyncEvent_contextId(ctx, field)
+			case "connectionID":
+				return ec.fieldContext_MeshSyncEvent_connectionID(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type MeshSyncEvent", field.Name)
 		},
@@ -17303,7 +16335,7 @@ func (ec *executionContext) unmarshalInputCatalogSelector(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"page", "pagesize", "search", "order"}
+	fieldsInOrder := [...]string{"page", "pagesize", "search", "order", "metrics"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17338,6 +16370,13 @@ func (ec *executionContext) unmarshalInputCatalogSelector(ctx context.Context, o
 				return it, err
 			}
 			it.Order = data
+		case "metrics":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metrics"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Metrics = data
 		}
 	}
 
@@ -17412,7 +16451,7 @@ func (ec *executionContext) unmarshalInputPageFilter(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"page", "pageSize", "order", "search", "from", "to", "updated_after", "visibility"}
+	fieldsInOrder := [...]string{"page", "pageSize", "order", "search", "from", "to", "updated_after", "visibility", "metrics"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17475,6 +16514,13 @@ func (ec *executionContext) unmarshalInputPageFilter(ctx context.Context, obj in
 				return it, err
 			}
 			it.Visibility = data
+		case "metrics":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metrics"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Metrics = data
 		}
 	}
 
@@ -18898,8 +17944,8 @@ func (ec *executionContext) _MeshSyncEvent(ctx context.Context, sel ast.Selectio
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "contextId":
-			out.Values[i] = ec._MeshSyncEvent_contextId(ctx, field, obj)
+		case "connectionID":
+			out.Values[i] = ec._MeshSyncEvent_connectionID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -18937,8 +17983,8 @@ func (ec *executionContext) _MeshplayControllersStatusListItem(ctx context.Conte
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("MeshplayControllersStatusListItem")
-		case "contextId":
-			out.Values[i] = ec._MeshplayControllersStatusListItem_contextId(ctx, field, obj)
+		case "connectionID":
+			out.Values[i] = ec._MeshplayControllersStatusListItem_connectionID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -18954,6 +18000,9 @@ func (ec *executionContext) _MeshplayControllersStatusListItem(ctx context.Conte
 			}
 		case "version":
 			out.Values[i] = ec._MeshplayControllersStatusListItem_version(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -19174,52 +18223,6 @@ func (ec *executionContext) _NullString(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
-var oAMCapabilityImplementors = []string{"OAMCapability"}
-
-func (ec *executionContext) _OAMCapability(ctx context.Context, sel ast.SelectionSet, obj *model.OAMCapability) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, oAMCapabilityImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("OAMCapability")
-		case "oam_definition":
-			out.Values[i] = ec._OAMCapability_oam_definition(ctx, field, obj)
-		case "id":
-			out.Values[i] = ec._OAMCapability_id(ctx, field, obj)
-		case "oam_ref_schema":
-			out.Values[i] = ec._OAMCapability_oam_ref_schema(ctx, field, obj)
-		case "host":
-			out.Values[i] = ec._OAMCapability_host(ctx, field, obj)
-		case "restricted":
-			out.Values[i] = ec._OAMCapability_restricted(ctx, field, obj)
-		case "metadata":
-			out.Values[i] = ec._OAMCapability_metadata(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var operatorControllerStatusImplementors = []string{"OperatorControllerStatus"}
 
 func (ec *executionContext) _OperatorControllerStatus(ctx context.Context, sel ast.SelectionSet, obj *model.OperatorControllerStatus) graphql.Marshaler {
@@ -19248,152 +18251,8 @@ func (ec *executionContext) _OperatorControllerStatus(ctx context.Context, sel a
 			}
 		case "error":
 			out.Values[i] = ec._OperatorControllerStatus_error(ctx, field, obj)
-		case "contextID":
-			out.Values[i] = ec._OperatorControllerStatus_contextID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var operatorControllerStatusPerK8sContextImplementors = []string{"OperatorControllerStatusPerK8sContext"}
-
-func (ec *executionContext) _OperatorControllerStatusPerK8sContext(ctx context.Context, sel ast.SelectionSet, obj *model.OperatorControllerStatusPerK8sContext) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, operatorControllerStatusPerK8sContextImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("OperatorControllerStatusPerK8sContext")
-		case "contextID":
-			out.Values[i] = ec._OperatorControllerStatusPerK8sContext_contextID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "OperatorControllerStatus":
-			out.Values[i] = ec._OperatorControllerStatusPerK8sContext_OperatorControllerStatus(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var operatorStatusImplementors = []string{"OperatorStatus"}
-
-func (ec *executionContext) _OperatorStatus(ctx context.Context, sel ast.SelectionSet, obj *model.OperatorStatus) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, operatorStatusImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("OperatorStatus")
-		case "status":
-			out.Values[i] = ec._OperatorStatus_status(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "version":
-			out.Values[i] = ec._OperatorStatus_version(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "controllers":
-			out.Values[i] = ec._OperatorStatus_controllers(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "error":
-			out.Values[i] = ec._OperatorStatus_error(ctx, field, obj)
-		case "contextID":
-			out.Values[i] = ec._OperatorStatus_contextID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var operatorStatusPerK8sContextImplementors = []string{"OperatorStatusPerK8sContext"}
-
-func (ec *executionContext) _OperatorStatusPerK8sContext(ctx context.Context, sel ast.SelectionSet, obj *model.OperatorStatusPerK8sContext) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, operatorStatusPerK8sContextImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("OperatorStatusPerK8sContext")
-		case "contextID":
-			out.Values[i] = ec._OperatorStatusPerK8sContext_contextID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "operatorStatus":
-			out.Values[i] = ec._OperatorStatusPerK8sContext_operatorStatus(ctx, field, obj)
+		case "connectionID":
+			out.Values[i] = ec._OperatorControllerStatus_connectionID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -20231,8 +19090,6 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 	}
 
 	switch fields[0].Name {
-	case "listenToOperatorState":
-		return ec._Subscription_listenToOperatorState(ctx, fields[0])
 	case "subscribePerfProfiles":
 		return ec._Subscription_subscribePerfProfiles(ctx, fields[0])
 	case "subscribePerfResults":
@@ -21398,50 +20255,6 @@ func (ec *executionContext) marshalNOperatorControllerStatus2githubᚗcomᚋkhul
 	return ec._OperatorControllerStatus(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNOperatorControllerStatus2ᚕᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐOperatorControllerStatusᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.OperatorControllerStatus) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNOperatorControllerStatus2ᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐOperatorControllerStatus(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) marshalNOperatorControllerStatus2ᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐOperatorControllerStatus(ctx context.Context, sel ast.SelectionSet, v *model.OperatorControllerStatus) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -21450,16 +20263,6 @@ func (ec *executionContext) marshalNOperatorControllerStatus2ᚖgithubᚗcomᚋk
 		return graphql.Null
 	}
 	return ec._OperatorControllerStatus(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNOperatorStatus2ᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐOperatorStatus(ctx context.Context, sel ast.SelectionSet, v *model.OperatorStatus) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._OperatorStatus(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNPageFilter2githubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐPageFilter(ctx context.Context, v interface{}) (model.PageFilter, error) {
@@ -22465,13 +21268,6 @@ func (ec *executionContext) unmarshalOOperatorStatusInput2ᚖgithubᚗcomᚋkhul
 	}
 	res, err := ec.unmarshalInputOperatorStatusInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOOperatorStatusPerK8sContext2ᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐOperatorStatusPerK8sContext(ctx context.Context, sel ast.SelectionSet, v *model.OperatorStatusPerK8sContext) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._OperatorStatusPerK8sContext(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOPatternPageResult2ᚖgithubᚗcomᚋkhulnasoftᚋmeshplayᚋserverᚋinternalᚋgraphqlᚋmodelᚐPatternPageResult(ctx context.Context, sel ast.SelectionSet, v *model.PatternPageResult) graphql.Marshaler {

@@ -10,136 +10,134 @@ category: contributing
 list: include
 ---
 
-Meshplay's internal object model is designed to provide a consistent and extensible way of capturing and characterizing the resources under Meshplay's management. Meshplay Models serve as the unit of packaging for the object models that define a type of managed infrastructure and their relationships, and details specifics of how to manage them.
+<!-- Concepts for which docs needs to be updated: -->
+<!-- Scopes - What they mean to contributors/expand on which takes precedence?
+1. Which policies get loaded?
+   1. What policies are loaded by default?
+   2. What happens in conflict?
+2. What controls are exposed to model contributors?
+3. Are there any global Meshplay defaults (can user change them?) 
+4. Instructions for Creating a New Connection
+5. Instructions for Creating a New Component -->
 
-Models typically represent infrastructure and application technologies, however, they are also capable of defining other types of constructs like annotations, like shapes (infrastructure ambiguous components). 
+# Understanding the internals of Meshplay's logical object model
 
-## Difference Between Model Schemas, Definition, and Instance
+Meshplay's internal object model is designed to provide a consistent and extensible way of capturing and characterizing the resources under Meshplay's management and the capabilities Meshplay has at its disposal. Meshplay Models serve as the unit of packaging for the object models that define a registered capability or a type of managed infrastructure and their relationships, and details specifics of how to manage them.Models often represent infrastructure and application technologies, however, they are also capable of defining other types of entities like annotations, like shapes (infrastructure ambiguous components). Models are used to define the capabilities of Meshplay. _See [Models]({{site.baseurl}}/concepts/logical/models) to learn more about models as a logical concept._
 
-The lifecycle of a Model can be summarized under three states.
+Each model includes a set of entities (in the form of definitions) that Meshplay can manage. Models are defined and versioned using on the [Model Schema](https://github.com/meshplay/schemas/blob/master/openapi/schemas/meshmodels.yml). The schema defines the structure of the model, including the entities it contains, their relationships, and the properties they have. The schema also defines the version of the model and the version of the schema itself. _See [Registry]({{site.baseurl}}/concepts/logical/registry) to learn more about Meshplay's internal registry and how to use it._
 
-<!-- Model Definitions are read-only templates that contain instructions for creating a any given infrasture. A Model Definition is a snapshot or blueprint of the configuration, credentials(s) and dependencies required for an application to run.
+[![Model Entity Classification]({{ site.baseurl }}/assets/img/meshmodel/meshmodel-architecture.svg)]({{ site.baseurl }}/assets/img/concepts/meshplay-models.png)
+_Figure: Model Entity Classification_
 
-Depending upon where they are in their lifecycle, Meshplay Models can be referred to differently based on their are comprised of a handful of core constructs. -->
+## Meshplay Entities and their Lifecycle
 
-1. `Schema` (static): The schema represents the skeletal structure of a construct and provides a logical view of its size, shape, and characteristics. It defines the expected properties and attributes of the construct. The schema serves as a blueprint or template for creating instances of the construct. It is a static representation that defines the structure and properties but does not contain specific configuration values.
+This section aids in your understanding of the vernacular of Meshplay's internal object model and discusses the difference beteween schemas, definitions, declarations, and instances. The lifecycle of Meshplay entities (components, relationships, policies) is represented by the following terms, which are used to describe the various stages of their lifecycle.
 
-2. `Definition` (static): The definition is an implementation of the schema. It contains specific configurations and values for the construct at hand. The definition provides the actual configuration details for a specific instance of the construct. It is static because it is created based on the schema but does not change once created. The definition is used to instantiate instances of the construct.
+### Schema
 
-        Things to keep in mind while creating RelationshipDefinitions:
+**Schema** _(static)_ **: the skeletal structure representing a logical view of the size, shape, characteristics of a construct.**
 
-        a. Targets of a Relationship can be specific Components or entire Models.
-        b. The values for Kind, Version  and Model are case-sensitive.
-        c. The convention is to use camel-casing for Kind and SubType values.
-        d. Absence of a field means in the selector means “*” (or wildcard).
-            - If we have a selector with {Kind: Pod, Model: Kubernetes}, the absence of the Version field here
-              means that all the versions of the Kubernetes Pod resource (e.g. k8s.io/v1/betav2) will match.
-        e. In the event of conflicting Relationship Definitions, union between them is taken.
-            - If we have two Relationships, one from (Component A) to (Component B and Component F), and another
-              from (Component A) to (Component B and Component C), then it is similar to having a Relationship
-              from Component A to Component B, C and F
-        f. In the event of an overlapping set of complementary Relationship Definitions, Union.
-        g. In the event of an overlapping set of conflicting  Relationship Definitions:
-            - No relationship type (Kind) is inherently more important than the next one, so will not be any case
-              of conflict
+The schema represents the skeletal structure of an entity and provides a logical view of its size, shape, and characteristics. It defines the expected properties and attributes of the entity. The schema serves as a blueprint or template for creating instances of the entity. It is a static representation that defines the structure and properties but does not contain specific configuration values.
 
-3.  `Instance` (dynamic): The instance represents a realized construct. It is a dynamic representation that corresponds to a deployed or discovered instance of the construct. The instance is created based on the definition and represents an actual running or deployed version of the construct within the service mesh environment.
+{% include alert.html type="info" title="Schema example" content='<details><summary>Component schema excerpt</summary><pre> {
+"$id": "https://schemas.meshplay.io/component.json",
+  "$schema": "<http://json-schema.org/draft-07/schema#>",
+"description": "Components are the atomic units for designing infrastructure. Learn more at <https://docs-meshplay.khulnasoft.com/concepts/components>",
+"required": [
+"apiVersion",
+"kind",
+"schema",
+"model"
+],
+"additionalProperties": false,
+"type": "object",
+"properties": {
+"apiVersion": {
+"type": "string",
+"description": "API Version of the component."
+},
+"kind": {
+"type": "string",
+"description": "Kind of the component."
+.
+.
+.
 
-If a specific attribute is not provided with a value in the definition, it means that the value for that attribute has to be written or configured per construct. In other words, the absence of a value indicates that the configuration for that attribute is required and specific to each individual construct instance.
+</pre></details> See <a href="https://github.com/meshplay/schemas">github.com/meshplay/schemas</a> for more details.' %}
 
-[![MeshModel Contruct Classification]({{ site.baseurl }}/assets/img/meshmodel/meshmodel-architecture.svg)]({{ site.baseurl }}/assets/img/meshmodel/meshmodel-architecture.svg)
+### Definition
 
-_Figure: MeshModel Contruct Classification_
+**Definition** _(static)_ **: An implementation of the Schema containing an outline of the specific attributes of a given, unconfigured entity.**
 
-### Generating Models does not require Meshplay Server
+A definition is an implementation of the schema. It contains specific configurations and values for the entity at hand. The definition provides the actual configuration details for a specific instance of the entity. It is static because it is created based on the schema but does not change once created. The definition is used to instantiate declarations of the entity.
 
-Model and Component generation logic is MeshKit. `meshplayctl` and Meshplay Server both utilize MeshKit’s libraries for ongoing programmatic generation of models and components.
+{% include alert.html type="info" title="Definition example" content="a generic, unconfigured Kubernetes Pod." %}
 
-### Contribute to MeshModel Relationships
+### Declaration
 
-Relationships within MeshModel play a crucial role in establishing concrete visualisations of efficient data flow between different components of Meshplay. These are used to classify the nature of interaction between one or more interconnected Components.
+**Declaration** _(static)_ **: - A configured entity with detailed intentions of a given Definition.**
 
-1. Identify the relationship and any specific constraints to be enforced between the two specific components, their models or potentially other components, models, or environmental considerations.
-2. Propose a specific visual representation for the relationship.
-3. Visual representation examples:
-   - [Hierarchical]({{ site.baseurl }}/assets/img/meshmodel/relationships/hierarchical_relationship.png)
-   - [Sibling]({{ site.baseurl }}/assets/img/meshmodel/relationships/sibling_relationship.png)
-   - [Binding]({{ site.baseurl }}/assets/img/meshmodel/relationships/binding_relationship.png)
-   - [Edge]({{ site.baseurl }}/assets/img/meshmodel/relationships/mount_edge_relationship.png)
+{% include alert.html type="info" title="Declaration example" content="NGINX container as a Kubernetes Pod with port 443 and SSL termination." %}
 
-4. Prospose the appropriate relationship type, using one of the predefined set of relationship types or suggest a new relationship where an existing type does not fit.
-5. Create a Relationship Definition (yaml).
-6. Create a policy for evaluation of the relationship (rego). See [examples](https://github.com/khulnasoft/meshplay/tree/master/server/meshmodel/policies/).
-7. Add in Documentation.
+### Instance
 
-**Existing Relationships, their Definitions and their Subtypes**
+**Instance** _(dynamic)_ **: A realized entity (deployed/discovered); An instantiation of the declaration.**
 
-1. `Hierarchical` relationships involve either an ancestral connection of the components i.e. the creation/ deletion of a Component higher up affects the existence of the Components below in the lineage or a connection which involves the inheritence of features from one Component to the other.  
-- [Parent](https://github.com/khulnasoft/meshplay/tree/master/server/meshmodel/relationships/hierarchical_parent.json) - A parent-child relationship implies the requirement of the parent component before the child component can be created. For example, a "Namespace" can be a parent of "Pods" within that namespace. The namespace must exist before creating pods within it.
-- [Inventory](https://github.com/khulnasoft/meshplay/blob/master/server/meshmodel/relationships/hierarchical_inv_wasm_filters.json) - Wasm filters can inherit features and functionalities from Envoy filters. This can be used to build on existing functionalities provided by Envoy filters and further extend them using Wasm filters. It enables a modular and scalable approach to customize the behavior of the proxy while maintaining a clear hierarchy of features.
+An _instance_ represents a realized entity. An _instance_ is a dynamic representation that corresponds to a deployed or discovered instantiation of a _declaration_. An _instance_ is created based on its corresponding _definition_ and represents an actual running or deployed version of the entity within the environment.
 
-2. `Edge` relationships indicate the possibility of traffic flow between two components. They enable communication and interaction between different Components within the system.
-- [Mount](https://github.com/khulnasoft/meshplay/tree/master/server/meshmodel/relationships/mount_edge.json) - This subtype addresses the storage and access possibility between involved components. For example, a "PersistentVolume" can be mounted to a "Pod" to provide persistent storage for the pod's data.
-- [Network](https://github.com/khulnasoft/meshplay/tree/master/server/meshmodel/relationships/network_edge.json) - This deals with IP addresses and DNS names and provides stable endpoints for communication. For example, a "Service" provides a stable endpoint for accessing multiple replicas of a "Deployment."
-- [Firewall](https://github.com/khulnasoft/meshplay/tree/master/server/meshmodel/relationships/network_policy_edge.json) - This acts as intermediary for communications which include standard networking protocols like TCP and UDP. It can enforce network policies to control traffic between components. For example, a "NetworkPolicy" can be used to manage the traffic flow between different "Pods" in the cluster.
-- [Permission](https://github.com/khulnasoft/meshplay/tree/master/server/meshmodel/relationships/permission_edge.json) - This defines the permissions for components if they can have a possible relationship with other Components. It ensures that only authorized Components can interact with each other. For example, a "Role" can define permissions for Components to access specific resources.
+{% include alert.html type="info" title="Instance example" content="NGINX-as234z2 pod running in a cluster as a Kubernetes Pod with port 443 and SSL termination." %}
 
-3. `Sibling` relationships represent connections between components that are at the same hierarchical level or share a common parent. Siblings can have the same or similar functionalities or may interact with each other in specific ways. These relationships facilitate communication and cooperation between components that are in the same group or category.
-- [Sibling](https://github.com/khulnasoft/meshplay/tree/master/server/meshmodel/relationships/sibling.json)
+# Instructions for creating a new Model
+
+All of Meshplay's Models, Components, and Relationships can be found in the <a href='https://docs.google.com/spreadsheets/d/1DZHnzxYWOlJ69Oguz4LkRVTFM79kC2tuvdwizOJmeMw/edit#'>Meshplay Integrations spreadsheet</a>. This spreadsheet is the source of truth for the definition of Meshplay's models. On a daily schedule, the contents of the Meshplay Integrations spreadsheet is refreshed.
+
+{% include alert.html type="light" title="Model Source Code" content="See examples of <a href='https://github.com/meshplay/meshplay/tree/master/server/meshmodel'>Models defined in JSON in meshplay/meshplay</a>." %}
+
+To add or update a model, follow these steps:
+
+1. **Create a Model Definition.** Open the <a href='https://docs.google.com/spreadsheets/d/1DZHnzxYWOlJ69Oguz4LkRVTFM79kC2tuvdwizOJmeMw/edit#'>Meshplay Integrations spreadsheet</a>. Create a new row (or comment to suggest a new row) to capture the specific details of your model. As you fill-in model details, referernce each column's notes and comments as instructions and an explanation of their purpose.
+1. **Generate Components.** Once you have entered values into the required columns, either execute step 2.a. or 2.b.
+   1. Execute the following command to generate components for your model.
+{% capture code_content %}$ meshplayctl registry generate --spreadsheet-id "1DZHnzxYWOlJ69Oguz4LkRVTFM79kC2tuvdwizOJmeMw" --spreadsheet-cred “${{SPREADSHEET_CRED}}"{% endcapture %}
+ {% include code.html code=code_content %}
+   1. Ask a maintainer to invoke the [Model Generator workflow](https://github.com/meshplay/meshplay/actions/workflows/model-generator.yml).
+1. **Enhance Component details.** While the default shape for new components is a circle, each component should be considered for its best-fit shape.
+1. Review and familiarize with the available set of predefined relationship types. Refer to the Cytoscape [node types](https://js.cytoscape.org/demos/node-types/) for a list of possible shapes.
+1. Propose a specific shape, best-suited to visually represent the Component. _Example - Deployment as a pentagon._
+1. Proposee a specific icon, best-suited to visually represent the Component. _Example - DaemonSet as a skull icon._
+
+{% include alert.html type="info" title="Using Meshplay CLI with the Registry (models)" content="Create new and list existing models by using <code>meshplayctl registry</code> to interact with the Meshplay Registry and the <a href='https://docs.google.com/spreadsheets/d/1DZHnzxYWOlJ69Oguz4LkRVTFM79kC2tuvdwizOJmeMw/edit#'>Meshplay Integrations spreadsheet</a>." %}
+
+### Instructions for creating a new Component
+
+See the [Contributing to Components]({{site.baseurl}}/project/contributing/contributing-components) for detailed instructions.
+
+### Instructions for creating a new Relationship
+
+See the [Contributing to Relationships]({{site.baseurl}}/project/contributing/contributing-relationships) for detailed instructions.
+
+{% include alert.html type="info" title="Generating Models does not require Meshplay Server" content="Meshplay Server is not required to generate models. The Meshplay CLI can be used to generate models. Model and Component generation logic is MeshKit. `meshplayctl` and Meshplay Server both utilize MeshKit’s libraries for ongoing programmatic generation of models and components." %}
 
 
-<details open>
-<summary>See all Visual Representations</summary>
-    <details close><summary>Hierarchical</summary>
-    <figure><br><figcaption>Hierarchical Parent</figcaption>
-    <img alt="Hierarchical Parent" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/hierachical_relationship_namespace_others.png"/>
-    </figure>
-    </details>
+<!-- ### Instructions for Creating a New Connection
 
-    <details close><summary>Sibling</summary>
-    <figure><br><figcaption>Sibling</figcaption>
-    <img alt=Sibling src="{{ site.baseurl }}/assets/img/meshmodel/relationships/sibling_relationship.png"/>
-    </figure>
-    </details>
+### Managed and Unmanaged Connections
 
-    <details close><summary>Binding</summary>
-    <figure><br><figcaption>Binding</figcaption>
-    <img alt=Binding src="{{ site.baseurl }}/assets/img/meshmodel/relationships/binding_relationship.png"/>
-    </figure>
-    </details>
+Each Meshplay Model can contain one more ConnectionDefinitions (files), each Definition representing one Connection, and also, (as a matter of convenience multiple Connections can be described in the same ConnectionDefinition file).
 
-    <details close><summary>Edge</summary>
-    <figure><br><figcaption>Mount Edge</figcaption>
-    <img alt="Mount Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/mount_edge_relationship.png"/>
-    </figure>
+Connections can be:
 
-    <br>
-    <figure><figcaption>Network Edge</figcaption>
-    <img alt="Network Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/network_edge_relationship_ingress_service.png"/>
-    <img alt="Network Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/network_edge_relationship_service_pod.png"/>
-    <img alt="Network Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/network_edge_relationship_service_service.png"/>
-    <img alt="Network Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/network_edge_relationship_service_endpoints.png"/>
-    <img alt="Network Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/network_edge_relationship_service_deployment.png"/>
-    </figure>
+1. a ConnectionDefinition based Meshplay's [Connection Schema](https://github.com/meshplay/schemas/) with hand-curated Connection attributes.
+2. a custom ConnectionDefinition based Meshplay's Connection Schema that references an existing Component within the same Model. -->
 
-    <br>
-    <figure><figcaption>Permission Edge</figcaption>
-    <img alt="Permission Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/permission_edge_relationship_role_service.png"/>
-    <img alt="Permission Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/permission_edge_relationship_role_pod.png"/>
-    <img alt="Permission Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/permission_edge_relationship_role_deployment.png"/>
-    <img alt="Permission Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/permission_edge_relationship_clusterrole_pod.png"/>
-    <img alt="Permission Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/permission_edge_relationship_clusterrole_service.png"/>
-    <img alt="Permission Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/permission_edge_relationship_clusterrole_deployment.png"/>
-    </figure>
+## Next Steps
 
-    <br>
-    <figure><figcaption>Network Policy Edge</figcaption>
-    <img alt="Network Policy Edge" src="{{ site.baseurl }}/assets/img/meshmodel/relationships/network_policy_edge_relationship.png">
-    </figure>
+The Meshplay team is currently working on the following:
 
-    </details>
+* Extending the model to support additional entities
+* Improving the tooling for working with models
+* Defining relationships between components and embedding those policies within models
 
-</details>
-
-For more information refer - [MeshModel - Construct Models in Meshplay](https://docs.google.com/document/d/16z5hA8qVfSq885of9LXFUVvfom-hQXr-6oTD_GgoFmk/edit)
-
+We encourage you to get involved in the development of Meshplay Models and to share your feedback.
+  
+  {% include alert.html type="info" title="Meshplay Models are extensible" content="Meshplay Models are designed to be extensible, allowing you to define new components as needed. If you have an idea for a new component, please create one and share it with the Meshplay community." %}

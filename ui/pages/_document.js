@@ -117,7 +117,6 @@ MeshplayDocument.getInitialProps = (ctx) => {
   if (pageContext) {
     css = pageContext.sheetsRegistry.toString();
   }
-
   return {
     ...page,
     pageContext,

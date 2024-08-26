@@ -6,6 +6,7 @@ type: installation
 category: meshplayctl
 redirect_from:
 - installation/platforms/bash
+- installation/bash
 display-title: "false"
 language: en
 list: include

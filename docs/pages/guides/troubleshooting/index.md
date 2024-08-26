@@ -25,7 +25,8 @@ Troubleshooting guides to using Meshplay's various features and components.
 <ul>
 <li><a href="{{ site.baseurl }}/reference/error-codes">Meshplay Error Code Reference</a></li>
 </ul>
-</div> 
+</div>
 
 {% include discuss.html %}
+
 <!-- {:toc} -->

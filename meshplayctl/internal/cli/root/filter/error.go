@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ import (
 )
 
 // Please reference the following before contributing an error code:
-// https://docs.khulnasoft.com/project/contributing/contributing-error
-// https://github.com/khulnasoft/meshkit/blob/master/errors/errors.go
+// https://docs-meshplay.khulnasoft.com/project/contributing/contributing-error
+// https://github.com/meshplay/meshkit/blob/master/errors/errors.go
 const (
-	ErrFilterNameOrIDCode = "1096"
-	ErrFetchFilterCode    = "1097"
+	ErrFilterNameOrIDCode = "meshplayctl-1018"
+	ErrFetchFilterCode    = "meshplayctl-1019"
 )
 
 func ErrFilterNameOrID(err error) error {

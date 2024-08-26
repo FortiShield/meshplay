@@ -40,7 +40,10 @@ export const _ConnectionChip = ({ handlePing, onDelete, iconSrc, status, title, 
     // <Tooltip title={tooltip || title} placement="bottom">
     <Chip
       label={title}
-      onClick={handlePing}
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent event propagation
+        handlePing(); // Call your custom handler
+      }}
       onDelete={onDelete}
       avatar={
         status ? (
@@ -51,10 +54,14 @@ export const _ConnectionChip = ({ handlePing, onDelete, iconSrc, status, title, 
                 : theme.palette.secondary.penColorSecondary
             }
           >
-            <Avatar src={iconSrc} className={classes.icon} style={status ? {} : { opacity: 0.2 }} />
+            <Avatar src={iconSrc} className={classes.icon} style={status ? {} : { opacity: 0.2 }}>
+              <img className={classes.icon} src="/static/img/kubernetes.svg" />
+            </Avatar>
           </BadgeAvatars>
         ) : (
-          <Avatar src={iconSrc} className={classes.icon} />
+          <Avatar src={iconSrc} className={classes.icon}>
+            <img className={classes.icon} src="/static/img/kubernetes.svg" />
+          </Avatar>
         )
       }
       variant="filled"
@@ -81,7 +88,6 @@ const styles = makeStyles((theme) => ({
     maxWidth: 'max-content !important',
     display: 'flex !important',
     justifyContent: 'flex-start !important',
-    textTransform: 'capitalize',
     borderRadius: '3px !important',
     padding: '6px 8px',
     '& .MuiChip-label': {
@@ -199,7 +205,6 @@ const DiscoveredStateChip = ({ value }) => {
 
 const RegisteredStateChip = ({ value }) => {
   const classes = styles();
-  console.log('tetsppppp', value);
   return (
     <MenuItem value={value}>
       <Chip
@@ -303,7 +308,7 @@ const NotFoundStateChip = ({ value }) => {
 };
 
 // const HelpToolTip = ({ classes, value }) => {
-//   const url = `https://docs.khulnasoft.com/concepts/connections#${value}`;
+//   const url = `https://docs-meshplay.khulnasoft.com/concepts/connections#${value}`;
 //   const onClick = () => (e) => {
 //     e.preventDefault();
 //     e.stopPropagation();
@@ -334,8 +339,6 @@ const Default = ({ value }) => {
 };
 
 function getStatusChip(status) {
-  console.log('inside func: ', status);
-
   switch (status) {
     case 'ignored':
       return <IgnoredStateChip value={status} />;

@@ -3,7 +3,7 @@ layout: default
 title: "Extensibility: Meshplay Adapters"
 permalink: extensibility/adapters
 type: Extensibility
-abstract: 'Meshplay architecture is extensible. Meshplay provides several extension points for working with different cloud native infrastructure via <a href="extensibility#adapters">adapters</a>, <a href="extensibility#load-generators">load generators</a> and <a href="extensibility/providers">providers</a>.'
+abstract: 'Meshplay architecture is extensible. Meshplay provides several extension points for working with different cloud native infrastructure via <a href="/extensibility/adapters">adapters</a>, <a href="/extensibility/load-generators">load generators</a> and <a href="/extensibility/providers">providers</a>.'
 language: en
 #redirect_from: extensibility
 ---
@@ -46,7 +46,7 @@ The predefined operation types are:
 
 [Common libraries](https://docs.google.com/presentation/d/1uQU7e_evJ8IMIzlLoBi3jQSRvpKsl_-K1COVGjJVs30/edit#) are used to avoid code duplication and apply DRY.
 
-### [MeshKit](https://github.com/khulnasoft/meshkit)
+### [MeshKit](https://github.com/meshplay/meshkit)
 
 The code hierarchy is pluggable and independent from one another. There can be N number of packages depending upon the use case.
 - `errors/` - holds the implementations and the error handlers and error codes which are used across projects.
@@ -56,7 +56,7 @@ The code hierarchy is pluggable and independent from one another. There can be N
 
 Each package inside a meshkit is a handler interface implementation, the implementation could be from any third-party packages or the go-kit.
 
-### [Meshplay Adapter Library](https://github.com/khulnasoft/meshplay-adapter-library)
+### [Meshplay Adapter Library](https://github.com/meshplay/meshplay-adapter-library)
 
 This section contains a high level overview of the meshplay-adapter-library, its purpose and architecture. For details, the reader is referred to the documentation and the code in the repository.
 

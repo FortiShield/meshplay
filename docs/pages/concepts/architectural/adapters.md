@@ -30,11 +30,11 @@ Meshplay has lifecycle adapters for managing the following cloud native infrastr
 
 ## Meshplay Adapters for Performance Management
 
-_v0.8.0 Roadmap:_ The `meshplay-perf` adapter externalizes Nighthawk as an Meshplay component.
+_v0.8.0 Roadmap:_ The `meshplay-nighthawk` adapter externalizes Nighthawk as an Meshplay component.
 
-Meshplay Server allows users to generate traffic load tests using Nighthawk, fortio, and wrk2. Using the `meshplay-perf` adapter, you can schedule, control, and execute performance tests.
+Meshplay Server allows users to generate traffic load tests using Nighthawk, fortio, and wrk2. Using the `meshplay-nigthhawk` adapter, you can schedule, control, and execute performance tests.
 
-Run the `meshplay-perf` adapter as an externalized load generator when you: 
+Run the `meshplay-nighthawk` adapter as an externalized load generator when you: 
 
 1. Need a smaller sized container image for Meshplay. Nighthawk binaries are dynamically linked (C++) and they need other dependencies to work. This causes bloat in Meshplay Server’s image which doesn’t need them.
 1. Need *adaptive load control* of your performance tests, controlling the variability by which the system under test receives load. Use Meshplay Server to run adaptive load tests.
@@ -60,6 +60,6 @@ No. Adapters much interface with Meshplay Server via gRPC. What language is used
 
 #### Can I run more than one instance of the same Meshplay adapter?
 
-Yes. The default configuration of a Meshplay deployment includes one instance of each of the Meshplay adapters (that have reached a stable version status). You may choose to run multiple instances of the same type of Meshplay adapter; e.g. two instances of the `meshplay-istio` adapter. To do so, modify ~/.khulnasoft/meshplay.yaml to include multiple copies of the given adapter.
+Yes. The default configuration of a Meshplay deployment includes one instance of each of the Meshplay adapters (that have reached a stable version status). You may choose to run multiple instances of the same type of Meshplay adapter; e.g. two instances of the `meshplay-istio` adapter. To do so, modify ~/.meshplay/meshplay.yaml to include multiple copies of the given adapter.
 
-See the "[Multiple Adapters]({{site.baseurl}}/guides/multiple-adapters)" guide for more information.
+See the "[Multiple Adapters]({{site.baseurl}}/guides/installation/multiple-adapters)" guide for more information.

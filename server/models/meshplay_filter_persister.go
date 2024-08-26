@@ -8,7 +8,6 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/khulnasoft/meshkit/database"
-	"gorm.io/gorm"
 )
 
 // MeshplayFilterPersister is the persister for persisting
@@ -37,10 +36,12 @@ func (mfp *MeshplayFilterPersister) GetMeshplayFilters(search, order string, pag
 	count := int64(0)
 	filters := []*MeshplayFilter{}
 
-	var query *gorm.DB
-	if len(visibility) == 0 {
-		query = mfp.DB.Where("visibility in (?)", visibility)
+	query := mfp.DB.Table("meshplay_filters")
+
+	if len(visibility) > 0 {
+		query = query.Where("visibility in (?)", visibility)
 	}
+
 	query = query.Order(order)
 
 	if search != "" {
@@ -48,8 +49,7 @@ func (mfp *MeshplayFilterPersister) GetMeshplayFilters(search, order string, pag
 		query = query.Where("(lower(meshplay_filters.name) like ?)", like)
 	}
 
-	query.Table("meshplay_filters").Count(&count)
-
+	query.Count(&count)
 	Paginate(uint(page), uint(pageSize))(query).Find(&filters)
 
 	meshplayFilterPage := &MeshplayFilterPage{

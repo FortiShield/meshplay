@@ -8,7 +8,7 @@ Meshplay Adapter for Network Service Mesh.
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Khulnasoft Authors | <community@khulnasoft.com> |  |
+| KhulnaSoft Authors | <community@khulnasoft.com> |  |
 | aisuko | <urakiny@gmail.com> |  |
 | leecalcote | <lee.calcote@khulnasoft.com> |  |
 

@@ -47,7 +47,9 @@ import {
   setAdapter,
   updateCapabilities,
 } from '../lib/store';
-import { ButtonGroup, IconButton, Tooltip } from '@material-ui/core';
+import { ButtonGroup, IconButton } from '@material-ui/core';
+import { CatalogIcon, CustomTooltip } from '@khulnasoft/sistent';
+import { UsesSistent } from './SistentWrapper';
 import ExtensionPointSchemaValidator from '../utils/ExtensionPointSchemaValidator';
 import dataFetch from '../lib/data-fetch';
 import { Collapse } from '@material-ui/core';
@@ -61,6 +63,7 @@ import {
   DESIGN,
   CONFIGURATION,
   DASHBOARD,
+  CATALOG,
   FILTER,
   LIFECYCLE,
   SERVICE_MESH,
@@ -74,6 +77,7 @@ import {
 import { iconSmall } from '../css/icons.styles';
 import CAN from '@/utils/can';
 import { keys } from '@/utils/permission_constants';
+import { CustomTextTooltip } from './MeshplayMeshInterface/PatternService/CustomTextTooltip';
 
 const styles = (theme) => ({
   root: {
@@ -102,8 +106,8 @@ const styles = (theme) => ({
   itemCategory: {
     backgroundColor: '#263238',
     boxShadow: '0 -1px 0 #404854 inset',
-    paddingTop: 16,
-    paddingBottom: 16,
+    paddingTop: '1.325rem',
+    paddingBottom: '1.325rem',
   },
   firebase: {
     top: 0,
@@ -389,8 +393,8 @@ const getNavigatorComponents = (/** @type {CapabilitiesRegistry} */ capabilityRe
       },
       {
         id: SERVICE_MESH,
-        href: '/management/service-mesh',
-        title: 'Service Mesh',
+        href: '/management/adapter',
+        title: 'Adapters',
         link: true,
         icon: <ServiceMeshIcon style={{ ...drawerIconsStyle }} />,
         show: true,
@@ -411,6 +415,28 @@ const getNavigatorComponents = (/** @type {CapabilitiesRegistry} */ capabilityRe
     link: true,
     submenu: true,
     children: [
+      {
+        id: CATALOG,
+        icon: (
+          <UsesSistent>
+            <CatalogIcon
+              primaryFill="#FFFFFF"
+              secondaryFill="#FFFFFFb3"
+              tertiaryFill="transparent"
+              style={{ ...drawerIconsStyle }}
+            />
+          </UsesSistent>
+        ),
+        href: '/configuration/catalog',
+        title: 'Catalog',
+        show: capabilityRegistryObj.isNavigatorComponentEnabled([CONFIGURATION, CATALOG]),
+        link: true,
+        isBeta: true,
+        permission: {
+          action: keys.VIEW_CATALOG.action,
+          subject: keys.VIEW_CATALOG.subject,
+        },
+      },
       {
         id: FILTER,
         icon: <FilterIcon style={{ ...drawerIconsStyle }} />,
@@ -487,14 +513,14 @@ const ExternalLinkIcon = (
 const externlinks = [
   {
     id: 'doc',
-    href: 'https://docs.khulnasoft.com',
+    href: 'https://docs-meshplay.khulnasoft.com',
     title: 'Documentation',
     icon: <DocumentIcon style={drawerIconsStyle} />,
     external_icon: ExternalLinkIcon,
   },
   {
     id: 'community',
-    href: 'https://slack.khulnasoft.com',
+    href: 'https://slack.meshplay.khulnasoft.com',
     title: 'Community',
     icon: (
       <SlackIcon
@@ -505,14 +531,14 @@ const externlinks = [
   },
   {
     id: 'forum',
-    href: 'http://discuss.khulnasoft.com',
+    href: 'http://discuss.meshplay.khulnasoft.com',
     title: 'Discussion Forum',
     icon: <ChatIcon style={drawerIconsStyle} />,
     external_icon: ExternalLinkIcon,
   },
   {
     id: 'issues',
-    href: 'https://github.com/khulnasoft/meshplay/issues/new/choose',
+    href: 'https://github.com/meshplay/meshplay/issues/new/choose',
     title: 'Issues',
     icon: <GithubIcon style={drawerIconsStyle} />,
     external_icon: ExternalLinkIcon,
@@ -655,7 +681,7 @@ class Navigator extends React.Component {
 
     let content = (
       <div className={classNames(classes.link)} data-cy={name}>
-        <Tooltip
+        <CustomTooltip
           title={name}
           placement="right"
           disableFocusListener={!drawerCollapsed}
@@ -677,7 +703,7 @@ class Navigator extends React.Component {
               }}
             />
           </ListItemIcon>
-        </Tooltip>
+        </CustomTooltip>
         <ListItemText
           className={drawerCollapsed ? classes.isHidden : classes.isDisplayed}
           classes={{ primary: classes.itemPrimary }}
@@ -734,6 +760,15 @@ class Navigator extends React.Component {
         });
 
         cat.show = show;
+      }
+
+      //To Toggle Catalog Extension
+      if (cat.id === CONFIGURATION) {
+        cat.children?.forEach((ch) => {
+          if (ch.id === CATALOG) {
+            ch.show = this.props.catalogVisibility;
+          }
+        });
       }
     });
   }
@@ -1001,7 +1036,7 @@ class Navigator extends React.Component {
     const { classes } = this.props;
     let linkContent = (
       <div className={classNames(classes.link)}>
-        <Tooltip
+        <CustomTooltip
           title={titlec}
           placement="right"
           disableFocusListener={!drawerCollapsed}
@@ -1009,7 +1044,7 @@ class Navigator extends React.Component {
           disableTouchListener={!drawerCollapsed}
         >
           <ListItemIcon className={classes.listIcon}>{iconc} </ListItemIcon>
-        </Tooltip>
+        </CustomTooltip>
         <ListItemText
           className={drawerCollapsed ? classes.isHidden : classes.isDisplayed}
           classes={{ primary: classes.itemPrimary }}
@@ -1064,14 +1099,17 @@ class Navigator extends React.Component {
         <span style={{ marginLeft: '15px' }}>
           {'Update available '}
           <a
-            href={`https://docs.khulnasoft.com/project/releases/${latest}`}
+            href={`https://docs-meshplay.khulnasoft.com/project/releases/${latest}`}
             target="_blank"
             rel="noreferrer"
             style={{ color: 'white' }}
           >
-            <Tooltip title={`Newer version of Meshplay available: ${latest}`} placement="right">
+            <CustomTextTooltip
+              title={`Newer version of Meshplay available: ${latest}`}
+              placement="right"
+            >
               <OpenInNewIcon style={{ width: '0.85rem', verticalAlign: 'middle' }} />
-            </Tooltip>
+            </CustomTextTooltip>
           </a>
         </span>
       );
@@ -1091,7 +1129,7 @@ class Navigator extends React.Component {
     if (release_channel === 'edge')
       return (
         <a
-          href="https://docs.khulnasoft.com/project/releases"
+          href="https://docs-meshplay.khulnasoft.com/project/releases"
           target="_blank"
           rel="noreferrer"
           style={{ color: 'white' }}
@@ -1102,7 +1140,7 @@ class Navigator extends React.Component {
 
     return (
       <a
-        href={`https://docs.khulnasoft.com/project/releases/${build}`}
+        href={`https://docs-meshplay.khulnasoft.com/project/releases/${build}`}
         target="_blank"
         rel="noreferrer"
         style={{ color: 'white' }}
@@ -1195,24 +1233,22 @@ class Navigator extends React.Component {
                 >
                   <Link href={link ? href : ''}>
                     <div data-cy={childId} className={classNames(classes.link)}>
-                      <Tooltip
+                      <CustomTooltip
                         title={childId}
                         placement="right"
                         disableFocusListener={!isDrawerCollapsed}
                         disableHoverListener={true}
                         disableTouchListener={!isDrawerCollapsed}
                         TransitionComponent={Zoom}
-                        arrow
                       >
                         {isDrawerCollapsed &&
                         (this.state.hoveredId === childId ||
                           (this.state.openItems.includes(childId) && submenu)) ? (
                           <div>
-                            <Tooltip
+                            <CustomTooltip
                               title={title}
                               placement="right"
                               TransitionComponent={Zoom}
-                              arrow
                             >
                               <ListItemIcon
                                 onClick={() => this.toggleItemCollapse(childId)}
@@ -1220,12 +1256,12 @@ class Navigator extends React.Component {
                               >
                                 {hovericon}
                               </ListItemIcon>
-                            </Tooltip>
+                            </CustomTooltip>
                           </div>
                         ) : (
                           <ListItemIcon className={classes.listIcon}>{icon}</ListItemIcon>
                         )}
-                      </Tooltip>
+                      </CustomTooltip>
                       <ListItemText
                         className={isDrawerCollapsed ? classes.isHidden : classes.isDisplayed}
                         classes={{ primary: classes.itemPrimary }}
@@ -1288,11 +1324,11 @@ class Navigator extends React.Component {
                     isDrawerCollapsed ? classes.extraPadding : '',
                   )}
                 >
-                  <Tooltip title={title} placement={isDrawerCollapsed ? 'right' : 'top'}>
+                  <CustomTextTooltip title={title} placement={isDrawerCollapsed ? 'right' : 'top'}>
                     <ListItemIcon className={classNames(classes.listIcon, classes.helpIcon)}>
                       {icon}
                     </ListItemIcon>
-                  </Tooltip>
+                  </CustomTextTooltip>
                 </a>
               </Grow>
             </ListItem>
@@ -1302,7 +1338,7 @@ class Navigator extends React.Component {
           className={classes.rightMargin}
           style={!isDrawerCollapsed ? { display: 'none' } : { marginLeft: '4px' }}
         >
-          <Tooltip title="Help" placement={isDrawerCollapsed ? 'right' : 'top'}>
+          <CustomTextTooltip title="Help" placement={isDrawerCollapsed ? 'right' : 'top'}>
             <IconButton
               className={isDrawerCollapsed ? classes.collapsedHelpButton : classes.rightTranslate}
               onClick={this.toggleSpacing}
@@ -1312,7 +1348,7 @@ class Navigator extends React.Component {
                 style={{ fontSize: '1.45rem', ...iconSmall }}
               />
             </IconButton>
-          </Tooltip>
+          </CustomTextTooltip>
         </ListItem>
       </ButtonGroup>
     );
@@ -1366,7 +1402,7 @@ class Navigator extends React.Component {
           <FontAwesomeIcon
             icon={faAngleLeft}
             fixedWidth
-            size="1.5x"
+            size="2x"
             style={{ margin: '0.75rem 0.2rem ', width: '0.8rem', verticalAlign: 'middle' }}
             alt="Sidebar collapse toggle icon"
           />
@@ -1383,7 +1419,7 @@ class Navigator extends React.Component {
           classes={{
             paper: isDrawerCollapsed ? classes.sidebarCollapsed : classes.sidebarExpanded,
           }}
-          style={{ width: 'inherit' }}
+          style={{ height: '100%' }}
         >
           {Title}
           {Menu}
@@ -1419,6 +1455,7 @@ const mapStateToProps = (state) => {
   const capabilitiesRegistry = state.get('capabilitiesRegistry');
   const organization = state.get('organization');
   const keys = state.get('keys');
+  const catalogVisibility = state.get('catalogVisibility');
   return {
     meshAdapters,
     meshAdaptersts,
@@ -1427,6 +1464,7 @@ const mapStateToProps = (state) => {
     capabilitiesRegistry,
     organization,
     keys,
+    catalogVisibility,
   };
 };
 

@@ -66,7 +66,7 @@ The following table outlines a set of design artifacts produced in the process o
 The following table outlines a set of design artifacts produced in the process of creating and implementing functional specifications.
 
 | **Document** | **Purpose** |
-| [meshplayctl Command Reference](https://docs.khulnasoft.com/reference/meshplayctl) | Overarching index in the form of succinct, categorized, and tabularly displayed reference of all commands and their syntax with simple example usage. |
+| [meshplayctl Command Reference](https://docs-meshplay.khulnasoft.com/reference/meshplayctl) | Overarching index in the form of succinct, categorized, and tabularly displayed reference of all commands and their syntax with simple example usage. |
 | `meshplayctl <name of command>` | Breakout of individual command purpose, syntax, flags, and behavior. Links to these separate, breakout documents should be available from the meshplayctl Command Reference. |
 
 ## When designing for the CLI, consider...
@@ -99,7 +99,6 @@ If you are working on a new command or adding a new feature on an existing comma
 
 Broader features should have a design specification created in the form of a Google Doc. Refer to "[Process: Creating a Functional Specification or other Document](https://docs.google.com/document/d/1RP3IWLc-MiQS-QYasqCoVuCH7--G87p5ezE5f_nOzB8/edit?usp=sharing)", which has detailed information on creating a design specification.
 
-For small changes, communicating over the [issue tracker](https://github.com/khulnasoft/meshplay/issues) or the [discussions](https://github.com/khulnasoft/meshplay/discussions) will be helpful.
+For small changes, communicating over the [issue tracker](https://github.com/meshplay/meshplay/issues) or the [discussions](https://github.com/meshplay/meshplay/discussions) will be helpful.
 
-{% include suggested-reading.html %}
 

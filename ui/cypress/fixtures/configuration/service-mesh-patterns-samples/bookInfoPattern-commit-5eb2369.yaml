@@ -7,7 +7,7 @@ services:
       gateways:
         - sample-app-gateway
       hosts:
-        - bookinfo.khulnasoft.com
+        - bookinfo.meshplay.khulnasoft.com
       http:
         - fault:
             delay:

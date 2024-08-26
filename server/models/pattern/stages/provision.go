@@ -7,20 +7,24 @@ import (
 	"github.com/khulnasoft/meshplay/server/helpers"
 	"github.com/khulnasoft/meshplay/server/models/pattern/core"
 	"github.com/khulnasoft/meshplay/server/models/pattern/planner"
-	meshmodelv1alpha1 "github.com/khulnasoft/meshkit/models/meshmodel/core/v1alpha1"
+	"github.com/khulnasoft/meshkit/logger"
+	models "github.com/khulnasoft/meshkit/models/meshmodel/core/v1beta1"
+
 	meshmodel "github.com/khulnasoft/meshkit/models/meshmodel/registry"
-	"github.com/khulnasoft/meshkit/models/oam/core/v1alpha1"
+	"github.com/khulnasoft/meshkit/utils"
+	"github.com/meshplay/schemas/models/v1beta1/component"
+	"github.com/meshplay/schemas/models/v1beta1/connection"
+	"github.com/meshplay/schemas/models/v1beta1/pattern"
 )
 
 type CompConfigPair struct {
-	Component     v1alpha1.Component
-	Configuration v1alpha1.Configuration
-	Hosts         map[meshmodel.Host]bool
+	Component component.ComponentDefinition
+	Hosts     []connection.Connection
 }
 
 const ProvisionSuffixKey = ".isProvisioned"
 
-func Provision(prov ServiceInfoProvider, act ServiceActionProvider) ChainStageFunction {
+func Provision(prov ServiceInfoProvider, act ServiceActionProvider, log logger.Handler) ChainStageFunction {
 	return func(data *Data, err error, next ChainStageNextFunction) {
 		if err != nil {
 			act.Terminate(err)
@@ -42,44 +46,45 @@ func Provision(prov ServiceInfoProvider, act ServiceActionProvider) ChainStageFu
 			return
 		}
 
-		config, err := data.Pattern.GenerateApplicationConfiguration()
-		if err != nil {
-			act.Terminate(fmt.Errorf("failed to generate application configuration: %s", err))
-			return
-		}
 		errs := []error{}
 
 		// Execute the plan
-		_ = plan.Execute(func(name string, svc core.Service) bool {
+		_ = plan.Execute(func(name string, component component.ComponentDefinition) bool {
 			ccp := CompConfigPair{}
 
-			// Create application component
-			comp, err := data.Pattern.GetApplicationComponent(name)
+			err := core.AssignAdditionalLabels(&component)
 			if err != nil {
+				errs = append(errs, err)
 				return false
 			}
 
 			// Generate hosts list
 			ccp.Hosts = generateHosts(
-				data.PatternSvcWorkloadCapabilities[name],
-				data.PatternSvcTraitCapabilities[name],
+				data.DeclartionToDefinitionMapping[component.Id],
 				act.GetRegistry(),
 			)
 
+			var annotations map[string]string
+
+			_annotations, ok := component.Configuration["annotations"]
+			if !ok {
+				annotations = map[string]string{} // Directly initialize `annotations` to an empty map
+			} else {
+				var err error
+				annotations, err = utils.Cast[map[string]string](_annotations)
+				if err != nil {
+					errs = append(errs, err)
+					return false
+				}
+			}
+
 			// Get annotations for the component and merge with existing, if any
-			comp.ObjectMeta.SetAnnotations(helpers.MergeStringMaps(
-				v1alpha1.GetAnnotationsForWorkload(data.PatternSvcWorkloadCapabilities[name]),
-				comp.GetAnnotations(),
+			component.Configuration["annotations"] = helpers.MergeStringMaps(
+				annotations,
 				getAdditionalAnnotations(data.Pattern),
-			))
-			if core.Format { //deprettify the component before deploying
-				comp.Spec.Settings = core.Format.DePrettify(comp.Spec.Settings, false)
-			}
-			ccp.Component = comp
-			// Add configuration only if traits are applied to the component
-			if len(svc.Traits) > 0 {
-				ccp.Configuration = config
-			}
+			)
+
+			ccp.Component = component
 
 			msg, err := act.Provision(ccp)
 			if err != nil {
@@ -92,7 +97,7 @@ func Provision(prov ServiceInfoProvider, act ServiceActionProvider) ChainStageFu
 			data.Lock.Unlock()
 
 			return true
-		})
+		}, log)
 
 		if next != nil {
 			next(data, mergeErrors(errs))
@@ -100,38 +105,19 @@ func Provision(prov ServiceInfoProvider, act ServiceActionProvider) ChainStageFu
 	}
 }
 
-func processAnnotations(pattern *core.Pattern) {
-	for name, svc := range pattern.Services {
-		if svc.IsAnnotation {
-			// this particular block is present so that designs with previous filters don't break
-			// also UI is dependent but not exactly sure how?
-			delete(pattern.Services, name)
-		}
-		data, ok := svc.Traits["meshmap"]
-		if ok {
-			metadata, ok2 := data.(map[string]interface{})
-			if ok2 {
-				compMetadata, ok3 := metadata["meshmodel-metadata"].(map[string]interface{})
-				if ok3 {
-					isAnnotation, ok4 := compMetadata["isAnnotation"].(bool)
-					if ok4 && isAnnotation {
-						delete(pattern.Services, name)
-					}
-				}
-			}
+func processAnnotations(pattern *pattern.PatternFile) {
+	components := []*component.ComponentDefinition{}
+	for _, component := range pattern.Components {
+		if !component.Metadata.IsAnnotation {
+			components = append(components, component)
 		}
 	}
+	pattern.Components = components
 }
 
-func generateHosts(wc meshmodelv1alpha1.ComponentDefinition, _ []core.TraitCapability, reg *meshmodel.RegistryManager) map[meshmodel.Host]bool {
-	res := map[meshmodel.Host]bool{}
-	host := reg.GetRegistrant(wc)
-	res[host] = true
-	// for _, tc := range tcs {
-	// 	res[tc.Host] = true
-	// }
-
-	return res
+func generateHosts(cd component.ComponentDefinition, reg *meshmodel.RegistryManager) []connection.Connection {
+	_connection := reg.GetRegistrant(&cd)
+	return []connection.Connection{_connection}
 }
 
 func mergeErrors(errs []error) error {
@@ -144,14 +130,14 @@ func mergeErrors(errs []error) error {
 		errMsg = append(errMsg, err.Error())
 	}
 
-	return fmt.Errorf(strings.Join(errMsg, "\n"))
+	return fmt.Errorf("%s", strings.Join(errMsg, "\n"))
 }
 
 // move into meshkit and change annotations prefix name
 
-func getAdditionalAnnotations(pattern *core.Pattern) map[string]string {
+func getAdditionalAnnotations(pattern *pattern.PatternFile) map[string]string {
 	annotations := make(map[string]string, 2)
-	annotations[fmt.Sprintf("%s.name", v1alpha1.MeshplayAnnotationPrefix)] = pattern.Name
-	annotations[fmt.Sprintf("%s.id", v1alpha1.MeshplayAnnotationPrefix)] = pattern.PatternID
+	annotations[fmt.Sprintf("%s.name", models.MeshplayAnnotationPrefix)] = pattern.Name
+	annotations[fmt.Sprintf("%s.id", models.MeshplayAnnotationPrefix)] = pattern.Id.String()
 	return annotations
 }

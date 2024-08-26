@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,6 +65,7 @@ meshplayctl system update --skip-reset
 		if len(args) != 0 {
 			return errors.New(utils.SystemLifeCycleError(fmt.Sprintf("this command takes no arguments. See '%s --help' for more information.\n", cmd.CommandPath()), "update"))
 		}
+
 		// Get viper instance used for context
 		mctlCfg, err := config.GetMeshplayCtl(viper.GetViper())
 		if err != nil {
@@ -129,11 +130,12 @@ meshplayctl system update --skip-reset
 				return err
 			}
 			meshplayImageVersion := currCtx.GetVersion()
+			providerURL := viper.GetString(c.ProviderURLsENV)
 			// If the user skips reset, then just restart the pods else fetch updated manifest files and apply them
 			if !utils.SkipResetFlag {
 
 				// Apply the latest helm chart along with the default image tag specified in the charts "stable-latest"
-				if err = applyHelmCharts(kubeClient, currCtx, meshplayImageVersion, false, meshkitkube.UPGRADE); err != nil {
+				if err = applyHelmCharts(kubeClient, currCtx, meshplayImageVersion, false, meshkitkube.UPGRADE, "", providerURL); err != nil {
 					return errors.Wrap(err, "cannot update Meshplay")
 				}
 			}
@@ -189,8 +191,8 @@ meshplayctl system update --skip-reset
 			latest := latestVersions[len(latestVersions)-1]
 			if latest != version {
 				log.Printf("A new release of meshplayctl is available: %s → %s", version, latest)
-				log.Printf("https://github.com/khulnasoft/meshplay/releases/tag/%s", latest)
-				log.Print("Check https://docs.khulnasoft.com/guides/upgrade#upgrading-meshplay-cli for instructions on how to update meshplayctl\n")
+				log.Printf("https://github.com/meshplay/meshplay/releases/tag/%s", latest)
+				log.Print("Check https://docs-meshplay.khulnasoft.com/installation/upgrades#upgrading-meshplay-cli for instructions on how to update meshplayctl\n")
 			}
 		}
 	},

@@ -1,6 +1,7 @@
 ---
-layout: enhanced
+layout: default
 title: Importing a Design
+abstract: Import your existing application definitions and infrastructure configuration into Meshplay.
 permalink: extensions/importing-a-design
 language: en
 display-title: "false"

@@ -1,5 +1,5 @@
 ---
-layout: enhanced
+layout: default
 title: MeshMap
 permalink: extensions/meshmap
 abstract: Collaborative cloud native visual designer to design and manage infrastructure and applications.
@@ -22,6 +22,7 @@ MeshMap is a GitOps-infused cloud native <b>visual designer</b> for Kubernetes a
 - <a href="{{site.baseurl}}/extensions/merging-design">Merge Designs</a> - Merging designs.
 - <a href="{{site.baseurl}}/extensions/importing-an-application">Import an application</a> - Importing an application of different types.
 - <a href="{{site.baseurl}}/extensions/component-shape-guide">Component Shapes</a> - Know what each component shape signify.
+- <a href="{{site.baseurl}}/extensions/edges-shape-guide">Edges Shapes</a> - Know what each Edge signifies.
 
 ### MeshMap For GitOps
 
@@ -40,5 +41,5 @@ See on YouTube: [MeshMap Designer Walkthrough](https://www.youtube.com/watch?v=q
 
 <div class="alert alert-dark" role="alert">
 <h4 class="alert-heading">Discussion Forum</h4>
-Not finding what you're looking for? Ask on the <a href="http://discuss.khulnasoft.com">Discussion Forum</a>.
+Not finding what you're looking for? Ask on the <a href="http://discuss.meshplay.io">Discussion Forum</a>.
 </div>

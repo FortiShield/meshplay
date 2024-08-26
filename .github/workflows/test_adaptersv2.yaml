@@ -66,9 +66,9 @@ jobs:
           echo "value=${USER_INPUT:-"meshplay"}" >> $GITHUB_OUTPUT
       - name: Setting up minikube
         id: setk8s
-        uses: manusa/actions-setup-minikube@v2.7.2
+        uses: manusa/actions-setup-minikube@v2.10.0
         with:
-          minikube version: "v1.28.0"
+          minikube version: "v1.32.0"
           kubernetes version: "${{ matrix.k8s_version }}"
           driver: docker
           start args: --cni "${{ inputs.k8s_cni }}"
@@ -116,7 +116,7 @@ jobs:
       # Start Meshplay Server (Assuming that this step will create the meshplay namespace)
       - name: Start Meshplay Server using meshplayctl
         run: |
-          curl -L https://khulnasoft.com/install | PLATFORM=kubernetes bash -
+          curl -L https://meshplay.io/install | PLATFORM=kubernetes bash -
 
       # Start the adapter using yamls
       - name: Start adapter
@@ -164,7 +164,7 @@ jobs:
           config='{"contexts":{"local":{"endpoint":'$svcip',"token":"default","platform":"kubernetes","adapters":[],"channel":"stable","version":"latest"}},"current-context":"local","tokens":[{"location":"auth.json","name":"default"}]}'
           echo $config  > ~/.meshplay/config.yaml
       - name: Download patternfile
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: patternfile
       - name: Wait for Meshplay pods to come up
@@ -256,14 +256,15 @@ jobs:
               status="partial"
           fi
           echo $(jq '."overall-status" |=  "'$status'"' data.json) > data.json;     
-          MESHPLAY_VERSION=$(curl -L -s https://github.com/khulnasoft/meshplay/releases/latest | grep -oP 'releases/tag/\K[^"]+' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | head -1)    
+          MESHPLAY_VERSION=$(curl -L -s https://github.com/meshplay/meshplay/releases/latest | grep -oP 'releases/tag/\K[^"]+' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | head -1)    
           echo $(jq '.metadata."meshplay-server-version" |="'$MESHPLAY_VERSION'"' data.json ) > data.json
           echo "exitstatus=$exitstatus" >> $GITHUB_ENV
       - name: UploadResults
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.output_filename }}
           path: ./${{ inputs.output_filename }}
+          overwrite: true
         continue-on-error: true
       - name: exit
         run: |

@@ -27,16 +27,15 @@ Manage your EKS clusters with Meshplay. Deploy Meshplay in EKS [in-cluster](#in-
 </div>
 
 Also see: [Install Meshplay on Kubernetes]({{ site.baseurl }}/installation/kubernetes)
-## Available Deployment Methods
+
+### Available Deployment Methods
 
 - [In-cluster Installation](#in-cluster-installation)
   - [Preflight Checks](#preflight-checks)
     - [Preflight: Cluster Connectivity](#preflight-cluster-connectivity)
-    - [Preflight: Plan your access to Meshplay UI](#preflight-plan-your-access-to-meshplay-ui)
   - [Installation: Using `meshplayctl`](#installation-using-meshplayctl)
   - [Installation: Using Helm](#installation-using-helm)
-- [Post-Installation Steps](#post-installation-steps)
-  - [Access Meshplay UI](#access-meshplay-ui)
+  - [Post-Installation Steps](#post-installation-steps)
 - [Out-of-cluster Installation](#out-of-cluster-installation)
   - [Install Meshplay on Docker](#install-meshplay-on-docker)
 
@@ -44,13 +43,9 @@ Also see: [Install Meshplay on Kubernetes]({{ site.baseurl }}/installation/kuber
 
 Follow the steps below to install Meshplay in your EKS cluster.
 
-## Preflight Checks
+**Prerequisites: Cluster Connectivity**
 
-Read through the following considerations prior to deploying Meshplay on EKS.
-
-### Preflight: Cluster Connectivity
-
-1. Verfiy you connection to an Elastic Kubernetes Services Cluster using AWS CLI.
+1. Verify your connection to an Elastic Kubernetes Services Cluster using AWS CLI.
 1. Login to AWS account using [aws configure](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-user.html), if you are using a different method of authentication in AWS, please refer to AWS documentation.
 1. After successful login, set the cluster context.
 {% capture code_content %}aws eks update-kubeconfig --name [YOUR_CLUSTER_NAME] --region [YOUR_REGION]{% endcapture %}
@@ -59,17 +54,6 @@ Read through the following considerations prior to deploying Meshplay on EKS.
 1. Verify your kubeconfig's current context.
 {% capture code_content %}kubectl config current-context{% endcapture %}
 {% include code.html code=code_content %}
-
-### Preflight: Plan your access to Meshplay UI
-
-1. If you are using port-forwarding, please refer to the [port-forwarding](/tasks/accessing-meshplay-ui) guide for detailed instructions.
-2. If you are using a LoadBalancer, please refer to the [LoadBalancer]({{ site.baseurl }}/installation/kubernetes#exposing-meshplay-serviceloadbalancer) guide for detailed instructions.
-3. Customize your Meshplay Provider Callback URL. Meshplay Server supports customizing authentication flow callback URL, which can be configured in the following way:
-
-{% capture code_content %}$ MESHPLAY_SERVER_CALLBACK_URL=https://custom-host meshplayctl system start{% endcapture %}
-{% include code.html code=code_content %}
-
-Meshplay should now be running in your EKS cluster and Meshplay UI should be accessible at the `EXTERNAL IP` of `meshplay` service.
 
 ## Installation: Using `meshplayctl`
 
@@ -83,21 +67,21 @@ Once configured, execute the following command to start Meshplay.
 {% capture code_content %}$ meshplayctl system start{% endcapture %}
 {% include code.html code=code_content %}
 
-If you encounter any authentication issues, you can use `meshplayctl system login`. For more information, click [here](/guides/meshplayctl/authenticate-with-meshplay-via-cli) to learn more.
-
 ## Installation: Using Helm
 
 For detailed instructions on installing Meshplay using Helm V3, please refer to the [Helm Installation](/installation/kubernetes/helm) guide.
 
-# Post-Installation Steps
+## Post-Installation Steps
 
-## Access Meshplay UI
+Optionally, you can verify the health of your Meshplay deployment, using <a href='/reference/meshplayctl/system/check'>meshplayctl system check</a>.
 
-To access Meshplay's UI, please refer to the [instruction](/tasks/accessing-meshplay-ui) for detailed guidance.
+You're ready to use Meshplay! Open your browser and navigate to the Meshplay UI.
+
+{% include_cached installation/accessing-meshplay-ui.md display-title="true" %}
 
 # Out-of-cluster Installation
 
-{% include alert.html title='Out-of-cluster EKS deployments not currently supported' type="warning" alert='Out-of-cluster support for EKS is still beta and on <a href="https://github.com/khulnasoft/meshplay/blob/master/ROADMAP.md">roadmap</a>.' %}
+{% include alert.html title='Out-of-cluster EKS deployments not currently supported' type="warning" alert='Out-of-cluster support for EKS is still beta and on <a href="https://github.com/meshplay/meshplay/blob/master/ROADMAP.md">roadmap</a>.' %}
 
 Install Meshplay on Docker (out-of-cluster) and connect it to your EKS cluster.
 
@@ -112,7 +96,5 @@ Configure Meshplay to connect to your cluster by executing:
 {% include code.html code=code_content %}
 
 Once you have verified that all the services are up and running, Meshplay UI will be accessible on your local machine on port 9081. Open your browser and access Meshplay at [`http://localhost:9081`](http://localhost:9081).
-
-{% include suggested-reading.html language="en" %}
 
 {% include related-discussions.html tag="meshplay" %}

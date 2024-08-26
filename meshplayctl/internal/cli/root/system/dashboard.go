@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,14 +36,15 @@ import (
 var (
 	// runPortForward is used for port-forwarding Meshplay UI via `system dashboard`
 	runPortForward bool
+	localPort      int
 )
 
 // dashboardOptions holds values for command line flags that apply to the dashboard
 // command.
 type dashboardOptions struct {
-	host    string
-	port    int
-	podPort int
+	host    string // Host on which server is running inside the pod
+	port    int    // The default port on which Meshplay service is listening
+	podPort int    // Port on which server is running inside the pod
 }
 
 // newDashboardOptions initializes dashboard options with default
@@ -71,9 +72,11 @@ meshplayctl system dashboard
 // Open Meshplay UI in browser and use port-forwarding (if default port is taken already)
 meshplayctl system dashboard --port-forward
 
+// Open Meshplay UI in browser and use port-forwarding, listen on port 9081 locally, forwarding traffic to meshplay server in the pod
+meshplayctl system dashboard --port-forward -p 9081
+
 // (optional) skip opening of MeshplayUI in browser.
-meshplayctl system dashboard --skip-browser
-	`,
+meshplayctl system dashboard --skip-browser`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// check if meshplay is running or not
 		mctlCfg, err := config.GetMeshplayCtl(viper.GetViper())
@@ -105,10 +108,11 @@ meshplayctl system dashboard --skip-browser
 			return nil
 		}
 		log.Debug("Fetching Meshplay-UI endpoint")
-
 		switch currCtx.GetPlatform() {
 		case "docker":
-			break
+			if runPortForward {
+				log.Warn("--port-forward is not supported using Docker as Meshplay's deployment platform.")
+			}
 		case "kubernetes":
 			client, err := meshkitkube.New([]byte(""))
 			if err != nil {
@@ -123,20 +127,13 @@ meshplayctl system dashboard --skip-browser
 				signal.Notify(signals, os.Interrupt)
 				defer signal.Stop(signals)
 
-				// get a free port number to bind port-forwarding
-				port, err := utils.GetEphemeralPort()
-				if err != nil {
-					utils.Log.Error(ErrFailedGetEphemeralPort(err))
-					return nil
-				}
-
 				portforward, err := utils.NewPortForward(
 					cmd.Context(),
 					client,
 					utils.MeshplayNamespace,
 					"meshplay",
 					options.host,
-					port,
+					localPort,
 					options.podPort,
 					false,
 				)
@@ -168,7 +165,7 @@ meshplayctl system dashboard --skip-browser
 						}
 					}
 				}()
-				log.Info(fmt.Sprintf("Forwarding ports %v -> %v", options.podPort, port))
+				log.Info(fmt.Sprintf("Forwarding port %v -> %v", options.podPort, localPort))
 				log.Info("Meshplay UI available at: ", meshplayURL)
 				log.Info("Opening Meshplay UI in the default browser.")
 				err = utils.NavigateToBrowser(meshplayURL)
@@ -251,5 +248,7 @@ func keepConnectionAlive(url string) {
 
 func init() {
 	dashboardCmd.Flags().BoolVarP(&runPortForward, "port-forward", "", false, "(optional) Use port forwarding to access Meshplay UI")
+	dashboardCmd.Flags().IntVarP(&localPort, "port", "p", 9081, "(optional) Local port that is not in use from which traffic is to be forwarded to the server running inside the Pod.")
+
 	dashboardCmd.Flags().BoolVarP(&skipBrowserFlag, "skip-browser", "", false, "(optional) skip opening of MeshplayUI in browser.")
 }

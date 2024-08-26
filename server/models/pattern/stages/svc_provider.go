@@ -3,8 +3,10 @@ package stages
 import (
 	"github.com/gofrs/uuid"
 	"github.com/khulnasoft/meshplay/server/models/pattern/core"
-	meshmodel "github.com/khulnasoft/meshkit/models/meshmodel/registry"
-	"github.com/khulnasoft/meshkit/models/oam/core/v1alpha1"
+	"github.com/khulnasoft/meshplay/server/models/pattern/patterns"
+	"github.com/khulnasoft/meshkit/models/meshmodel/registry"
+	"github.com/meshplay/schemas/models/v1beta1/component"
+	"github.com/meshplay/schemas/models/v1beta1/pattern"
 )
 
 type ServiceInfoProvider interface {
@@ -14,17 +16,14 @@ type ServiceInfoProvider interface {
 		typ string,
 		oamType string,
 	) (ID *uuid.UUID, err error)
-	GetServiceMesh() (name string, version string)
-	GetAPIVersionForKind(kind string) string
 	IsDelete() bool
 }
 
 type ServiceActionProvider interface {
 	Terminate(error)
 	Log(msg string)
-	Provision(CompConfigPair) (string, error)
-	GetRegistry() *meshmodel.RegistryManager
-	Persist(string, core.Service, bool) error
-	DryRun([]v1alpha1.Component) (map[string]map[string]core.DryRunResponseWrapper, error)
-	Mutate(*core.Pattern) //Uses pre-defined policies/configuration to mutate the pattern
+	Provision(CompConfigPair) ([]patterns.DeploymentMessagePerContext, error)
+	GetRegistry() *registry.RegistryManager
+	DryRun([]*component.ComponentDefinition) (map[string]map[string]core.DryRunResponseWrapper, error)
+	Mutate(*pattern.PatternFile) //Uses pre-defined policies/configuration to mutate the pattern
 }

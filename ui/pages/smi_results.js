@@ -9,9 +9,11 @@ import { Paper, withStyles } from '@material-ui/core';
 
 const styles = { paper: { maxWidth: '90%', margin: 'auto', overflow: 'hidden' } };
 
+/**
+ * @deprecated This functionality has been deprecated and its child components can be left behind
+ */
 const SMIResults = (props) => {
   useEffect(() => {
-    console.log(`path: ${getPath()}`);
     props.updatepagepath({ path: getPath() });
   }, [props.updatepagepath]);
 

@@ -15,7 +15,7 @@ abstract: Install Meshplay CLI on Linux or Mac
 
 # Overview
 
-To set up and run Meshplay on Linux or macOS, you will need to install `meshplayctl`. `meshplayctl` is the command line interface (CLI) for Meshplay. It is used to install, manage, and operate one or more Meshplay deployments. `meshplayctl` can be installed via `bash` is also available [directly](https://github.com/khulnasoft/meshplay/releases/latest) or through [Homebrew]({{site.baseurl}}/installation/linux-mac/brew) or [Scoop]({{site.baseurl}}/installation/windows/scoop).
+To set up and run Meshplay on Linux or macOS, you will need to install `meshplayctl`. `meshplayctl` is the command line interface (CLI) for Meshplay. It is used to install, manage, and operate one or more Meshplay deployments. `meshplayctl` can be installed via `bash` is also available [directly](https://github.com/meshplay/meshplay/releases/latest) or through [Homebrew]({{site.baseurl}}/installation/linux-mac/brew) or [Scoop]({{site.baseurl}}/installation/windows/scoop).
 
 # Brew
 
@@ -40,10 +40,8 @@ Guides to using Meshplay's various features and components.
     </li>
     {% endif %}
   {% endfor %}
-    <li><a href="{{ site.baseurl }}/guides/upgrade#upgrading-meshplay-cli">Upgrading Meshplay CLI</a></li>
+    <li><a href="{{ site.baseurl }}/installation/upgrades#upgrading-meshplay-cli">Upgrading Meshplay CLI</a></li>
 </ul>
-
-{% include suggested-reading.html language="en" %}
 
 {% include related-discussions.html tag="meshplayctl" %}
 

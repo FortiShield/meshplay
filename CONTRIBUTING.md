@@ -6,11 +6,11 @@ Please do! Thank you for your help in improving Meshplay! :balloon:
 
 <details>
 
-  <summary><h3>Find the complete set of contributor guides at https://docs.khulnasoft.com/project/contributing</h3></summary>
+  <summary><h3>Find the complete set of contributor guides at https://docs-meshplay.khulnasoft.com/project/contributing</h3></summary>
 
 All contributors are welcome. Not sure where to start? Please see the [newcomers welcome guide](https://khulnasoft.com/community/newcomers) for how, where, and why to contribute. This project is community-built and welcomes collaboration. Contributors are expected to adhere to our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-All set to contribute? Grab an open issue with the [help-wanted label](../../labels/help%20wanted) and jump in. Join our [Slack channel](https://slack.khulnasoft.com) and engage in conversation. Create a [new issue](/../../issues/new/choose) if needed. All [pull requests](/../../pulls) should ideally reference an open [issue](/../../issues). Include keywords in your pull request descriptions, as well as commit messages, to [automatically close related issues in GitHub](https://help.github.com/en/github/managing-your-work-on-github/closing-issues-using-keywords).
+All set to contribute? Grab an open issue with the [help-wanted label](../../labels/help%20wanted) and jump in. Join our [Slack channel](https://slack.meshplay.io) and engage in conversation. Create a [new issue](/../../issues/new/choose) if needed. All [pull requests](/../../pulls) should ideally reference an open [issue](/../../issues). Include keywords in your pull request descriptions, as well as commit messages, to [automatically close related issues in GitHub](https://help.github.com/en/github/managing-your-work-on-github/closing-issues-using-keywords).
 
 **Sections**
 
@@ -134,7 +134,12 @@ Please contribute! Meshplay documentation uses GitHub Pages to host the docs sit
 
 1. Commit, [sign-off](#commit-signing), and push changes to your remote branch.
    `git push origin <my-changes>`
-1. Open a pull request (in your web browser) against our main repo: https://github.com/khulnasoft/meshplay.
+1. Open a pull request (in your web browser) against our main repo: https://github.com/meshplay/meshplay.
+
+_Alternatively, LiveReload is available as an option during development: with jekyll serve --livereload no more manual page refresh. 
+
+`bundle exec jekyll serve --drafts --livereload --incremental --config _config_dev.yml`
+
 
 ## <a name="contributing-meshplay">Meshplay Contribution Flow</a>
 
@@ -150,7 +155,7 @@ Practices for Production Environments](https://peter.bourgon.org/go-in-productio
 1. Go version 1.21.1 must be installed if you want to build and/or make changes to the existing code. The binary `go1.21.1` should be available in your path. If you don't want to disturb your existing version of Go, then follow these [instructions](https://go.dev/doc/manage-install#:~:text=and%20run%20them.-,Installing%20multiple%20Go%20versions,-You%20can%20install) to keep multiple versions of Go in your system.
 2. `GOPATH` environment variable should be configured appropriately
 3. `npm` and `node` should be installed on your machine, preferably the latest versions.
-4. Fork this repository (`git clone https://github.com/khulnasoft/meshplay.git`), and clone your forked version of Meshplay to your development environment, preferably outside `GOPATH`.
+4. Fork this repository (`git clone https://github.com/meshplay/meshplay.git`), and clone your forked version of Meshplay to your development environment, preferably outside `GOPATH`.
 5. `golangci-lint` should be installed if you want to test Go code, for MacOS and linux users.
 
 #### Build and Run Meshplay Server
@@ -185,7 +190,7 @@ Potential Solution:
 -  Go to your meshplay folder in your local-system where you’ve cloned it.
 Execute:
 
-- `git remote add upstream https://github.com/khulnasoft/meshplay`
+- `git remote add upstream https://github.com/meshplay/meshplay`
 - `git fetch upstream`
 - Restart the meshplay server
 - Additionally, before restarting the server, if you like to pull the latest changes, you can do: `git pull upstream master`
@@ -233,7 +238,7 @@ make docker
 Meshplay uses adapters to provision and interact with different service meshes. Follow these instructions to create a new adapter or modify an existing adapter.
 
 1. Get the proto buf spec file from Meshplay repo:
-   `wget https://raw.githubusercontent.com/khulnasoft/meshplay/master/server/meshes/meshops.proto`
+   `wget https://raw.githubusercontent.com/meshplay/meshplay/master/server/meshes/meshops.proto`
 1. Generate code
    1. Using Go as an example, do the following:
       - install the protocol buffer compiler: https://grpc.io/docs/protoc-installation/
@@ -248,13 +253,13 @@ Meshplay uses adapters to provision and interact with different service meshes. 
    1. For other languages, please refer to gRPC.io for language-specific guides.
 1. Implement the service methods and expose the gRPC server on a port of your choice (e.g. 10000).
 
-_Tip:_ The [Meshplay adapter for Istio](https://github.com/khulnasoft/meshplay-istio) is a good reference adapter to use as an example of a Meshplay adapter written in Go.
+_Tip:_ The [Meshplay adapter for Istio](https://github.com/meshplay/meshplay-istio) is a good reference adapter to use as an example of a Meshplay adapter written in Go.
 
 #### <a name="meshplay-istio">Running Meshplay Adapter (Meshplay-Istio)</a>
 
 **Meshplay-Istio** is a pre-written example of Meshplay Adapter written in Go. Follow these instructions to run meshplay-istio to avoid errors related to Meshplay Adapters
 
-1. Fork [Meshplay-Istio](https://github.com/khulnasoft/meshplay-istio)
+1. Fork [Meshplay-Istio](https://github.com/meshplay/meshplay-istio)
 2. Clone your fork locally
 3. Run this command from the root directory of **meshplay-istio**
    ```sh
@@ -330,7 +335,85 @@ We are using ES-Lint to maintain code quality & consistency in our UI Code. To m
 - Remember to run `make ui-lint` & `make ui-provider-lint` if you are making changes in Meshplay-UI & Provider-UI respectively.
 - The above commands will only fix some basic indenting rules. You will have to manually check your code to ensure there are no duplications, un-used variables or un-declared constants.
 - We will soon be adding Pre-Commit Hooks to make sure you get to know your errors before you commit the code.
-- In case you are unable to fix your lint errors, ping us on our [Slack](https://slack.khulnasoft.com).
+- In case you are unable to fix your lint errors, ping us on our [Slack](https://slack.meshplay.io).
+
+
+# Using Sistent in Meshplay UI
+
+## Overview
+
+Meshplay UI utilizes three component libraries:
+
+1. Material-UI (MUI) v4
+2. Material-UI (MUI) v5
+3. Sistent
+
+While MUI v4 and v5 are being phased out, Sistent is now the preferred component library. Sistent internally uses MUI v5, and Meshplay UI globally still relies on MUI v4. This can lead to conflicts between themes when Sistent components are used directly.
+
+## The `UseSistent` Wrapper
+
+To resolve theme conflicts and ensure proper functionality, a custom wrapper called `UseSistent` has been created. This wrapper provides the Sistent theme to its child components.
+
+## Usage Guidelines
+
+1. Wrap any custom component that exclusively uses Sistent components with `UseSistent`.
+2. Individual Sistent components can also be wrapped with `UseSistent`.
+3. Avoid using MUI v4 components within a component wrapped with `UseSistent`.
+
+## Examples
+
+### Example 1: Wrapping a custom component
+
+```jsx
+import { UseSistent } from './UseSistent';
+import { Button, TextField } from 'sistent';
+
+const MyCustomForm = () => (
+  <UseSistent>
+    <form>
+      <TextField label="Name" />
+      <Button>Submit</Button>
+    </form>
+  </UseSistent>
+);
+```
+
+### Example 2: Wrapping an individual Sistent component
+
+```jsx
+import { UseSistent } from './UseSistent';
+import { DataGrid } from 'sistent';
+
+const MyDataGridComponent = ({ data }) => (
+  <UseSistent>
+    <DataGrid rows={data} columns={columns} />
+  </UseSistent>
+);
+```
+
+### Example 3: Incorrect usage (avoid this)
+
+```jsx
+import { UseSistent } from './UseSistent';
+import { Button } from 'sistent';
+import { TextField } from '@material-ui/core'; // MUI v4
+
+// Don't do this!
+const IncorrectUsage = () => (
+  <UseSistent>
+    <Button>Sistent Button</Button>
+    <TextField label="MUI v4 TextField" /> {/* This will cause conflicts */}
+  </UseSistent>
+);
+```
+
+## Best Practices
+
+1. Gradually migrate components to use Sistent instead of MUI v4 or v5.
+2. Always wrap Sistent components or custom components using Sistent with `UseSistent`.
+3. Keep MUI v4 components separate from Sistent components to avoid theme conflicts.
+
+
 
 ## <a name="contributing-meshplayctl">Meshplayctl Documentation</a>
 
@@ -340,13 +423,13 @@ We are using ES-Lint to maintain code quality & consistency in our UI Code. To m
 
 ### Contributing
 
-Please refer to the [Meshplay Contributing Guidelines](https://docs.khulnasoft.com/project/contributing/contributing-cli) for setting up your development environment and the [meshplayctl Command Reference and Tracker](https://docs.google.com/spreadsheets/d/1q63sIGAuCnIeDs8PeM-0BAkNj8BBgPUXhLbe1Y-318o/edit#gid=0) for current status of `meshplayctl`.
+Please refer to the [Meshplay Contributing Guidelines](https://docs-meshplay.khulnasoft.com/project/contributing/contributing-cli) for setting up your development environment and the [meshplayctl Command Reference and Tracker](https://docs.google.com/spreadsheets/d/1q63sIGAuCnIeDs8PeM-0BAkNj8BBgPUXhLbe1Y-318o/edit#gid=0) for current status of `meshplayctl`.
 
 For a quick introduction to `meshplayctl`, checkout [Beginner's guide to contributing to Meshplay and meshplayctl](https://youtu.be/hh_kFLZx3G4).
 
 ### Building and running `meshplayctl`
 
-The [`/meshplayctl`](https://github.com/khulnasoft/meshplay/tree/master/meshplayctl) folder contains the complete code for `meshplayctl`.
+The [`/meshplayctl`](https://github.com/meshplay/meshplay/tree/master/meshplayctl) folder contains the complete code for `meshplayctl`.
 
 `meshplayctl` is written in Golang or the Go Programming Language. For development use Go version 1.15+.
 
@@ -354,7 +437,7 @@ After making changes, run `make` in the `meshplayctl` folder to build the binary
 
 ### `meshplayctl` command reference
 
-- See user-facing, documentation of the `meshplayctl` commands is available in the [Meshplay Docs](https://docs.khulnasoft.com/reference/meshplayctl).
+- See user-facing, documentation of the `meshplayctl` commands is available in the [Meshplay Docs](https://docs-meshplay.khulnasoft.com/reference/meshplayctl).
 - See contributor-facing design spec for [Meshplay CLI Commands and Documentation](https://docs.google.com/document/d/1xRlFpElRmybJ3WacgPKXgCSiQ2poJl3iCCV1dAalf0k/edit#heading=h.5fucij4hc5wt) for a complete reference of `meshplayctl`.
 
 ### General guidelines and resources
@@ -380,7 +463,7 @@ For logs, `meshplayctl` uses [Logrus](https://github.com/sirupsen/logrus). Going
 
 `meshplayctl` uses [golangci-lint](https://github.com/golangci/golangci-lint). Refer to it for lint checks.
 
-All contributors are invited to review [pull requests](https://github.com/khulnasoft/meshplay/pulls) on `meshplayctl` as on other Khulnasoft projects.
+All contributors are invited to review [pull requests](https://github.com/meshplay/meshplay/pulls) on `meshplayctl` as on other Meshplay components.
 
 # <a name="maintaining"> Reviews</a>
 

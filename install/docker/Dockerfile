@@ -5,7 +5,7 @@ ARG GIT_COMMITSHA
 ARG RELEASE_CHANNEL
 
 RUN adduser --disabled-login appuser
-WORKDIR /github.com/khulnasoft/meshplay
+WORKDIR /github.com/meshplay/meshplay
 ADD . .
 RUN go clean -modcache; cd server; cd cmd; GOPROXY=https://proxy.golang.org GOSUMDB=off go build -ldflags="-w -s -X main.globalTokenForAnonymousResults=$TOKEN -X main.version=$GIT_VERSION -X main.commitsha=$GIT_COMMITSHA -X main.releasechannel=$RELEASE_CHANNEL" -tags draft -a -o /meshplay .
 
@@ -22,7 +22,7 @@ RUN apt-get -y update && apt-get -y install git && apt-get clean && rm -rf /var/
 RUN apt-get -y update && apt-get -y  install build-essential libssl-dev git zlib1g-dev
 RUN git config --global user.email "meshplay@khulnasoft.com"
 RUN git config --global user.name "meshplay"
-RUN git clone --depth=1 https://github.com/layer5io/wrk2 && cd wrk2 && make
+RUN git clone --depth=1 https://github.com/khulnasoft/wrk2 && cd wrk2 && make
 
 FROM alpine:3.15.3 as seed_content
 RUN apk add --no-cache curl
@@ -81,19 +81,20 @@ RUN update-ca-certificates
 # RUN apk upgrade --no-cache && \
 #     apk add --no-cache libstdc++
 
+COPY ./server/cmd/server-config.env /app/server/cmd/server-config.env
 COPY ./server/meshmodel /app/server/meshmodel
-COPY ./permissions /app/permissions/
+COPY ./server/permissions /app/server/permissions/
 COPY --from=meshplay-server /meshplay /app/server/cmd/
 COPY --from=meshplay-server /etc/passwd /etc/passwd
-COPY --from=meshplay-server /github.com/khulnasoft/meshplay/server/helpers/swagger.yaml /app/server/helpers/swagger.yaml
+COPY --from=meshplay-server /github.com/meshplay/meshplay/server/helpers/swagger.yaml /app/server/helpers/swagger.yaml
 COPY --from=ui /out /app/ui/out
 COPY --from=ui /public /app/ui/public
 COPY --from=provider-ui /out /app/provider-ui/out
 COPY --from=wrk2 /wrk2 /app/server/cmd/wrk2
 COPY --from=wrk2 /wrk2/wrk /usr/local/bin
 COPY --from=seed_content /seed_content /home/appuser/.meshplay/seed_content
-COPY --from=layer5/getnighthawk:v1.0.1 /usr/local/bin/nighthawk_service /app/server/cmd/
-COPY --from=layer5/getnighthawk:v1.0.1 /usr/local/bin/nighthawk_output_transform /app/server/cmd/
+COPY --from=khulnasoft/getnighthawk:v1.0.1 /usr/local/bin/nighthawk_service /app/server/cmd/
+COPY --from=khulnasoft/getnighthawk:v1.0.1 /usr/local/bin/nighthawk_output_transform /app/server/cmd/
 
 RUN addgroup docker
 RUN mkdir -p /var/run; chown -R appuser:docker /var/run/

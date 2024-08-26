@@ -82,7 +82,7 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-  
+
 
 resources:
   {}
@@ -151,9 +151,9 @@ meshplay-cilium:
   enabled: false
   fullnameOverride: meshplay-cilium
 
-meshplay-perf:
+meshplay-nighthawk:
   enabled: false
-  fullnameOverride: meshplay-perf
+  fullnameOverride: meshplay-nighthawk
   serviceAccountNameOverride: meshplay-server
 
 # If there need the test cases set it as true.

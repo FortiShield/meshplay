@@ -39,8 +39,7 @@ Also see: [Install Meshplay on Kubernetes]({{ site.baseurl }}/installation/kuber
 - [Out-of-cluster Installation](#out-of-cluster-installation)
   - [Installation: Install Meshplay on Docker](#installation-install-meshplay-on-docker)
   - [Installation: Upload Config File in Meshplay Web UI](#installation-upload-config-file-in-meshplay-web-ui)
-- [Post-Installation Steps](#post-installation-steps)
-  - [Access Meshplay UI](#access-meshplay-ui)
+  - [Post-Installation Steps](#post-installation-steps)
 
 # In-cluster Installation
 
@@ -88,7 +87,7 @@ If you encounter any authentication issues, you can use `meshplayctl system logi
 
 ## Installation: Using Helm
 
-For detailed instructions on installing Meshplay using Helm V3, please refer to the [Helm Installation](/installation/helm) guide.
+For detailed instructions on installing Meshplay using Helm V3, please refer to the [Helm Installation](/installation/kubernetes/helm) guide.
 
 ## Installation: Manual Steps
 
@@ -183,13 +182,13 @@ Once you have verified that all the services are up and running, Meshplay UI wil
 
 - Upload the generated config file by navigating to _Settings > Environment > Out of Cluster Deployment_ in the Web UI and using the _"Upload kubeconfig"_ option.
 
-# Post-Installation Steps
+## Post-Installation Steps
 
-## Access Meshplay UI
+Optionally, you can verify the health of your Meshplay deployment, using <a href='/reference/meshplayctl/system/check'>meshplayctl system check</a>.
 
-To access Meshplay's UI, please refer to the [instruction](/tasks/accessing-meshplay-ui) for detailed guidance.
+You're ready to use Meshplay! Open your browser and navigate to the Meshplay UI.
 
-{% include suggested-reading.html language="en" %}
+{% include_cached installation/accessing-meshplay-ui.md %}
 
 {% include related-discussions.html tag="meshplay" %}
 

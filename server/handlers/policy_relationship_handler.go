@@ -5,31 +5,25 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
-	"strings"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/gorilla/mux"
 	"github.com/khulnasoft/meshplay/server/models"
 	"github.com/khulnasoft/meshplay/server/models/pattern/core"
-	"gopkg.in/yaml.v2"
+	"github.com/meshplay/schemas/models/v1alpha3/relationship"
+	"github.com/meshplay/schemas/models/v1beta1/component"
+	"github.com/meshplay/schemas/models/v1beta1/pattern"
 
 	"github.com/khulnasoft/meshkit/models/events"
-	"github.com/khulnasoft/meshkit/models/meshmodel/core/v1alpha1"
-	"github.com/khulnasoft/meshkit/utils"
 
-	"github.com/sirupsen/logrus"
+	regv1beta1 "github.com/khulnasoft/meshkit/models/meshmodel/registry/v1beta1"
 )
 
 const (
-	relationshipPolicyPackageName = "data.meshmodel_policy"
+	relationshipPolicyPackageName = "data.relationship_evaluation_policy"
 	suffix                        = "_relationship"
 )
-
-type relationshipPolicyEvalPayload struct {
-	PatternFile string   `json:"pattern_file"`
-	EvaluationQueries []string `json:"evaluation_queries"`
-}
 
 // swagger:route POST /api/meshmodels/relationships/evaluate EvaluateRelationshipPolicy relationshipPolicyEvalPayloadWrapper
 // Handle POST request for evaluating relationships in the provided design file by running a set of provided evaluation queries on the design file
@@ -52,67 +46,84 @@ func (h *Handler) EvaluateRelationshipPolicy(
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		logrus.Error(ErrRequestBody(err))
+		h.log.Error(ErrRequestBody(err))
 		http.Error(rw, ErrRequestBody(err).Error(), http.StatusBadRequest)
 		rw.WriteHeader((http.StatusBadRequest))
 		return
 	}
 
-	relationshipPolicyEvalPayload := relationshipPolicyEvalPayload{}
+	relationshipPolicyEvalPayload := pattern.EvaluationRequest{}
 	err = json.Unmarshal(body, &relationshipPolicyEvalPayload)
 
 	if err != nil {
 		http.Error(rw, ErrDecoding(err, "design file").Error(), http.StatusInternalServerError)
 		return
 	}
-	var patternFile core.Pattern
+	// decode the pattern file
 
-	err = yaml.Unmarshal([]byte(relationshipPolicyEvalPayload.PatternFile), &patternFile)
-	if err != nil {
-		http.Error(rw, ErrDecoding(err, "design file").Error(), http.StatusInternalServerError)
-		return
-	}
-
-	evaluationQueries := relationshipPolicyEvalPayload.EvaluationQueries
-
-	for _, svc := range patternFile.Services {
-		svc.Settings = core.Format.DePrettify(svc.Settings, false)
-	}
-
-	data, err := yaml.Marshal(patternFile)
-	if err != nil {
-		http.Error(rw, models.ErrEncoding(err, "design file").Error(), http.StatusInternalServerError)
-		return
-	}
-
-	patternUUID := uuid.FromStringOrNil(patternFile.PatternID)
+	patternUUID := relationshipPolicyEvalPayload.Design.Id
 	eventBuilder.ActedUpon(patternUUID)
 
-	var evalResults interface{}
+	for _, component := range relationshipPolicyEvalPayload.Design.Components {
+		component.Configuration = core.Format.DePrettify(component.Configuration, false)
+	}
 
 	// evaluate specified relationship policies
-	verifiedEvaluationQueries := h.verifyEvaluationQueries(evaluationQueries)
-	if len(verifiedEvaluationQueries) == 0 {
-		event := eventBuilder.WithDescription("Invalid or unsupported evaluation queries provided").WithSeverity(events.Error).WithMetadata(map[string]interface{}{"evaluationQueries": evaluationQueries}).Build()
-		_ = provider.PersistEvent(event)
-		go h.config.EventBroadcaster.Publish(userUUID, event)
+	// on successful eval the event containing details like comps evaulated, relationships indeitified should be emitted and peristed.
+	evaluationResponse, err := h.Rego.RegoPolicyHandler(relationshipPolicyEvalPayload.Design,
+		relationshipPolicyPackageName,
+	)
+	if err != nil {
+		h.log.Debug(err)
+		// log an event
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	evalresults := make(map[string]interface{}, 0)
-	for _, query := range verifiedEvaluationQueries {
-		result, err := h.Rego.RegoPolicyHandler(fmt.Sprintf("%s.%s", relationshipPolicyPackageName, query), data)
-		if err != nil {
-			h.log.Warn(err)
-			continue
+	currentTime := time.Now()
+	evaluationResponse.Timestamp = &currentTime
+	// include trace instead of design file
+	event := eventBuilder.WithDescription(fmt.Sprintf("Relationship evaluation completed for \"%s\" at version \"%s\"", evaluationResponse.Design.Name, evaluationResponse.Design.Version)).
+		WithMetadata(map[string]interface{}{
+			"trace":        evaluationResponse.Trace,
+			"evaluated_at": *evaluationResponse.Timestamp,
+		}).WithSeverity(events.Informational).Build()
+	_ = provider.PersistEvent(event)
+
+	// Create the event but do not notify the client immediately, as the evaluations are frequent and takes up the view area.
+	// go h.config.EventBroadcaster.Publish(userUUID, event)
+
+	if relationshipPolicyEvalPayload.Options != nil && relationshipPolicyEvalPayload.Options.ReturnDiffOnly != nil &&
+		*relationshipPolicyEvalPayload.Options.ReturnDiffOnly {
+		evaluationResponse.Design.Components = []*component.ComponentDefinition{}
+		evaluationResponse.Design.Relationships = []*relationship.RelationshipDefinition{}
+		for _, component := range evaluationResponse.Trace.ComponentsUpdated {
+			_c := component
+			evaluationResponse.Design.Components = append(evaluationResponse.Design.Components, &_c)
 		}
-		evalresults[query] = result
+
+		for _, relationship := range evaluationResponse.Trace.RelationshipsAdded {
+			_r := relationship
+			evaluationResponse.Design.Relationships = append(evaluationResponse.Design.Relationships, &_r)
+		}
+		for _, relationship := range evaluationResponse.Trace.RelationshipsRemoved {
+			_r := relationship
+			evaluationResponse.Design.Relationships = append(evaluationResponse.Design.Relationships, &_r)
+		}
+
 	}
-	evalResults = evalresults
+
+	// Before starting the eval the design is de-prettified, so that we can use the relationships def correctly.
+	// The results contain the updated config.
+	// Prettify the design before sending it to client.
+
+	for _, component := range evaluationResponse.Design.Components {
+		component.Configuration = core.Format.Prettify(component.Configuration, false)
+	}
 
 	// write the response
 	ec := json.NewEncoder(rw)
-	err = ec.Encode(evalResults)
+	err = ec.Encode(evaluationResponse)
 	if err != nil {
 		h.log.Error(models.ErrEncoding(err, "policy evaluation response"))
 		http.Error(rw, models.ErrEncoding(err, "failed to generate policy evaluation results").Error(), http.StatusInternalServerError)
@@ -120,36 +131,41 @@ func (h *Handler) EvaluateRelationshipPolicy(
 	}
 }
 
-func (h *Handler) verifyEvaluationQueries(evaluationQueries []string) (verifiedEvaluationQueries []string) {
-	registeredRelationships, _, _ := h.registryManager.GetEntities(&v1alpha1.RelationshipFilter{})
+// unused currently
 
-	var relationships []v1alpha1.RelationshipDefinition
-	for _, entity := range registeredRelationships {
-		relationship, err := utils.Cast[v1alpha1.RelationshipDefinition](entity)
-		if err != nil {
-			return
-		}
-		relationships = append(relationships, relationship)
-	}
+// func (h *Handler) verifyEvaluationQueries(evaluationQueries []string) (verifiedEvaluationQueries []string) {
+// 	registeredRelationships, _, _, _ := h.registryManager.GetEntities(&regv1alpha3.RelationshipFilter{})
 
-	if len(evaluationQueries) == 0 || (len(evaluationQueries) == 1 && evaluationQueries[0] == "all") {
-		for _, relationship := range relationships {
-			if relationship.EvaluationQuery != "" {
-				verifiedEvaluationQueries = append(verifiedEvaluationQueries, relationship.EvaluationQuery)
-			}
-		}
-	} else {
-		for _, regoQuery := range evaluationQueries {
-			for _, relationship := range relationships {
-				if strings.TrimSuffix(regoQuery, suffix) == fmt.Sprintf("%s_%s", strings.ToLower(relationship.Kind), strings.ToLower(relationship.SubType)) {
-					verifiedEvaluationQueries = append(verifiedEvaluationQueries, relationship.EvaluationQuery)
-					break
-				}
-			}
-		}
-	}
-	return
-}
+// 	var relationships []relationship.RelationshipDefinition
+// 	for _, entity := range registeredRelationships {
+// 		relationship, err := mutils.Cast[*relationship.RelationshipDefinition](entity)
+
+// 		if err != nil {
+// 			return
+// 		}
+// 		relationships = append(relationships, *relationship)
+// 	}
+
+// 	if len(evaluationQueries) == 0 || (len(evaluationQueries) == 1 && evaluationQueries[0] == "all") {
+// 		for _, relationship := range relationships {
+// 			if relationship.EvaluationQuery != nil {
+// 				verifiedEvaluationQueries = append(verifiedEvaluationQueries, *relationship.EvaluationQuery)
+// 			} else {
+// 				verifiedEvaluationQueries = append(verifiedEvaluationQueries, relationship.GetDefaultEvaluationQuery())
+// 			}
+// 		}
+// 	} else {
+// 		for _, regoQuery := range evaluationQueries {
+// 			for _, relationship := range relationships {
+// 				if (relationship.EvaluationQuery != nil && regoQuery == *relationship.EvaluationQuery) || regoQuery == relationship.GetDefaultEvaluationQuery() {
+// 					verifiedEvaluationQueries = append(verifiedEvaluationQueries, *relationship.EvaluationQuery)
+// 					break
+// 				}
+// 			}
+// 		}
+// 	}
+// 	return
+// }
 
 // swagger:route GET /api/meshmodels/models/{model}/policies/{name} GetMeshmodelPoliciesByName idGetMeshmodelPoliciesByName
 // Handle GET request for getting meshmodel policies of a specific model by name.
@@ -171,44 +187,25 @@ func (h *Handler) verifyEvaluationQueries(evaluationQueries []string) (verifiedE
 func (h *Handler) GetAllMeshmodelPoliciesByName(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	enc := json.NewEncoder(rw)
+	page, offset, limit, search, order, sort, _ := getPaginationParams(r)
 	typ := mux.Vars(r)["model"]
 	name := mux.Vars(r)["name"]
 	var greedy bool
-	if r.URL.Query().Get("search") == "true" {
+	if search == "true" {
 		greedy = true
 	}
-	limitstr := r.URL.Query().Get("pagesize")
-	var limit int
-	if limitstr != "all" {
-		limit, _ = strconv.Atoi(limitstr)
-		if limit == 0 { //If limit is unspecified then it defaults to 25
-			limit = DefaultPageSizeForMeshModelComponents
-		}
-	}
-	pagestr := r.URL.Query().Get("page")
-	page, _ := strconv.Atoi(pagestr)
-	if page <= 0 {
-		page = 1
-	}
-	offset := (page - 1) * limit
-	entities, _, _ := h.registryManager.GetEntities(&v1alpha1.PolicyFilter{
+
+	entities, _, _, _ := h.registryManager.GetEntities(&regv1beta1.PolicyFilter{
 		Kind:      name,
 		ModelName: typ,
 		Greedy:    greedy,
 		Offset:    offset,
-		OrderOn:   r.URL.Query().Get("order"),
-		Sort:      r.URL.Query().Get("sort"),
+		OrderOn:   order,
+		Sort:      sort,
 	})
-	var policies []v1alpha1.PolicyDefinition
-	for _, p := range entities {
-		policy, ok := p.(v1alpha1.PolicyDefinition)
-		if ok {
-			policies = append(policies, policy)
-		}
-	}
 
 	var pgSize int64
-	if limitstr == "all" {
+	if limit == 0 {
 		pgSize = 0
 	} else {
 		pgSize = int64(limit)
@@ -218,7 +215,7 @@ func (h *Handler) GetAllMeshmodelPoliciesByName(rw http.ResponseWriter, r *http.
 		Page:     page,
 		PageSize: int(pgSize),
 		Count:    0,
-		Policies: policies,
+		Policies: entities,
 	}
 
 	if err := enc.Encode(response); err != nil {
@@ -247,43 +244,25 @@ func (h *Handler) GetAllMeshmodelPoliciesByName(rw http.ResponseWriter, r *http.
 func (h *Handler) GetAllMeshmodelPolicies(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	enc := json.NewEncoder(rw)
+	page, offset, limit, search, order, sort, _ := getPaginationParams(r)
 	typ := mux.Vars(r)["model"]
 
 	var greedy bool
-	if r.URL.Query().Get("search") == "true" {
+	if search == "true" {
 		greedy = true
 	}
-	limitstr := r.URL.Query().Get("pagesize")
-	var limit int
-	if limitstr != "all" {
-		limit, _ = strconv.Atoi(limitstr)
-		if limit == 0 { //If limit is unspecified then it defaults to 25
-			limit = DefaultPageSizeForMeshModelComponents
-		}
-	}
-	pagestr := r.URL.Query().Get("page")
-	page, _ := strconv.Atoi(pagestr)
-	offset := (page - 1) * limit
-	if page <= 0 {
-		page = 1
-	}
-	entities, _, _ := h.registryManager.GetEntities(&v1alpha1.PolicyFilter{
+
+	entities, _, _, _ := h.registryManager.GetEntities(&regv1beta1.PolicyFilter{
 		ModelName: typ,
 		Greedy:    greedy,
 		Offset:    offset,
-		OrderOn:   r.URL.Query().Get("order"),
-		Sort:      r.URL.Query().Get("sort"),
+		OrderOn:   order,
+		Sort:      sort,
 	})
-	var policies []v1alpha1.PolicyDefinition
-	for _, p := range entities {
-		policy, ok := p.(v1alpha1.PolicyDefinition)
-		if ok {
-			policies = append(policies, policy)
-		}
-	}
+
 	var pgSize int64
 
-	if limitstr == "all" {
+	if limit == 0 {
 		pgSize = 0
 	} else {
 		pgSize = int64(limit)
@@ -293,7 +272,7 @@ func (h *Handler) GetAllMeshmodelPolicies(rw http.ResponseWriter, r *http.Reques
 		Page:     page,
 		PageSize: int(pgSize),
 		Count:    0,
-		Policies: policies,
+		Policies: entities,
 	}
 
 	if err := enc.Encode(response); err != nil {

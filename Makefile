@@ -18,7 +18,7 @@ include install/Makefile.show-help.mk
 #-----------------------------------------------------------------------------
 # Docker-based Builds
 #-----------------------------------------------------------------------------
-.PHONY: docker-build docker-local-cloud docker-cloud docker-playground-build
+.PHONY: docker-build docker-local-cloud docker-cloud docker-playground-build docker-testing-env-build docker-testing-env 
 
 ## Build Meshplay Server and UI container.
 docker-build:
@@ -26,16 +26,21 @@ docker-build:
 	# This method does NOT require that you have Go, NPM, etc. installed locally.
 	DOCKER_BUILDKIT=1 docker build -f install/docker/Dockerfile -t khulnasoft/meshplay --build-arg TOKEN=$(GLOBAL_TOKEN) --build-arg GIT_COMMITSHA=$(GIT_COMMITSHA) --build-arg GIT_VERSION=$(GIT_VERSION) --build-arg RELEASE_CHANNEL=${RELEASE_CHANNEL} .
 
-## Build Meshplay Server and UI container in Playground mode. 
+## Build Meshplay Server and UI container in Playground mode.
 docker-playground-build:
 	# `make docker-playground-build` builds Meshplay inside of a multi-stage Docker container.
 	# This method does NOT require that you have Go, NPM, etc. installed locally.
 	DOCKER_BUILDKIT=1 docker build -f install/docker/Dockerfile -t khulnasoft/meshplay --build-arg TOKEN=$(GLOBAL_TOKEN) --build-arg GIT_COMMITSHA=$(GIT_COMMITSHA) --build-arg GIT_VERSION=$(GIT_VERSION) --build-arg RELEASE_CHANNEL=${RELEASE_CHANNEL} --build-arg PROVIDER=$(LOCAL_PROVIDER) --build-arg PROVIDER_BASE_URLS=$(MESHPLAY_CLOUD_PROD) .
 
+## Build Meshplay Server and UI container for e2e testing.
+docker-testing-env-build:
+	# `make docker-build` builds Meshplay inside of a multi-stage Docker container.
+	# This method does NOT require that you have Go, NPM, etc. installed locally.
+	DOCKER_BUILDKIT=1 docker build -f install/docker/testing/Dockerfile -t khulnasoft/meshplay-testing-env --build-arg GIT_VERSION=$(GIT_VERSION) .
+
 ## Meshplay Cloud for user authentication.
 ## Runs Meshplay in a container locally and points to locally-running
 docker-local-cloud:
-
 	(docker rm -f meshplay) || true
 	docker run --name meshplay -d \
 	--link meshplay-cloud:meshplay-cloud \
@@ -60,14 +65,27 @@ docker-cloud:
 	-p 9081:8080 \
 	khulnasoft/meshplay ./meshplay
 
+## Runs Meshplay in a container locally and points to remote
+## Remote Provider for user authentication.
+docker-testing-env:
+	docker run --rm --name meshplaytesting  -d \
+	-e PROVIDER_BASE_URLS=$(MESHPLAY_CLOUD_PROD) \
+	-e DEBUG=true \
+	-e ADAPTER_URLS=$(ADAPTER_URLS) \
+	-e KEYS_PATH=$(KEYS_PATH) \
+	-v meshplay-config:/home/appuser/.meshplay/config \
+  -v $(HOME)/.kube:/home/appuser/.kube:ro \
+	-p 9081:8080 \
+	khulnasoft/meshplay-testing-env ./meshplay
+
 #-----------------------------------------------------------------------------
 # Meshplay Server Native Builds
 #-----------------------------------------------------------------------------
-.PHONY: server wrk2-setup nighthawk-setup server-local server-skip-compgen server-no-content golangci proto-build error
+.PHONY: server wrk2-setup nighthawk-setup server-local server-skip-compgen server-no-content golangci proto-build error build-server server-binary
 ## Setup wrk2 for local development.
 wrk2-setup:
 	echo "setup-wrk does not work on Mac Catalina at the moment"
-	cd server; cd cmd; git clone https://github.com/layer5io/wrk2.git; cd wrk2; make; cd ..
+	cd server; cd cmd; git clone https://github.com/khulnasoft/wrk2.git; cd wrk2; make; cd ..
 
 ## Setup nighthawk for local development.
 nighthawk-setup: dep-check
@@ -99,14 +117,31 @@ build-server: dep-check
 	ADAPTER_URLS=$(ADAPTER_URLS) \
 	APP_PATH=$(APPLICATIONCONFIGPATH) \
 	KEYS_PATH=$(KEYS_PATH) \
-	GOPROXY=https://proxy.golang.org,direct GOSUMDB=off GO111MODULE=on go build ./server/cmd/main.go ./server/cmd/error.go
+	GOPROXY=https://proxy.golang.org,direct GO111MODULE=on go build ./server/cmd/main.go ./server/cmd/error.go
 	chmod +x ./main
+
+## Running the meshplay server using binary.
+server-binary:
+	cd server/cmd; BUILD="$(GIT_VERSION)" PROVIDER_BASE_URLS=$(MESHPLAY_CLOUD_STAGING) ../../main; cd ../../
+
+## Build and run Meshplay Server on your local machine
+## and point to Remote Provider in staging environment
+server-stg: dep-check
+	cd server; cd cmd; go mod tidy; \
+	BUILD="$(GIT_VERSION)" \
+	PROVIDER_BASE_URLS=$(MESHPLAY_CLOUD_STAGING) \
+	PORT=9081 \
+	DEBUG=true \
+	ADAPTER_URLS=$(ADAPTER_URLS) \
+	APP_PATH=$(APPLICATIONCONFIGPATH) \
+	KEYS_PATH=$(KEYS_PATH) \
+	go run main.go error.go;
 
 ## Build and run Meshplay Server on your local machine.
 server: dep-check
 	cd server; cd cmd; go mod tidy; \
 	BUILD="$(GIT_VERSION)" \
-	PROVIDER_BASE_URLS=$(MESHPLAY_CLOUD_PROD) \
+	PROVIDER_BASE_URLS=$(MESHPLAY_CLOUD_STAGING) \
 	PORT=9081 \
 	DEBUG=true \
 	ADAPTER_URLS=$(ADAPTER_URLS) \
@@ -140,7 +175,7 @@ server-skip-compgen:
  	SKIP_COMP_GEN=true \
 	KEYS_PATH=$(KEYS_PATH) \
 	go run main.go error.go;
-	
+
 ## Build and run Meshplay Server on your local machine.
 ## Do not generate and register Kubernetes models.
 server-without-k8s: dep-check
@@ -223,7 +258,7 @@ error: dep-check
 	go run github.com/khulnasoft/meshkit/cmd/errorutil -d . analyze -i ./server/helpers -o ./server/helpers --skip-dirs meshplayctl
 
 ## Runs meshkit error utility to update error codes for meshplay server only.
-server-error-util:
+error-util:
 	go run github.com/khulnasoft/meshkit/cmd/errorutil -d . --skip-dirs meshplayctl update -i ./server/helpers/ -o ./server/helpers
 
 ## Build Meshplay UI; Build and run Meshplay Server on your local machine.
@@ -274,9 +309,9 @@ ui-provider-test:
 	cd provider-ui; npm run test; cd ..
 
 ## Buils all Meshplay UIs  on your local machine.
-ui-build:
+ui-build: ui-setup
 	cd ui; npm run lint:fix && npm run build && npm run export; cd ..
-	cd provider-ui; npm run build && npm run export; cd ..
+	cd provider-ui; npm run lint:fix && npm run build && npm run export; cd ..
 
 ## Build only Meshplay UI on your local machine.
 ui-meshplay-build:
@@ -298,10 +333,15 @@ ui-integration-tests: ui-setup
 jekyll=bundle exec jekyll
 
 site: docs
+site-serve: docs-serve
 
 ## Run Meshplay Docs. Listen for changes.
 docs:
 	cd docs; bundle install; bundle exec jekyll serve --drafts --incremental --config _config_dev.yml
+
+## Run Meshplay Docs. Do not listen for changes.
+docs-serve:
+	cd docs; bundle install; bundle exec jekyll serve --drafts --config _config_dev.yml
 
 ## Build Meshplay Docs on your local machine.
 docs-build:
@@ -309,7 +349,7 @@ docs-build:
 
 ## Run Meshplay Docs in a Docker container. Listen for changes.
 docs-docker:
-	cd docs; docker run --name meshplay-docs --rm -p 4000:4000 -v `pwd`:"/srv/jekyll" jekyll/jekyll:4.0.0 bash -c "bundle install; jekyll serve --drafts --livereload"
+	cd docs; docker run --name meshplay-docs --rm -p 4000:4000 -v `pwd`:"/srv/jekyll" jekyll/jekyll:4.0 bash -c "bundle install; jekyll serve --drafts --livereload"
 
 ## Build Meshplay CLI docs
 docs-meshplayctl:
@@ -370,6 +410,15 @@ graphql-docs-build:
 ## Build Meshplay GraphQl API specifications
 graphql-build: dep-check
 	cd server; cd internal/graphql; go run -mod=mod github.com/99designs/gqlgen generate
+
+
+
+## testing
+test-setup-ui:
+	cd ui; npm ci; npx playwright install --with-deps; cd ..
+
+test-ui:
+	cd ui; npm run test:e2e; cd ..
 
 #-----------------------------------------------------------------------------
 # Dependencies

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: KubeSphere
-permalink: installation/kubesphere
+permalink: installation/kubernetes/kubesphere
 type: installation
 category: kubernetes
 redirect_from:
@@ -13,9 +13,9 @@ image: /assets/img/platforms/kubesphere.png
 abstract: Install Meshplay on KubeSphere
 ---
 
-{% include installation_prerequisites.html %}
+{% include installation/installation_prerequisites.html %}
 
-[Meshplay](https://khulnasoft.com/) is the open source, cloud native management plane that enables the adoption, operation, and management of Kubernetes, any service mesh, and their workloads.
+[Meshplay](https://meshplay.io/) is the open source, cloud native management plane that enables the adoption, operation, and management of Kubernetes, any service mesh, and their workloads.
 
 This tutorial walks you through an example of deploying Meshplay from the App Store of KubeSphere.
 
@@ -66,7 +66,5 @@ Perform the following steps in order:
 3. Access the Meshplay Dashboard by entering **${NodeIP}:${NODEPORT}** in your browser.
 
     ![meshplay-dashboard]({{ site.baseurl }}/assets/img/platforms/meshplay-dashboard.png)
-
-{% include suggested-reading.html language="en" %}
 
 {% include related-discussions.html tag="meshplay" %}

@@ -19,10 +19,10 @@ import _ from 'lodash';
 import withRedux from 'next-redux-wrapper';
 import App from 'next/app';
 import Head from 'next/head';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarContent, SnackbarProvider } from 'notistack';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect, Provider } from 'react-redux';
+import { connect, Provider, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import MeshplayProgressBar from '../components/MeshplayProgressBar';
 import Navigator from '../components/Navigator';
@@ -36,9 +36,10 @@ import {
   toggleCatalogContent,
   updateTelemetryUrls,
   setConnectionMetadata,
+  LegacyStoreContext,
 } from '../lib/store';
 import theme, { styles } from '../themes';
-import { getK8sConfigIdsFromK8sConfig } from '../utils/multi-ctx';
+import { getConnectionIDsFromContextIds, getK8sConfigIdsFromK8sConfig } from '../utils/multi-ctx';
 import './../public/static/style/index.css';
 import subscribeK8sContext from '../components/graphql/subscriptions/K8sContextSubscription';
 import { bindActionCreators } from 'redux';
@@ -63,6 +64,12 @@ import { getMeshModelComponentByName } from '../api/meshmodel';
 import { CONNECTION_KINDS, CONNECTION_KINDS_DEF, CONNECTION_STATES } from '../utils/Enum';
 import { ability } from '../utils/can';
 import { getCredentialByID } from '@/api/credentials';
+import { DynamicComponentProvider } from '@/utils/context/dynamicContext';
+import { useTheme } from '@material-ui/core/styles';
+import { store } from '../store';
+import { RTKContext } from '@/store/hooks';
+import classNames from 'classnames';
+import { forwardRef } from 'react';
 
 if (typeof window !== 'undefined') {
   require('codemirror/mode/yaml/yaml');
@@ -97,6 +104,59 @@ export function isExtensionOpen() {
   return window.location.pathname.startsWith(meshplayExtensionRoute);
 }
 
+const Footer = ({ classes, capabilitiesRegistry, handleL5CommunityClick }) => {
+  const theme = useTheme();
+
+  const extension = useSelector((state) => {
+    return state.get('extensionType');
+  });
+
+  if (extension == 'navigator') {
+    return null;
+  }
+
+  return (
+    <footer
+      className={
+        capabilitiesRegistry?.restrictedAccess?.isMeshplayUiRestricted
+          ? classes.playgFooter
+          : theme.palette.type === 'dark'
+            ? classes.footerDark
+            : classes.footer
+      }
+    >
+      <Typography
+        variant="body2"
+        align="center"
+        color="textSecondary"
+        component="p"
+        style={
+          capabilitiesRegistry?.restrictedAccess?.isMeshplayUiRestricted ? { color: '#000' } : {}
+        }
+      >
+        <span onClick={handleL5CommunityClick} className={classes.footerText}>
+          {capabilitiesRegistry?.restrictedAccess?.isMeshplayUiRestricted ? (
+            'ACCESS LIMITED IN MESHPLAY PLAYGROUND. DEPLOY MESHPLAY TO ACCESS ALL FEATURES.'
+          ) : (
+            <>
+              {' '}
+              Built with{' '}
+              <FavoriteIcon
+                style={{
+                  color:
+                    theme.palette.type === 'dark' ? theme.palette.secondary.focused : '#00b39f',
+                }}
+                className={classes.footerIcon}
+              />{' '}
+              by the KhulnaSoft Community
+            </>
+          )}
+        </span>
+      </Typography>
+    </footer>
+  );
+};
+
 class MeshplayApp extends App {
   constructor() {
     super();
@@ -112,7 +172,6 @@ class MeshplayApp extends App {
       activeK8sContexts: [],
       operatorSubscription: null,
       meshplayControllerSubscription: null,
-      meshSyncSubscription: null,
       disposeK8sContextSubscription: null,
       theme: 'light',
       isOpen: false,
@@ -120,6 +179,7 @@ class MeshplayApp extends App {
       connectionMetadata: {},
       keys: [],
       abilities: [],
+      abilityUpdated: false,
     };
   }
 
@@ -207,7 +267,7 @@ class MeshplayApp extends App {
         }
       },
       {
-        k8scontextIDs: contexts,
+        connectionIDs: getConnectionIDsFromContextIds(contexts, this.props.k8sConfig),
         eventTypes: ['ADDED', 'DELETED'],
       },
     );
@@ -276,8 +336,8 @@ class MeshplayApp extends App {
       const res = await getMeshModelComponentByName(formatToTitleCase(kind).concat('Connection'));
       if (res?.components) {
         connectionDef[CONNECTION_KINDS[kind]] = {
-          transitions: res?.components[0].model.metadata.transitions,
-          icon: res?.components[0].metadata.svgColor,
+          transitions: res?.components[0].metadata.transitions,
+          icon: res?.components[0].styles.svgColor,
         };
       }
       this.setState({ connectionMetadata: connectionDef });
@@ -300,22 +360,18 @@ class MeshplayApp extends App {
     }
 
     if (!_.isEqual(prevProps.k8sConfig, k8sConfig)) {
-      const { meshSyncSubscription, meshplayControllerSubscription } = this.state;
+      const { meshplayControllerSubscription } = this.state;
       console.log(
         'k8sconfig changed, re-initialising subscriptions',
         k8sConfig,
         this.state.activeK8sContexts,
       );
       const ids = getK8sConfigIdsFromK8sConfig(k8sConfig);
-      // if (operatorSubscription) {
-      //   operatorSubscription.updateSubscription(ids);
-      // }
 
       if (meshplayControllerSubscription) {
-        meshplayControllerSubscription.updateSubscription(ids);
-      }
-      if (meshSyncSubscription) {
-        meshSyncSubscription.updateSubscription(ids);
+        meshplayControllerSubscription.updateSubscription(
+          getConnectionIDsFromContextIds(ids, k8sConfig),
+        );
       }
 
       if (this.meshsyncEventsSubscriptionRef.current) {
@@ -327,7 +383,7 @@ class MeshplayApp extends App {
   initSubscriptions = (contexts) => {
     const meshplayControllerSubscription = new GQLSubscription({
       type: MESHPLAY_CONTROLLER_SUBSCRIPTION,
-      contextIds: contexts,
+      connectionIDs: getConnectionIDsFromContextIds(contexts, this.props.k8sConfig),
       callbackFunction: (data) => {
         this.props.store.dispatch({
           type: actionTypes.SET_CONTROLLER_STATE,
@@ -335,9 +391,8 @@ class MeshplayApp extends App {
         });
       },
     });
-    // const meshSyncSubscription = new GQLSubscription({ type : MESHSYNC_EVENT_SUBSCRIPTION, contextIds : contexts, callbackFunction : meshSyncCallback }) above uses old listenToMeshSyncEvents subscription, instead new subscribeMeshSyncEvents is used
+
     this.setState({ meshplayControllerSubscription });
-    // this.setState({ operatorSubscription });
   };
 
   handleDrawerToggle = () => {
@@ -369,6 +424,14 @@ class MeshplayApp extends App {
         this.state.k8sContexts.contexts.forEach((ctx) => activeContexts.push(ctx.id));
         activeContexts.push('all');
         this.setState({ activeK8sContexts: activeContexts }, () =>
+          this.activeContextChangeCallback(this.state.activeK8sContexts),
+        );
+        return;
+      }
+
+      // if id is an empty array, clear all active contexts
+      if (Array.isArray(id) && id.length === 0) {
+        this.setState({ activeK8sContexts: [] }, () =>
           this.activeContextChangeCallback(this.state.activeK8sContexts),
         );
         return;
@@ -416,6 +479,7 @@ class MeshplayApp extends App {
       let org = JSON.parse(currentOrg);
       await this.loadAbility(org.id, reFetchKeys);
       this.setOrganization(org);
+      await this.loadWorkspace(org.id);
     }
 
     dataFetch(
@@ -434,11 +498,13 @@ class MeshplayApp extends App {
             organizationToSet = result.organizations[0];
             reFetchKeys = true;
             await this.loadAbility(organizationToSet.id, reFetchKeys);
+            await this.loadWorkspace(organizationToSet.id);
             this.setOrganization(organizationToSet);
           }
         } else {
           organizationToSet = result.organizations[0];
           reFetchKeys = true;
+          await this.loadWorkspace(organizationToSet.id);
           await this.loadAbility(organizationToSet.id, reFetchKeys);
           this.setOrganization(organizationToSet);
         }
@@ -446,7 +512,25 @@ class MeshplayApp extends App {
       (err) => console.log('There was an error fetching available orgs:', err),
     );
   };
-
+  loadWorkspace = async (orgId) => {
+    const currentWorkspace = sessionStorage.getItem('currentWorkspace');
+    if (currentWorkspace && currentWorkspace !== 'undefined') {
+      let workspace = JSON.parse(currentWorkspace);
+      this.setWorkspace(workspace);
+    } else {
+      dataFetch(
+        `/api/workspaces?search=&order=&page=0&pagesize=10&orgID=${orgId}`,
+        {
+          method: 'GET',
+          credentials: 'include',
+        },
+        async (result) => {
+          this.setWorkspace(result.workspaces[0]);
+        },
+        (err) => console.log('There was an error fetching workspaces:', err),
+      );
+    }
+  };
   setOrganization = (org) => {
     const { store } = this.props;
     store.dispatch({
@@ -454,7 +538,13 @@ class MeshplayApp extends App {
       organization: org,
     });
   };
-
+  setWorkspace = (workspace) => {
+    const { store } = this.props;
+    store.dispatch({
+      type: actionTypes.SET_WORKSPACE,
+      workspace: workspace,
+    });
+  };
   loadAbility = async (orgID, reFetchKeys) => {
     const storedKeys = sessionStorage.getItem('keys');
     const { store } = this.props;
@@ -484,7 +574,10 @@ class MeshplayApp extends App {
   };
 
   updateAbility = () => {
-    ability.update(this.state.keys?.map((key) => ({ action: key.id, subject: key.function })));
+    ability.update(
+      this.state.keys?.map((key) => ({ action: key.id, subject: _.lowerCase(key.function) })),
+    );
+    this.setState({ abilityUpdated: true });
   };
 
   async loadConfigFromServer() {
@@ -578,149 +671,165 @@ class MeshplayApp extends App {
   render() {
     const { Component, pageProps, classes, isDrawerCollapsed, relayEnvironment } = this.props;
 
+    //eslint-disable-next-line
+    const ThemeResponsiveSnackbar = forwardRef((props, forwardedRef) => {
+      const { variant, message, action, key } = props;
+      return (
+        <SnackbarContent
+          ref={forwardedRef}
+          className={classNames(classes[variant], {
+            [classes.darknotifInfo]: variant === 'info' && this.state.theme === 'dark',
+            [classes.notifInfo]: variant === 'info' && this.state.theme !== 'dark',
+            [classes.darknotifSuccess]: variant === 'success' && this.state.theme === 'dark',
+            [classes.notifSuccess]: variant === 'success' && this.state.theme !== 'dark',
+            [classes.darknotifWarn]: variant === 'warning' && this.state.theme === 'dark',
+            [classes.notifWarn]: variant === 'warning' && this.state.theme !== 'dark',
+            [classes.darknotifError]: variant === 'error' && this.state.theme === 'dark',
+            [classes.notifError]: variant === 'error' && this.state.theme !== 'dark',
+          })}
+          style={{
+            borderRadius: '0.3rem',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0.5rem',
+            }}
+          >
+            {variant === 'error' ? (
+              <Error style={{ marginRight: '0.5rem' }} />
+            ) : variant === 'success' ? (
+              <CheckCircle style={{ marginRight: '0.5rem' }} />
+            ) : variant === 'warning' ? (
+              <Warning style={{ marginRight: '0.5rem' }} />
+            ) : variant === 'info' ? (
+              <Info style={{ marginRight: '0.5rem' }} />
+            ) : null}
+            <div className={classes.message}>{message}</div>
+
+            <div
+              style={{
+                marginLeft: '5px',
+              }}
+              className={classes.action}
+            >
+              {action && action?.(key)}
+            </div>
+          </div>
+        </SnackbarContent>
+      );
+    });
+
     return (
-      <RelayEnvironmentProvider environment={relayEnvironment}>
-        <ThemeProvider theme={this.state.theme === 'dark' ? darkTheme : theme}>
-          <NoSsr>
-            <ErrorBoundary>
-              <div className={classes.root}>
-                <CssBaseline />
-                {!this.state.isFullScreenMode && (
-                  <nav
-                    className={isDrawerCollapsed ? classes.drawerCollapsed : classes.drawer}
-                    data-test="navigation"
-                  >
-                    <Hidden smUp implementation="js">
-                      <Navigator
-                        variant="temporary"
-                        open={this.state.mobileOpen}
-                        onClose={this.handleDrawerToggle}
-                        onCollapseDrawer={(open = null) => this.handleCollapseDrawer(open)}
-                        isDrawerCollapsed={isDrawerCollapsed}
-                        updateExtensionType={this.updateExtensionType}
-                      />
-                    </Hidden>
-                    <Hidden xsDown implementation="css">
-                      <Navigator
-                        onCollapseDrawer={(open = null) => this.handleCollapseDrawer(open)}
-                        isDrawerCollapsed={isDrawerCollapsed}
-                        updateExtensionType={this.updateExtensionType}
-                      />
-                    </Hidden>
-                  </nav>
-                )}
-                <div className={classes.appContent}>
-                  <SnackbarProvider
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    }}
-                    iconVariant={{
-                      success: <CheckCircle style={{ marginRight: '0.5rem' }} />,
-                      error: <Error style={{ marginRight: '0.5rem' }} />,
-                      warning: <Warning style={{ marginRight: '0.5rem' }} />,
-                      info: <Info style={{ marginRight: '0.5rem' }} />,
-                    }}
-                    classes={{
-                      variantSuccess:
-                        this.state.theme === 'dark'
-                          ? classes.darknotifSuccess
-                          : classes.notifSuccess,
-                      variantError:
-                        this.state.theme === 'dark' ? classes.darknotifError : classes.notifError,
-                      variantWarning:
-                        this.state.theme === 'dark' ? classes.darknotifWarn : classes.notifWarn,
-                      variantInfo:
-                        this.state.theme === 'dark' ? classes.darknotifInfo : classes.notifInfo,
-                    }}
-                    maxSnack={10}
-                  >
-                    <NotificationCenterProvider>
-                      <MeshplayProgressBar />
-                      {!this.state.isFullScreenMode && (
-                        <Header
-                          onDrawerToggle={this.handleDrawerToggle}
-                          onDrawerCollapse={isDrawerCollapsed}
-                          contexts={this.state.k8sContexts}
-                          activeContexts={this.state.activeK8sContexts}
-                          setActiveContexts={this.setActiveContexts}
-                          searchContexts={this.searchContexts}
+      <DynamicComponentProvider>
+        <RelayEnvironmentProvider environment={relayEnvironment}>
+          <ThemeProvider theme={this.state.theme === 'dark' ? darkTheme : theme}>
+            <NoSsr>
+              <ErrorBoundary>
+                <div className={classes.root}>
+                  <CssBaseline />
+                  {!this.state.isFullScreenMode && (
+                    <nav
+                      className={isDrawerCollapsed ? classes.drawerCollapsed : classes.drawer}
+                      data-test="navigation"
+                      style={{ height: '100%', overflow: 'visible' }}
+                    >
+                      <Hidden smUp implementation="js">
+                        <Navigator
+                          variant="temporary"
+                          open={this.state.mobileOpen}
+                          onClose={this.handleDrawerToggle}
+                          onCollapseDrawer={(open = null) => this.handleCollapseDrawer(open)}
+                          isDrawerCollapsed={isDrawerCollapsed}
                           updateExtensionType={this.updateExtensionType}
-                          theme={this.state.theme}
-                          themeSetter={this.themeSetter}
                         />
-                      )}
-                    </NotificationCenterProvider>
-                    <main className={classes.mainContent}>
-                      <MuiPickersUtilsProvider utils={MomentUtils}>
-                        <ErrorBoundary>
-                          <Component
-                            pageContext={this.pageContext}
+                      </Hidden>
+                      <Hidden xsDown implementation="css">
+                        <Navigator
+                          onCollapseDrawer={(open = null) => this.handleCollapseDrawer(open)}
+                          isDrawerCollapsed={isDrawerCollapsed}
+                          updateExtensionType={this.updateExtensionType}
+                        />
+                      </Hidden>
+                    </nav>
+                  )}
+                  <div className={classes.appContent}>
+                    <SnackbarProvider
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                      }}
+                      iconVariant={{
+                        success: <CheckCircle style={{ marginRight: '0.5rem' }} />,
+                        error: <Error style={{ marginRight: '0.5rem' }} />,
+                        warning: <Warning style={{ marginRight: '0.5rem' }} />,
+                        info: <Info style={{ marginRight: '0.5rem' }} />,
+                      }}
+                      Components={{
+                        info: ThemeResponsiveSnackbar,
+                        success: ThemeResponsiveSnackbar,
+                        error: ThemeResponsiveSnackbar,
+                        warning: ThemeResponsiveSnackbar,
+                      }}
+                      maxSnack={10}
+                    >
+                      <NotificationCenterProvider>
+                        <MeshplayProgressBar />
+                        {!this.state.isFullScreenMode && (
+                          <Header
+                            onDrawerToggle={this.handleDrawerToggle}
+                            onDrawerCollapse={isDrawerCollapsed}
                             contexts={this.state.k8sContexts}
                             activeContexts={this.state.activeK8sContexts}
                             setActiveContexts={this.setActiveContexts}
                             searchContexts={this.searchContexts}
+                            updateExtensionType={this.updateExtensionType}
                             theme={this.state.theme}
                             themeSetter={this.themeSetter}
-                            {...pageProps}
+                            abilityUpdated={this.state.abilityUpdated}
                           />
-                        </ErrorBoundary>
-                      </MuiPickersUtilsProvider>
-                    </main>
-                  </SnackbarProvider>
-                  <footer
-                    className={
-                      this.props.capabilitiesRegistry?.restrictedAccess?.isMeshplayUiRestricted
-                        ? classes.playgroundFooter
-                        : this.state.theme === 'dark'
-                        ? classes.footerDark
-                        : classes.footer
-                    }
-                  >
-                    <Typography
-                      variant="body2"
-                      align="center"
-                      color="textSecondary"
-                      component="p"
-                      style={
-                        this.props.capabilitiesRegistry?.restrictedAccess?.isMeshplayUiRestricted
-                          ? { color: '#000' }
-                          : {}
-                      }
-                    >
-                      <span onClick={this.handleL5CommunityClick} className={classes.footerText}>
-                        {this.props.capabilitiesRegistry?.restrictedAccess
-                          ?.isMeshplayUiRestricted ? (
-                          'ACCESS LIMITED IN MESHPLAY PLAYGROUND. DEPLOY MESHPLAY TO ACCESS ALL FEATURES.'
-                        ) : (
-                          <>
-                            {' '}
-                            Built with{' '}
-                            <FavoriteIcon
-                              style={{
-                                color:
-                                  this.state.theme === 'dark'
-                                    ? theme.palette.secondary.focused
-                                    : '#00b39f',
-                              }}
-                              className={classes.footerIcon}
-                            />{' '}
-                            by the Khulnasoft Community
-                          </>
                         )}
-                      </span>
-                    </Typography>
-                  </footer>
+                        <main
+                          className={classes.mainContent}
+                          style={{
+                            padding: this.props.extensionType === 'navigator' && '0px',
+                          }}
+                        >
+                          <MuiPickersUtilsProvider utils={MomentUtils}>
+                            <ErrorBoundary>
+                              <Component
+                                pageContext={this.pageContext}
+                                contexts={this.state.k8sContexts}
+                                activeContexts={this.state.activeK8sContexts}
+                                setActiveContexts={this.setActiveContexts}
+                                searchContexts={this.searchContexts}
+                                theme={this.state.theme}
+                                themeSetter={this.themeSetter}
+                                {...pageProps}
+                              />
+                            </ErrorBoundary>
+                          </MuiPickersUtilsProvider>
+                        </main>
+                      </NotificationCenterProvider>
+                    </SnackbarProvider>
+                    <Footer
+                      classes={classes}
+                      handleL5CommunityClick={this.handleL5CommunityClick}
+                      capabilitiesRegistry={this.props.capabilitiesRegistry}
+                    />
+                  </div>
                 </div>
-              </div>
-              <PlaygroundMeshDeploy
-                closeForm={() => this.setState({ isOpen: false })}
-                isOpen={this.state.isOpen}
-              />
-            </ErrorBoundary>
-          </NoSsr>
-        </ThemeProvider>
-      </RelayEnvironmentProvider>
+                <PlaygroundMeshDeploy
+                  closeForm={() => this.setState({ isOpen: false })}
+                  isOpen={this.state.isOpen}
+                />
+              </ErrorBoundary>
+            </NoSsr>
+          </ThemeProvider>
+        </RelayEnvironmentProvider>
+      </DynamicComponentProvider>
     );
   }
 }
@@ -731,10 +840,10 @@ const mapStateToProps = (state) => ({
   isDrawerCollapsed: state.get('isDrawerCollapsed'),
   k8sConfig: state.get('k8sConfig'),
   operatorSubscription: state.get('operatorSubscription'),
-  meshSyncSubscription: state.get('meshSyncSubscription'),
   capabilitiesRegistry: state.get('capabilitiesRegistry'),
   telemetryURLs: state.get('telemetryURLs'),
   connectionMetadata: state.get('connectionMetadata'),
+  extensionType: state.get('extensionType'),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -749,14 +858,18 @@ const MeshplayWithRedux = withStyles(styles)(
 
 const MeshplayAppWrapper = (props) => {
   return (
-    <Provider store={props.store}>
-      <Head>
-        <link rel="shortcut icon" href="/static/img/meshplay-logo/meshplay-logo.svg" />
-        <title>Meshplay</title>
-      </Head>
-      <MuiPickersUtilsProvider utils={MomentUtils}>
-        <MeshplayWithRedux {...props} />
-      </MuiPickersUtilsProvider>
+    <Provider store={store} context={RTKContext}>
+      <Provider store={props.store} context={LegacyStoreContext}>
+        <Provider store={props.store}>
+          <Head>
+            <link rel="shortcut icon" href="/static/img/meshplay-logo/meshplay-logo.svg" />
+            <title>Meshplay</title>
+          </Head>
+          <MuiPickersUtilsProvider utils={MomentUtils}>
+            <MeshplayWithRedux {...props} />
+          </MuiPickersUtilsProvider>
+        </Provider>
+      </Provider>
     </Provider>
   );
 };

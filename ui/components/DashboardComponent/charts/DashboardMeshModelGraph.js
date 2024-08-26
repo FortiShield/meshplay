@@ -1,58 +1,52 @@
 import Grid from '@material-ui/core/Grid';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Typography } from '@material-ui/core';
+import React, { useMemo } from 'react';
+import { IconButton, Typography } from '@material-ui/core';
 import BBChart from '../../BBChart';
-import { donut, pie } from 'billboard.js';
-import {
-  getAllComponents,
-  getMeshModels,
-  getRelationshipsDetail,
-  fetchCategories,
-  getModelFromCategoryApi,
-} from '../../../api/meshmodel';
+import { donut } from 'billboard.js';
 import { dataToColors } from '../../../utils/charts';
 import Link from 'next/link';
 import theme from '../../../themes/app';
 import { iconSmall } from '../../../css/icons.styles';
-import InfoIcon from '@material-ui/icons/Info';
 import { CustomTextTooltip } from '@/components/MeshplayMeshInterface/PatternService/CustomTextTooltip';
-
-const useFetchTotal = (fetchr) => {
-  const [total, setTotal] = useState(0);
-
-  useEffect(() => {
-    fetchr()
-      .then((json) => {
-        setTotal(json['total_count']);
-      })
-      .catch((e) => console.log('Api Error : ', e));
-  }, []);
-  return total;
-};
+import { InfoOutlined } from '@material-ui/icons';
+import {
+  useGetCategoriesSummary,
+  useGetComponentsQuery,
+  useGetMeshModelsQuery,
+  useGetRelationshipsQuery,
+  useGetRegistrantsQuery,
+} from '@/rtk-query/meshModel';
+import CAN from '@/utils/can';
+import { keys } from '@/utils/permission_constants';
+import { useRouter } from 'next/router';
 
 function MeshModelContructs({ classes }) {
-  // API Calls
-  const totalModels = useFetchTotal(() => getMeshModels(1, 1));
-  const totalComponents = useFetchTotal(() => getAllComponents(1, 1));
-  const totalRelationships = useFetchTotal(() => getRelationshipsDetail(1, 1));
+  const params = {
+    page: 0,
+    pagesize: '1',
+  };
+  const modelCount = useGetMeshModelsQuery({ params }).data?.total_count || 0;
+  const componentCount = useGetComponentsQuery({ params }).data?.total_count || 0;
+  const relationshipCount = useGetRelationshipsQuery({ params }).data?.total_count || 0;
+  const registrantsConut = useGetRegistrantsQuery({ params }).data?.total_count || 0;
 
   // Data Cleanup
-  const data = useMemo(() => {
-    // TODO: Add Policies
-    return [
-      ['Models', totalModels],
-      ['Components', totalComponents],
-      ['Relationships', totalRelationships],
-      // TODO: Add Policies
-    ];
-  }, [totalModels, totalRelationships, totalComponents]);
-
+  const data = [
+    ['Models', modelCount],
+    ['Components', componentCount],
+    ['Relationships', relationshipCount],
+    ['Registrants', registrantsConut],
+  ];
+  const router = useRouter();
   const chartOptions = useMemo(
     () => ({
       data: {
         columns: data,
         type: donut(),
         colors: dataToColors(data),
+        onclick: function (d) {
+          router.push(`/settings?settingsCategory=Registry&tab=${d.name}`);
+        },
       },
       arc: {
         cornerRadius: {
@@ -74,28 +68,39 @@ function MeshModelContructs({ classes }) {
     [data],
   );
 
-  const url = `https://docs.khulnasoft.com/concepts/models`;
-
   return (
-    <Link href="/settings#registry">
+    <Link
+      href="/settings?settingsCategory=Registry"
+      style={{
+        pointerEvents: !CAN(keys.VIEW_REGISTRY.action, keys.VIEW_REGISTRY.subject)
+          ? 'none'
+          : 'auto',
+      }}
+    >
       <div className={classes.dashboardSection}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h6" gutterBottom className={classes.link}>
             Registry
           </Typography>
-          <CustomTextTooltip
-            title="Learn more about Models, Components, and Relationships in Meshplay"
-            placement="left"
-          >
-            <InfoIcon
-              color={theme.palette.secondary.iconMain}
-              style={{ ...iconSmall, marginLeft: '0.5rem', cursor: 'pointer' }}
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(url, '_blank');
-              }}
-            />
-          </CustomTextTooltip>
+
+          <div onClick={(e) => e.stopPropagation()}>
+            <CustomTextTooltip
+              placement="left"
+              interactive={true}
+              variant="standard"
+              title={`The Meshplay Registry is a critical component acting as the central repository for all capabilities known to Meshplay. [Learn More](https://docs-meshplay.khulnasoft.com/concepts/logical/registry)`}
+            >
+              <IconButton disableRipple={true} disableFocusRipple={true}>
+                <InfoOutlined
+                  color={theme.palette.secondary.iconMain}
+                  style={{ ...iconSmall, marginLeft: '0.5rem', cursor: 'pointer' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                />
+              </IconButton>
+            </CustomTextTooltip>
+          </div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <BBChart options={chartOptions} />
@@ -106,7 +111,9 @@ function MeshModelContructs({ classes }) {
 }
 
 function MeshModelCategories({ classes }) {
-  const [categoryMap, setCategoryMap] = useState({});
+  const router = useRouter();
+  const categoryMap = useGetCategoriesSummary();
+
   const cleanedData = useMemo(
     () => Object.keys(categoryMap).map((key) => [key, categoryMap[key]]),
     [categoryMap],
@@ -117,7 +124,24 @@ function MeshModelCategories({ classes }) {
       data: {
         columns: cleanedData,
         colors: dataToColors(cleanedData),
-        type: pie(),
+        type: donut(),
+        onclick: function () {
+          router.push('/settings?settingsCategory=Registry&tab=Models');
+        },
+      },
+      arc: {
+        cornerRadius: {
+          ratio: 0.05,
+        },
+      },
+      donut: {
+        title: 'Models\nby Category',
+        padAngle: 0.03,
+        label: {
+          format: function (value) {
+            return value;
+          },
+        },
       },
       tooltip: {
         format: {
@@ -133,40 +157,32 @@ function MeshModelCategories({ classes }) {
     [cleanedData],
   );
 
-  // API Calls
-  useEffect(() => {
-    fetchCategories().then((categoriesJson) => {
-      categoriesJson['categories'].forEach((category) => {
-        let categoryName = category.name;
-        getModelFromCategoryApi(categoryName).then((modelsJson) => {
-          setCategoryMap((prevState) => ({
-            ...prevState,
-            [categoryName]: modelsJson['total_count'],
-          }));
-        });
-      });
-    });
-  }, []);
-
-  const url = `https://docs.khulnasoft.com/concepts/models`;
-
   return (
-    <Link href="/settings#registry">
+    <Link href="/settings?settingsCategory=Registry&tab=Models">
       <div className={classes.dashboardSection}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h6" gutterBottom className={classes.link}>
-            Categories
+            Models by Category
           </Typography>
-          <CustomTextTooltip title="Learn more about Categories" placement="left">
-            <InfoIcon
-              color={theme.palette.secondary.iconMain}
-              style={{ ...iconSmall, marginLeft: '0.5rem', cursor: 'pointer' }}
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(url, '_blank');
-              }}
-            />
-          </CustomTextTooltip>
+
+          <div onClick={(e) => e.stopPropagation()}>
+            <CustomTextTooltip
+              title={`Meshplay Models represent the fundamental building blocks of your infrastructure. Models are categorized by their function. For example, a model for Prometheus belongs in the "Observability and Analysis" category. [Learn More](https://docs-meshplay.khulnasoft.com/concepts/logical/models)`}
+              placement="left"
+              variant="standard"
+              interactive={true}
+            >
+              <IconButton disableRipple={true} disableFocusRipple={true}>
+                <InfoOutlined
+                  color={theme.palette.secondary.iconMain}
+                  style={{ ...iconSmall, marginLeft: '0.5rem', cursor: 'pointer' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                />
+              </IconButton>
+            </CustomTextTooltip>
+          </div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <BBChart options={chartOptions} />

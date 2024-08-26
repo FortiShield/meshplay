@@ -66,12 +66,21 @@ meshplayctl system start -p docker
 </div>
 </pre> 
 
+Specify Provider to use.
+<pre class='codeblock-pre'>
+<div class='codeblock'>
+meshplayctl system start --provider Meshplay
+
+</div>
+</pre> 
+
 ## Options
 
 <pre class='codeblock-pre'>
 <div class='codeblock'>
   -h, --help              help for start
   -p, --platform string   platform to deploy Meshplay to.
+      --provider string   (optional) Defaults to the provider specified in the current context
       --reset             (optional) reset Meshplay's configuration file to default settings.
       --skip-browser      (optional) skip opening of MeshplayUI in browser.
       --skip-update       (optional) skip checking for new Meshplay's container images.

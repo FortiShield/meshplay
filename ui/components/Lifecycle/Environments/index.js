@@ -13,15 +13,23 @@ import classNames from 'classnames';
 import AddIconCircleBorder from '../../../assets/icons/AddIconCircleBorder';
 import EnvironmentCard from './environment-card';
 import EnvironmentIcon from '../../../assets/icons/Environment';
-import dataFetch from '../../../lib/data-fetch';
 import { EVENT_TYPES } from '../../../lib/event-types';
 import { updateProgress } from '../../../lib/store';
 import { useNotification } from '../../../utils/hooks/useNotification';
 import useStyles from '../../../assets/styles/general/tool.styles';
 import SearchBar from '../../../utils/custom-search';
-import Modal from '../../Modal';
+import { RJSFModalWrapper } from '../../Modal';
 import PromptComponent, { PROMPT_VARIANTS } from '../../PromptComponent';
-import { EmptyState, TransferList, GenericModal } from '../General';
+import { EmptyState } from '../General';
+import {
+  Modal as SisitentModal,
+  ModalBody,
+  TransferList,
+  ModalFooter,
+  PrimaryActionButtons,
+  createAndEditEnvironmentSchema,
+  createAndEditEnvironmentUiSchema,
+} from '@khulnasoft/sistent';
 import ConnectionIcon from '../../../assets/icons/Connection';
 import { TRANSFER_COMPONENT } from '../../../utils/Enum';
 import {
@@ -38,33 +46,7 @@ import styles from './styles';
 import { keys } from '@/utils/permission_constants';
 import CAN from '@/utils/can';
 import DefaultError from '../../General/error-404/index';
-
-const ERROR_MESSAGE = {
-  FETCH_ENVIRONMENTS: {
-    name: 'FETCH_ENVIRONMENTS',
-    error_msg: 'Failed to fetch environments',
-  },
-  CREATE_ENVIRONMENT: {
-    name: 'CREATE_ENVIRONMENT',
-    error_msg: 'Failed to create environment',
-  },
-  UPDATE_ENVIRONMENT: {
-    name: 'UPDATE_ENVIRONMENT',
-    error_msg: 'Failed to update environment',
-  },
-  DELETE_ENVIRONMENT: {
-    name: 'DELETE_ENVIRONMENT',
-    error_msg: 'Failed to delete environment',
-  },
-  FETCH_ORGANIZATIONS: {
-    name: 'FETCH_ORGANIZATIONS',
-    error_msg: 'There was an error fetching available orgs',
-  },
-  FETCH_CONNECTIONS: {
-    name: 'FETCH_CONNECTIONS',
-    error_msg: 'There was an error fetching connections',
-  },
-};
+import { UsesSistent } from '@/components/SistentWrapper';
 
 const ACTION_TYPES = {
   CREATE: 'create',
@@ -79,8 +61,6 @@ const Environments = ({ organization, classes }) => {
   const [actionType, setActionType] = useState('');
   const [initialData, setInitialData] = useState({});
   const [editEnvId, setEditEnvId] = useState('');
-  const [orgValue, setOrgValue] = useState([]);
-  const [orgLabel, setOrgLabel] = useState([]);
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [orgId, setOrgId] = useState('');
@@ -105,7 +85,6 @@ const Environments = ({ organization, classes }) => {
 
   const {
     data: environmentsData,
-    // isLoading: isEnvironmentsLoading,
     isError: isEnvironmentsError,
     error: environmentsError,
   } = useGetEnvironmentsQuery(
@@ -212,51 +191,36 @@ const Environments = ({ organization, classes }) => {
 
   useEffect(() => {
     setOrgId(organization?.id);
-    fetchAvailableOrgs();
   }, [organization]);
 
-  const fetchAvailableOrgs = async () => {
-    dataFetch(
-      '/api/identity/orgs',
-      {
-        method: 'GET',
-        credentials: 'include',
-      },
-      (result) => {
-        if (result) {
-          const label = result?.organizations.map((option) => option.name);
-          const value = result?.organizations.map((option) => option.id);
-          setOrgLabel(label);
-          setOrgValue(value);
-        }
-      },
-      handleError(ERROR_MESSAGE.FETCH_ORGANIZATIONS),
-    );
-  };
-
-  const fetchSchema = async (actionType) => {
-    dataFetch(
-      `/api/schema/resource/environment`,
-      {
-        credentials: 'include',
-        method: 'GET',
-      },
-      (res) => {
-        if (res) {
-          const rjsfSchemaOrg = res.rjsfSchema?.properties?.organization;
-          const uiSchemaOrg = res.uiSchema?.organization;
-          rjsfSchemaOrg.enum = orgValue;
-          rjsfSchemaOrg.enumNames = orgLabel;
-          actionType === ACTION_TYPES.CREATE
-            ? (uiSchemaOrg['ui:widget'] = 'select')
-            : (uiSchemaOrg['ui:widget'] = 'hidden');
-          setEnvironmentModal({
-            open: true,
-            schema: res,
-          });
-        }
-      },
-    );
+  const fetchSchema = () => {
+    const updatedSchema = {
+      schema: createAndEditEnvironmentSchema,
+      uischema: createAndEditEnvironmentUiSchema,
+    };
+    updatedSchema.schema.properties?.organization &&
+      ((updatedSchema.schema = {
+        ...updatedSchema.schema,
+        properties: {
+          ...updatedSchema.schema.properties,
+          organization: {
+            ...updatedSchema.schema.properties.organization,
+            enum: [organization?.id],
+            enumNames: [organization?.name],
+          },
+        },
+      }),
+      (updatedSchema.uischema = {
+        ...updatedSchema.uischema,
+        organization: {
+          ...updatedSchema.uischema.organization,
+          ['ui:widget']: 'hidden',
+        },
+      }));
+    setEnvironmentModal({
+      open: true,
+      schema: updatedSchema,
+    });
   };
 
   const [addConnectionToEnvironmentMutator] = useAddConnectionToEnvironmentMutation();
@@ -289,7 +253,7 @@ const Environments = ({ organization, classes }) => {
       });
       setEditEnvId('');
     }
-    fetchSchema(actionType);
+    fetchSchema();
   };
 
   const handleEnvironmentModalClose = () => {
@@ -332,9 +296,12 @@ const Environments = ({ organization, classes }) => {
   const handleDeleteEnvironmentConfirm = async (e, environment) => {
     e.stopPropagation();
     let response = await modalRef.current.show({
-      title: `Delete Environment ?`,
+      title: `Delete "${environment.name}" environment?`,
       subtitle: deleteEnvironmentModalContent(environment.name),
       options: ['DELETE', 'CANCEL'],
+      showInfoIcon: `Deleting an environment does not delete any resources (e.g. connections) currently contained with the environment.
+      Resources that belong to others environments will continue to belong to those other environments.
+      Learn more about the behavior of [lifecycle of environments and their resources](https://docs-meshplay.khulnasoft.com/concepts/logical/environments) in Meshplay Docs.`,
       variant: PROMPT_VARIANTS.DANGER,
     });
     if (response === 'DELETE') {
@@ -424,7 +391,15 @@ const Environments = ({ organization, classes }) => {
   const handleAssignConnectionData = (updatedAssignedData) => {
     const { addedConnectionsIds, removedConnectionsIds } =
       getAddedAndRemovedConnection(updatedAssignedData);
-    (addedConnectionsIds.length > 0 || removedConnectionsIds.length) > 0
+    (addedConnectionsIds.length > 0 || removedConnectionsIds.length) > 0 &&
+    (CAN(
+      keys.ASSIGN_CONNECTIONS_TO_ENVIRONMENT.action,
+      keys.ASSIGN_CONNECTIONS_TO_ENVIRONMENT.subject,
+    ) ||
+      CAN(
+        keys.REMOVE_CONNECTIONS_FROM_ENVIRONMENT.action,
+        keys.REMOVE_CONNECTIONS_FROM_ENVIRONMENT.subject,
+      ))
       ? setDisableTranferButton(false)
       : setDisableTranferButton(true);
 
@@ -501,7 +476,7 @@ const Environments = ({ organization, classes }) => {
               onSearch={(value) => {
                 setSearch(value);
               }}
-              placeholder="Search connections..."
+              placeholder="Search Environments..."
               expanded={isSearchExpanded}
               setExpanded={setIsSearchExpanded}
             />
@@ -584,59 +559,84 @@ const Environments = ({ organization, classes }) => {
               pointerLabel="Click “Create” to establish your first environment."
             />
           )}
-          {actionType === ACTION_TYPES.CREATE
-            ? CAN(keys.CREATE_ENVIRONMENT.action, keys.CREATE_ENVIRONMENT.subject)
-            : CAN(keys.EDIT_ENVIRONMENT.action, keys.EDIT_ENVIRONMENT.subject) &&
-              environmentModal.open && (
-                <Modal
+          {(CAN(keys.CREATE_ENVIRONMENT.action, keys.CREATE_ENVIRONMENT.subject) ||
+            CAN(keys.EDIT_ENVIRONMENT.action, keys.EDIT_ENVIRONMENT.subject)) &&
+            environmentModal.open && (
+              <UsesSistent>
+                <SisitentModal
                   open={environmentModal.open}
-                  schema={environmentModal.schema.rjsfSchema}
-                  uiSchema={environmentModal.schema.uiSchema}
-                  handleClose={handleEnvironmentModalClose}
-                  handleSubmit={
-                    actionType === ACTION_TYPES.CREATE
-                      ? handleCreateEnvironment
-                      : handleEditEnvironment
-                  }
+                  closeModal={handleEnvironmentModalClose}
                   title={
                     actionType === ACTION_TYPES.CREATE ? 'Create Environment' : 'Edit Environment'
                   }
-                  submitBtnText={actionType === ACTION_TYPES.CREATE ? 'Save' : 'Update'}
-                  initialData={initialData}
+                >
+                  <RJSFModalWrapper
+                    schema={environmentModal.schema.schema}
+                    uiSchema={environmentModal.schema.uischema}
+                    handleSubmit={
+                      actionType === ACTION_TYPES.CREATE
+                        ? handleCreateEnvironment
+                        : handleEditEnvironment
+                    }
+                    submitBtnText={actionType === ACTION_TYPES.CREATE ? 'Save' : 'Update'}
+                    initialData={initialData}
+                    handleClose={handleEnvironmentModalClose}
+                  />
+                </SisitentModal>
+              </UsesSistent>
+            )}
+          <UsesSistent>
+            <SisitentModal
+              open={assignConnectionModal}
+              closeModal={handleonAssignConnectionModalClose}
+              title={`${connectionAssignEnv.name} Resources`}
+              headerIcon={<EnvironmentIcon height="2rem" width="2rem" fill="white" />}
+              maxWidth="md"
+            >
+              <ModalBody>
+                <TransferList
+                  name="Connections"
+                  assignableData={connectionsData}
+                  assignedData={handleAssignConnectionData}
+                  originalAssignedData={environmentConnectionsData}
+                  emptyStateIconLeft={
+                    <ConnectionIcon width="120" primaryFill="#808080" secondaryFill="#979797" />
+                  }
+                  emtyStateMessageLeft="No connections available"
+                  emptyStateIconRight={
+                    <ConnectionIcon width="120" primaryFill="#808080" secondaryFill="#979797" />
+                  }
+                  emtyStateMessageRight="No connections assigned"
+                  transferComponentType={TRANSFER_COMPONENT.CHIP}
+                  assignablePage={handleAssignablePage}
+                  assignedPage={handleAssignedPage}
+                  originalLeftCount={connections?.total_count}
+                  originalRightCount={environmentConnections?.total_count}
+                  leftPermission={CAN(
+                    keys.REMOVE_CONNECTIONS_FROM_ENVIRONMENT.action,
+                    keys.REMOVE_CONNECTIONS_FROM_ENVIRONMENT.subject,
+                  )}
+                  rightPermission={CAN(
+                    keys.ASSIGN_CONNECTIONS_TO_ENVIRONMENT.action,
+                    keys.ASSIGN_CONNECTIONS_TO_ENVIRONMENT.subject,
+                  )}
                 />
-              )}
-          <GenericModal
-            open={assignConnectionModal}
-            handleClose={handleonAssignConnectionModalClose}
-            title={`${connectionAssignEnv.name} Resources`}
-            body={
-              <TransferList
-                name="Connections"
-                assignableData={connectionsData}
-                assignedData={handleAssignConnectionData}
-                originalAssignedData={environmentConnectionsData}
-                emptyStateIconLeft={
-                  <ConnectionIcon width="120" primaryFill="#808080" secondaryFill="#979797" />
-                }
-                emtyStateMessageLeft="No connections available"
-                emptyStateIconRight={
-                  <ConnectionIcon width="120" primaryFill="#808080" secondaryFill="#979797" />
-                }
-                emtyStateMessageRight="No connections assigned"
-                transferComponentType={TRANSFER_COMPONENT.CHIP}
-                assignablePage={handleAssignablePage}
-                assignedPage={handleAssignedPage}
-                originalLeftCount={connections?.total_count}
-                originalRightCount={environmentConnections?.total_count}
-              />
-            }
-            action={handleAssignConnection}
-            buttonTitle="Save"
-            disabled={disableTranferButton}
-            leftHeaderIcon={<EnvironmentIcon height="2rem" width="2rem" fill="white" />}
-            helpText="Assign connections to environment"
-            maxWidth="md"
-          />
+              </ModalBody>
+              <ModalFooter variant="filled" helpText="Assign connections to environment">
+                <PrimaryActionButtons
+                  primaryText="Save"
+                  secondaryText="Cancel"
+                  primaryButtonProps={{
+                    onClick: handleAssignConnection,
+                    disabled: disableTranferButton,
+                  }}
+                  secondaryButtonProps={{
+                    onClick: handleonAssignConnectionModalClose,
+                  }}
+                />
+              </ModalFooter>
+            </SisitentModal>
+          </UsesSistent>
           <PromptComponent ref={modalRef} />
         </>
       ) : (

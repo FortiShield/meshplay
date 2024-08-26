@@ -7,12 +7,13 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"strconv"
 	"time"
 
 	"github.com/khulnasoft/meshplay/server/models"
+	"github.com/khulnasoft/meshkit/models/meshmodel/registry"
 	"github.com/khulnasoft/meshkit/utils"
 	meshsyncmodel "github.com/khulnasoft/meshsync/pkg/model"
+	"github.com/spf13/viper"
 	"gorm.io/gorm/clause"
 )
 
@@ -37,26 +38,7 @@ func (h *Handler) GetSystemDatabase(w http.ResponseWriter, r *http.Request, _ *m
 	var tables []*models.SqliteSchema
 	var recordCount int
 	var totalTables int64
-
-	limitstr := r.URL.Query().Get("pagesize")
-	var limit int
-	if limitstr != "all" {
-		limit, _ = strconv.Atoi(limitstr)
-		if limit <= 0 {
-			limit = defaultPageSize
-		}
-	}
-	pagestr := r.URL.Query().Get("page")
-	page, _ := strconv.Atoi(pagestr)
-
-	if page <= 0 {
-		page = 1
-	}
-
-	offset := (page - 1) * limit
-	order := r.URL.Query().Get("order")
-	sort := r.URL.Query().Get("sort")
-	search := r.URL.Query().Get("search")
+	page, offset, limit, search, order, sort, _ := getPaginationParams(r)
 
 	tableFinder := h.dbHandler.DB.Table("sqlite_schema").
 		Where("type = ?", "table")
@@ -191,13 +173,29 @@ func (h *Handler) ResetSystemDatabase(w http.ResponseWriter, r *http.Request, _ 
 			&models.SmiResultWithID{},
 			&models.K8sContext{},
 		)
+
 		if err != nil {
 			http.Error(w, "Can not migrate tables to database", http.StatusInternalServerError)
 			return
 		}
 
+		rm, err := registry.NewRegistryManager(dbHandler)
+		if err != nil {
+			http.Error(w, "Can not migrate tables to database", http.StatusInternalServerError)
+			return
+		}
+		h.registryManager = rm
+
+		krh, err := models.NewKeysRegistrationHelper(dbHandler, h.log)
+		if err != nil {
+			http.Error(w, "Can not migrate tables to database", http.StatusInternalServerError)
+			return
+		}
+		go func() {
+			models.SeedComponents( h.log, h.config, h.registryManager)
+			krh.SeedKeys(viper.GetString("KEYS_PATH"))
+		}()
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, "Database reset successful")
-
 	}
 }

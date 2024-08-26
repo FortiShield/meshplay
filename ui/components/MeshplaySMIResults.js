@@ -211,7 +211,7 @@ class MeshplaySMIResults extends Component {
       search: !(user && user.user_id === 'meshplay'),
       filter: false,
       expandableRows: true,
-      selectableRows: false,
+      selectableRows: 'none',
       serverSide: true,
       count,
       rowsPerPage: smi_pageSize,

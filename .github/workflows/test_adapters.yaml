@@ -97,7 +97,7 @@ jobs:
       # Start Meshplay Server (Assuming that this step will create the meshplay namespace)
       - name: Start Meshplay Server using meshplayctl
         run: |
-          curl -L https://khulnasoft.com/install | PLATFORM=kubernetes bash -
+          curl -L https://meshplay.io/install | PLATFORM=kubernetes bash -
 
       # Start the adapter using yamls
       - name: Start adapter
@@ -232,11 +232,11 @@ jobs:
               status="partial"
           fi
           echo $(jq '."overall-status" |=  "'$status'"' data.json) > data.json;
-          MESHPLAY_VERSION=$(curl -L -s https://github.com/khulnasoft/meshplay/releases/latest | grep "/releases/tag/" | head -1 | awk -F '"' '{print $4}' | awk -F '/' '{print $NF}' )
+          MESHPLAY_VERSION=$(curl -L -s https://github.com/meshplay/meshplay/releases/latest | grep "/releases/tag/" | head -1 | awk -F '"' '{print $4}' | awk -F '/' '{print $NF}' )
           echo $(jq '.metadata."meshplay-server-version" |="'$MESHPLAY_VERSION'"' data.json ) > data.json
           echo "exitstatus=$exitstatus" >> $GITHUB_ENV
       - name: UploadResults
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.output_filename }}
           path: ./${{ inputs.output_filename }}

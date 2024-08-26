@@ -15,7 +15,7 @@ To automate functional integration and end-to-end testing through Meshplay UI, [
 
 ## Understanding the test framework directories
 
-Clone the `khulnasoft/meshplay` repo and navigate to the [/ui/cypress/](https://github.com/khulnasoft/meshplay/tree/master/ui/cypress) directory.
+Clone the `meshplay/meshplay` repo and navigate to the [/ui/cypress/](https://github.com/meshplay/meshplay/tree/master/ui/cypress) directory.
 
 ```
 .
@@ -52,18 +52,18 @@ Clone the `khulnasoft/meshplay` repo and navigate to the [/ui/cypress/](https://
 
 Let's walk-through each of these directories and comprehend their purpose.
 
-### Directory: `./actionHelpers/` ([code](https://github.com/khulnasoft/meshplay/tree/master/ui/cypress/actionHelpers))
+### Directory: `./actionHelpers/` ([code](https://github.com/meshplay/meshplay/tree/master/ui/cypress/actionHelpers))
 
 Helpers to provide common UI or API level actions across our different cypress integration and end-to-end tests.
 
-### Directory: `./fixtures/` ([code](https://github.com/khulnasoft/meshplay/tree/master/ui/cypress/fixtures))
+### Directory: `./fixtures/` ([code](https://github.com/meshplay/meshplay/tree/master/ui/cypress/fixtures))
 
 Our [Fixture Files](https://docs.cypress.io/guides/core-concepts/writing-and-organizing-tests#Fixture-Files) which are used by our tests as:
 
-- external pieces of static data to [Stub](https://docs.cypress.io/guides/guides/network-requests#Stubbing) response data in integration tests **(i.e. [/integration/integration/configuration_filters_spec.js](https://github.com/khulnasoft/meshplay/blob/master/ui/cypress/e2e/integration/configuration_filters_spec.js))**
-- or reuse data as test input in end-to-end tests **(i.e. [/integration/e2e/service_mesh_configuration_management_spec.js](https://github.com/khulnasoft/meshplay/blob/master/ui/cypress/e2e/e2e/service_mesh_configuration_management_spec.js))**.
+- external pieces of static data to [Stub](https://docs.cypress.io/guides/guides/network-requests#Stubbing) response data in integration tests **(i.e. [/integration/integration/configuration_filters_spec.js](https://github.com/meshplay/meshplay/blob/master/ui/cypress/e2e/integration/configuration_filters_spec.js))**
+- or reuse data as test input in end-to-end tests **(i.e. [/integration/e2e/service_mesh_configuration_management_spec.js](https://github.com/meshplay/meshplay/blob/master/ui/cypress/e2e/e2e/service_mesh_configuration_management_spec.js))**.
 
-### Directory: `./integration/integration/` ([code](https://github.com/khulnasoft/meshplay/tree/master/ui/cypress/e2e/integration))
+### Directory: `./integration/integration/` ([code](https://github.com/meshplay/meshplay/tree/master/ui/cypress/e2e/integration))
 
 Integration tests for Meshplay UI that stub server requests to:
 
@@ -73,17 +73,17 @@ Integration tests for Meshplay UI that stub server requests to:
 
 Follow [this guidance](https://docs.cypress.io/guides/getting-started/testing-your-app#Stubbing-the-server) regarding when it's a good idea to stub the server versus allowing the frontend to reach out the actual server and its underlying resources.
 
-### Directory: `./integration/e2e/` ([code](https://github.com/khulnasoft/meshplay/tree/master/ui/cypress/e2e/e2e))
+### Directory: `./integration/e2e/` ([code](https://github.com/meshplay/meshplay/tree/master/ui/cypress/e2e/e2e))
 
 End-to-end tests for both Meshplay UI and Meshplay Server where its usually necessary to [seed data](https://docs.cypress.io/guides/getting-started/testing-your-app#Seeding-data), occasionally [bypass our UI](https://docs.cypress.io/guides/getting-started/testing-your-app#Bypassing-your-UI), use [actual server responses](https://docs.cypress.io/guides/guides/network-requests#Use-Server-Responses) and define cypress [routes](https://docs.cypress.io/guides/guides/network-requests#Routing) to [wait](https://docs.cypress.io/guides/guides/network-requests#Waiting) and [assert](https://docs.cypress.io/guides/guides/network-requests#Assertions) on requests and/or their responses.
 
-### Directory: `./plugins/` ([code](https://github.com/khulnasoft/meshplay/tree/master/ui/cypress/plugins))
+### Directory: `./plugins/` ([code](https://github.com/meshplay/meshplay/tree/master/ui/cypress/plugins))
 
 Define Cypress plugins to leverage as "Seams" for Meshplay's workflows to run the project's own custom code to execute during particular stages of Cypress lifecycle.
 
-### Directory: `./support/` ([code](https://github.com/khulnasoft/meshplay/tree/master/ui/cypress/support))
+### Directory: `./support/` ([code](https://github.com/meshplay/meshplay/tree/master/ui/cypress/support))
 
-This is where Meshplay's Cypress supportFile resides ([./support/index.js](https://github.com/khulnasoft/meshplay/blob/master/ui/cypress/support/index.js)). It's processed and loaded automatically before tests run and it imports our [./support/commands.js](https://github.com/khulnasoft/meshplay/blob/master/ui/cypress/support/commands.js) file which allows us to sparingly define our Cypress [Custom Commands](https://docs.cypress.io/api/cypress-api/custom-commands) to reuse functions needed across most or all test suites.
+This is where Meshplay's Cypress supportFile resides ([./support/index.js](https://github.com/meshplay/meshplay/blob/master/ui/cypress/support/index.js)). It's processed and loaded automatically before tests run and it imports our [./support/commands.js](https://github.com/meshplay/meshplay/blob/master/ui/cypress/support/commands.js) file which allows us to sparingly define our Cypress [Custom Commands](https://docs.cypress.io/api/cypress-api/custom-commands) to reuse functions needed across most or all test suites.
 
 ## How to manually run end-to-end tests
 
@@ -98,7 +98,7 @@ Else, just run:
 {% include code.html code="npm run cy:dev:open" %}
 
 {%include alert.html content="Note the difference between local dependencies for Integration vs End-to-End Tests" %}
-keep in mind that if running integration tests (tests in [./integration/integration/](https://github.com/khulnasoft/meshplay/tree/master/ui/cypress/integration/integration) folder) the server doesn't need to be running but for full blown end-to-end tests (tests in [./integration/e2e/](https://github.com/khulnasoft/meshplay/tree/master/ui/cypress/integration/e2e) folder) its recommended to run `make server` OR make sure a Meshplay user build (see [Getting Started](/installation/quick-start.md)) is installed and running locally before choosing one of those tests.
+keep in mind that if running integration tests (tests in [./integration/integration/](https://github.com/meshplay/meshplay/tree/master/ui/cypress/integration/integration) folder) the server doesn't need to be running but for full blown end-to-end tests (tests in [./integration/e2e/](https://github.com/meshplay/meshplay/tree/master/ui/cypress/integration/e2e) folder) its recommended to run `make server` OR make sure a Meshplay user build (see [Getting Started]({{site.baseurl}}/installation/quick-start)) is installed and running locally before choosing one of those tests.
 
 ## References
 

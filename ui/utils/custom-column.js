@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Tooltip from '@mui/material/Tooltip';
+import { CustomTooltip } from '@khulnasoft/sistent';
 import Popper from '@mui/material/Popper';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { withStyles } from '@material-ui/core/styles';
-import ColumnIcon from '../assets/icons/coulmn';
 // import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
 import { Card } from '@material-ui/core';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import { ColumnIcon } from '@khulnasoft/sistent';
 
 const styles = (theme) => ({
   epaper: {
@@ -26,7 +26,7 @@ const styles = (theme) => ({
     }`,
   },
   icon: {
-    color: theme.palette.secondary.iconMain,
+    fill: theme.palette.secondary.iconMain,
   },
 });
 
@@ -50,7 +50,7 @@ const CustomColumnVisibilityControl = ({ columns, customToolsProps, classes, id 
 
   return (
     <div id={id}>
-      <Tooltip title="View Columns">
+      <CustomTooltip title="View Columns">
         <IconButton
           onClick={handleOpen}
           sx={{
@@ -59,9 +59,9 @@ const CustomColumnVisibilityControl = ({ columns, customToolsProps, classes, id 
             },
           }}
         >
-          <ColumnIcon />
+          <ColumnIcon className={classes.icon} />
         </IconButton>
-      </Tooltip>
+      </CustomTooltip>
 
       <Box sx={{ overflow: 'hidden' }}>
         <Popper

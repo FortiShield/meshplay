@@ -53,7 +53,7 @@ export const StorageTableConfig = (
                   onClick={() => switchView(SINGLE_VIEW, meshSyncResources[tableMeta.rowIndex])}
                   data={
                     meshSyncResources[tableMeta.rowIndex]
-                      ? meshSyncResources[tableMeta.rowIndex]?.component_metadata?.metadata
+                      ? meshSyncResources[tableMeta.rowIndex]?.component_metadata
                       : {}
                   }
                   value={value}
@@ -211,7 +211,7 @@ export const StorageTableConfig = (
                   onClick={() => switchView(SINGLE_VIEW, meshSyncResources[tableMeta.rowIndex])}
                   data={
                     meshSyncResources[tableMeta.rowIndex]
-                      ? meshSyncResources[tableMeta.rowIndex]?.component_metadata?.metadata
+                      ? meshSyncResources[tableMeta.rowIndex]?.component_metadata
                       : {}
                   }
                   value={value}
@@ -293,23 +293,6 @@ export const StorageTableConfig = (
             customHeadRender: function CustomHead({ ...column }) {
               return <DefaultTableCell columnData={column} />;
             },
-            customBodyRender: function CustomBody(value, tableMeta) {
-              return (
-                <>
-                  <div
-                    style={{
-                      color: 'inherit',
-                      textDecorationLine: 'underline',
-                      cursor: 'pointer',
-                      marginBottom: '0.5rem',
-                    }}
-                    onClick={() => switchView(SINGLE_VIEW, meshSyncResources[tableMeta.rowIndex])}
-                  >
-                    {value}
-                  </div>
-                </>
-              );
-            },
           },
         },
         {
@@ -330,7 +313,6 @@ export const StorageTableConfig = (
             },
             customBodyRender: function CustomBody(val) {
               let context = getK8sContextFromClusterId(val, k8sConfig);
-              console.log('TESTL ', context);
               return (
                 <TootltipWrappedConnectionChip
                   title={context.name}
@@ -393,7 +375,7 @@ export const StorageTableConfig = (
                   onClick={() => switchView(SINGLE_VIEW, meshSyncResources[tableMeta.rowIndex])}
                   data={
                     meshSyncResources[tableMeta.rowIndex]
-                      ? meshSyncResources[tableMeta.rowIndex]?.component_metadata?.metadata
+                      ? meshSyncResources[tableMeta.rowIndex]?.component_metadata
                       : {}
                   }
                   value={value}
@@ -438,7 +420,6 @@ export const StorageTableConfig = (
             },
             customBodyRender: function CustomBody(val) {
               let context = getK8sContextFromClusterId(val, k8sConfig);
-              console.log('TESTL ', context);
               return (
                 <TootltipWrappedConnectionChip
                   title={context.name}

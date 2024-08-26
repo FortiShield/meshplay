@@ -75,16 +75,16 @@ enum MeshplayControllerStatus {
   }
 
 type MeshplayControllersStatusListItem {
-    contextId: String!
+    connectionID: String!
     controller: MeshplayController! 
     status: MeshplayControllerStatus!
-    version: String
+    version: String!
   }
 
 type MeshSyncEvent {
     type: String!
     object: Any!
-    contextId: String!
+    connectionID: String!
   }
 
 
@@ -274,31 +274,6 @@ input OperatorStatusInput {
   contextID: String!
 }
 
-type OperatorStatusPerK8sContext{
-  contextID: String!
-  operatorStatus: OperatorStatus!
-}
-type OperatorControllerStatusPerK8sContext{
-  contextID: String!
-  OperatorControllerStatus: OperatorControllerStatus!
-}
-# Status of Meshplay Operator and its controllers
-type OperatorStatus {
-  # Status of Meshplay Operator
-  status: Status!
-
-  # Verion of Meshplay Operator
-  version: String!
-
-  # Details about various Controllers of Meshplay Operator
-  controllers: [OperatorControllerStatus!]!
-
-  # Error Logs encountered by Meshplay Operator
-  error: Error
-
-  contextID: String!
-}
-
 # Controllers of Meshplay Operator
 type OperatorControllerStatus {
   # Controller Name
@@ -313,7 +288,7 @@ type OperatorControllerStatus {
   # Controller Error Log
   error: Error
 
-  contextID: String!
+  connectionID: String!
 
 }
 
@@ -522,6 +497,7 @@ input PageFilter {
   to: String
   updated_after: String
   visibility: [String!]
+  metrics: String
 }
 
 # ============== CATALOG =============================
@@ -531,6 +507,7 @@ input CatalogSelector {
   pagesize: String!
   search: String!
   order: String!
+  metrics: String
 }
 
 # ================ TELEMETRY ==================== 
@@ -595,7 +572,7 @@ type Query {
 
   # Query status of Meshplay Operator in your cluster
   getOperatorStatus(
-        k8scontextID: String!
+        connectionID: String!
   ): MeshplayControllersStatusListItem @KubernetesMiddleware
 
   # Query to resync the cluster discovery
@@ -677,11 +654,6 @@ type Mutation {
 }
 
 type Subscription {
-  # Listen to changes in status of Meshplay Operator in your cluster
-  listenToOperatorState(
-    k8scontextIDs: [String!]
-  ): OperatorStatusPerK8sContext @KubernetesMiddleware
-
   # Listen to changes in Performance Profiles
   subscribePerfProfiles(selector: PageFilter!): PerfPageProfiles!
 
@@ -690,13 +662,13 @@ type Subscription {
 
   # Listen to changes in the status of meshplay controllers
   subscribeMeshplayControllersStatus(
-    k8scontextIDs: [String!]
+    connectionIDs: [String!]
   ): [MeshplayControllersStatusListItem!]! @KubernetesMiddleware
 
   # Listen to the events that MeshSync is sending through Meshplay Broker.
   # Note: It does not listen to the changes in meshplay database, but to meshsync events
   subscribeMeshSyncEvents(
-    k8scontextIDs: [String!]
+    connectionIDs: [String!]
     eventTypes: [MeshSyncEventType!]
   ) : MeshSyncEvent! @KubernetesMiddleware
 
@@ -713,15 +685,6 @@ type Subscription {
 
   # Publish events to user
   subscribeEvents : Event!
-}
-
-type OAMCapability {
-  oam_definition: Any
-  id: String
-  oam_ref_schema: String
-  host: String
-  restricted: Boolean
-  metadata: Any
 }
 
 type KctlDescribeDetails {

@@ -2,7 +2,7 @@
 layout: default
 title: Meshplay CLI Guides
 permalink: guides/meshplayctl
-# redirect_from: guides/meshplayctl/
+redirect_from: guides/meshplayctl/
 language: en
 type: guides
 category: meshplayctl
@@ -21,10 +21,8 @@ From the Command Line: Guides to using Meshplay's various features and component
     </li>
     {% endif %}
   {% endfor %}
-    <li><a href="{{ site.baseurl }}/guides/upgrade#upgrading-meshplay-cli">Upgrading Meshplay CLI</a></li>
+    <li><a href="{{ site.baseurl }}/installation/upgrades#upgrading-meshplay-cli">Upgrading Meshplay CLI</a></li>
 </ul>
-
-{% include suggested-reading.html diffName="true" isDiffTag="true" diffTag=tag %}
 
 {% include related-discussions.html tag="meshplayctl" %}
 

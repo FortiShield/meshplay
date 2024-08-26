@@ -10,20 +10,25 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ghodss/yaml"
 	"github.com/gofrs/uuid"
 	"github.com/khulnasoft/meshplay/server/meshes"
 	"github.com/khulnasoft/meshplay/server/models"
 	"github.com/khulnasoft/meshplay/server/models/pattern/core"
 	"github.com/khulnasoft/meshplay/server/models/pattern/patterns"
+	"github.com/spf13/viper"
+
 	"github.com/khulnasoft/meshplay/server/models/pattern/patterns/k8s"
+	patternutils "github.com/khulnasoft/meshplay/server/models/pattern/utils"
+
 	"github.com/khulnasoft/meshplay/server/models/pattern/stages"
 	"github.com/khulnasoft/meshkit/logger"
 	events "github.com/khulnasoft/meshkit/models/events"
 	meshmodel "github.com/khulnasoft/meshkit/models/meshmodel/registry"
-	"github.com/khulnasoft/meshkit/models/oam/core/v1alpha1"
+	"github.com/khulnasoft/meshkit/utils"
 	meshkube "github.com/khulnasoft/meshkit/utils/kubernetes"
-	"github.com/sirupsen/logrus"
+	"github.com/meshplay/schemas/models/v1beta1/component"
+	"github.com/meshplay/schemas/models/v1beta1/pattern"
+	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -50,11 +55,8 @@ func (h *Handler) PatternFileHandler(
 	provider models.Provider,
 ) {
 	userID := uuid.FromStringOrNil(user.ID)
-
-	var payload struct {
-		PatternFile string `json:"pattern_file"`
-		PatternID   string `json:"pattern_id"`
-	}
+	token, _ := r.Context().Value(models.TokenCtxKey).(string)
+	var payload models.MeshplayPatternFileDeployPayload
 	var patternFileByte []byte
 
 	// Read the PatternFile
@@ -79,63 +81,96 @@ func (h *Handler) PatternFileHandler(
 
 	patternFileByte = []byte(payload.PatternFile)
 
-	if r.Header.Get("Content-Type") == "application/json" {
-		patternFileByte, err = yaml.JSONToYAML(patternFileByte)
-		if err != nil {
-			h.log.Error(ErrPatternFile(err))
-			http.Error(rw, ErrPatternFile(err).Error(), http.StatusInternalServerError)
-			return
-		}
+	queryParams, _ := extractBoolQueryParams(r, "dryRun", "skipCRD", "verify", "upgrade")
+	isDryRun := queryParams["dryRun"]
+	skipCRDAndOperator := queryParams["skipCRD"]
+	validate := queryParams["verify"]
+	upgradeExistingRelease := queryParams["upgrade"]
+
+	isDelete := r.Method == http.MethodDelete
+	action := "deploy"
+	if isDelete {
+		action = "undeploy"
+	}
+	patternID := payload.PatternID
+
+	isDesignInAlpha2Format, err := patternutils.IsDesignInAlpha2Format(payload.PatternFile)
+	if err != nil {
+		err = ErrPatternFile(err)
+		event := events.NewEvent().ActedUpon(payload.PatternID).FromSystem(*h.SystemID).FromUser(userID).WithCategory("pattern").WithAction("view").WithDescription("Failed to parse design").WithMetadata(map[string]interface{}{"error": err, "id": payload.PatternID}).Build()
+		_ = provider.PersistEvent(event)
+		go h.config.EventBroadcaster.Publish(userID, event)
+		h.log.Error(err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	isDel := r.Method == http.MethodDelete
-	isDryRun := r.URL.Query().Get("dryRun") == "true"
-	action := "Deploy"
-	if isDel {
-		action = "Undeploy"
+	if isDesignInAlpha2Format {
+		eventBuilder := events.NewEvent().ActedUpon(patternID).FromSystem(*h.SystemID).FromUser(userID).WithCategory("pattern").WithAction("convert")
+
+		_, patternFileStr, err := h.convertV1alpha2ToV1beta1(&models.MeshplayPattern{
+			ID:          &patternID,
+			PatternFile: payload.PatternFile,
+		}, eventBuilder)
+
+		event := eventBuilder.Build()
+		_ = provider.PersistEvent(event)
+		go h.config.EventBroadcaster.Publish(userID, event)
+		
+		if err != nil {
+			h.log.Error(err)
+			http.Error(rw, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		patternFileByte = []byte(patternFileStr)
 	}
 
 	patternFile, err := core.NewPatternFile(patternFileByte)
-	patternFile.PatternID = payload.PatternID
-	// Generate the pattern file object
-	description := fmt.Sprintf("%sed design '%s'", action, patternFile.Name)
-	if isDryRun {
-		action = "Dry Run"
-		description = fmt.Sprintf("%s design '%s'", action, patternFile.Name)
-	}
-
 	if err != nil {
 		h.log.Error(ErrPatternFile(err))
 		http.Error(rw, ErrPatternFile(err).Error(), http.StatusInternalServerError)
 		return
 	}
 
-	response, err := _processPattern(
-		r.Context(),
-		provider,
-		patternFile,
-		prefObj,
-		user.ID,
-		isDel,
-		r.URL.Query().Get("verify") == "true",
-		isDryRun,
-		r.URL.Query().Get("skipCRD") == "true",
-		false,
-		h.registryManager,
-		h.config.EventBroadcaster,
-		h.log,
-	)
+	if patternID == uuid.Nil {
+		patternID = patternFile.Id
+	}
 
-	patternID := uuid.FromStringOrNil(patternFile.PatternID)
+	patternFile.Id = patternID
+	// Generate the pattern file object
+	description := fmt.Sprintf("%sed design '%s'", action, patternFile.Name)
+	if isDryRun {
+		action = "verify"
+		description = fmt.Sprintf("%sed design '%s'", action, patternFile.Name)
+	}
+
+	opts := &core.ProcessPatternOptions{
+		Context:                r.Context(),
+		Provider:               provider,
+		Pattern:                patternFile,
+		PrefObj:                prefObj,
+		UserID:                 user.ID,
+		IsDelete:               isDelete,
+		Validate:               validate,
+		DryRun:                 isDryRun,
+		SkipCRDAndOperator:     skipCRDAndOperator,
+		UpgradeExistingRelease: upgradeExistingRelease,
+		SkipPrintLogs:          viper.GetBool("DEBUG"),
+		Registry:               h.registryManager,
+		EventBroadcaster:       h.config.EventBroadcaster,
+		Log:                    h.log,
+	}
+	response, err := _processPattern(opts)
+
 	eventBuilder := events.NewEvent().ActedUpon(patternID).FromUser(userID).FromSystem(*h.SystemID).WithCategory("pattern").WithAction(action)
 
 	if err != nil {
-		err := ErrCompConfigPairs(err)
+		err := ErrPatternDeploy(err, patternFile.Name)
 		metadata := map[string]interface{}{
 			"error": err,
 		}
 
-		event := eventBuilder.WithSeverity(events.Error).WithDescription(fmt.Sprintf("%s error for design '%s'", action, patternFile.Name)).WithMetadata(metadata).Build()
+		event := eventBuilder.WithSeverity(events.Error).WithDescription(fmt.Sprintf("Failed to %s design '%s'.", action, patternFile.Name)).WithMetadata(metadata).Build()
 		_ = provider.PersistEvent(event)
 		go h.config.EventBroadcaster.Publish(userID, event)
 
@@ -148,64 +183,43 @@ func (h *Handler) PatternFileHandler(
 		"summary": response,
 	}
 
-	event := eventBuilder.WithSeverity(events.Informational).WithDescription(description).WithMetadata(metadata).Build()
+	serverURL, _ := r.Context().Value(models.MeshplayServerURL).(string)
+
+	if action == "deploy" {
+		viewLink := fmt.Sprintf("%s/extension/meshmap?mode=visualize&design=%s", serverURL, patternID)
+		description = fmt.Sprintf("%s.", description)
+		metadata["view_link"] = viewLink
+	}
+
+	event := eventBuilder.WithSeverity(events.Success).WithDescription(description).WithMetadata(metadata).Build()
 	_ = provider.PersistEvent(event)
-	go h.config.EventBroadcaster.Publish(userID, event)
+	go func() {
+		h.config.EventBroadcaster.Publish(userID, event)
+		err = provider.PublishEventToProvider(token, *event)
+		if err != nil {
+			h.log.Warn(ErrPersistEventToRemoteProvider(err))
+		}
+	}()
 
 	ec := json.NewEncoder(rw)
 	_ = ec.Encode(response)
 }
-func mergeMsgs(msgs []string) string {
-	var finalMsgs []string
 
-	for _, msg := range msgs {
-		if msg != "" {
-			finalMsgs = append(finalMsgs, msg)
-		}
-	}
-
-	return strings.Join(finalMsgs, "\n")
-}
-
-func _processPattern(
-	ctx context.Context,
-	provider models.Provider,
-	pattern core.Pattern,
-	prefObj *models.Preference,
-	userID string,
-	isDelete bool,
-	verify bool,
-	dryRun bool,
-	skipCrdAndOperator bool,
-	skipPrintLogs bool,
-	registry *meshmodel.RegistryManager,
-	ec *models.Broadcast,
-	l logger.Handler,
-) (map[string]interface{}, error) {
+func _processPattern(opts *core.ProcessPatternOptions) (map[string]interface{}, error) {
 	resp := make(map[string]interface{})
 
 	// Get the token from the context
-	token, ok := ctx.Value(models.TokenCtxKey).(string)
+	token, ok := opts.Context.Value(models.TokenCtxKey).(string)
 	if !ok {
 		return nil, ErrRetrieveUserToken(fmt.Errorf("token not found in the context"))
 	}
-	// // Get the kubehandler from the context
-	k8scontexts, ok := ctx.Value(models.KubeClustersKey).([]models.K8sContext)
+
+	// Get the kubehandler from the context
+	k8scontexts, ok := opts.Context.Value(models.KubeClustersKey).([]models.K8sContext)
 	if !ok || len(k8scontexts) == 0 {
-		return nil, ErrInvalidKubeHandler(fmt.Errorf("failed to find k8s handler"), "_processPattern couldn't find a valid k8s handler")
+		return nil, ErrInvalidKubeHandler(fmt.Errorf("Meshplay server failed to interact with the Kubernetes cluster due to the cluster not being available."), opts.Pattern.Name)
 	}
 
-	// // Get the kubernetes config from the context
-	// kubecfg, ok := ctx.Value(models.KubeConfigKey).([]byte)
-	// if !ok || kubecfg == nil {
-	// 	return "", ErrInvalidKubeConfig(fmt.Errorf("failed to find k8s config"), "_processPattern couldn't find a valid k8s config")
-	// }
-
-	// // Get the kubernetes context from the context
-	// mk8scontext, ok := ctx.Value(models.KubeContextKey).(*models.K8sContext)
-	// if !ok || mk8scontext == nil {
-	// 	return "", ErrInvalidKubeContext(fmt.Errorf("failed to find k8s context"), "_processPattern couldn't find a valid k8s context")
-	// }
 	var ctxToconfig = make(map[string]string)
 	for _, ctx := range k8scontexts {
 		cfg, err := ctx.GenerateKubeConfig()
@@ -213,75 +227,74 @@ func _processPattern(
 			return nil, ErrInvalidKubeConfig(fmt.Errorf("failed to find Kubernetes config"), "_processPattern couldn't find a valid Kubernetes config")
 		}
 		ctxToconfig[ctx.ID] = string(cfg)
-		// configs = append(configs, string(cfg))
 	}
+
 	internal := func(mk8scontext []models.K8sContext) (map[string]interface{}, error) {
 		sip := &serviceInfoProvider{
 			token:      token,
-			provider:   provider,
-			opIsDelete: isDelete,
+			provider:   opts.Provider,
+			opIsDelete: opts.IsDelete,
 		}
 		sap := &serviceActionProvider{
-			token:    token,
-			log:      l,
-			provider: provider,
-			prefObj:  prefObj,
-			// kubeClient:    kubeClient,
-			opIsDelete: isDelete,
-			userID:     userID,
-			registry:   registry,
-			// kubeconfig:    kubecfg,
-			// kubecontext:   mk8scontext,
-			skipPrintLogs:      skipPrintLogs,
-			skipCrdAndOperator: skipCrdAndOperator,
-			ctxTokubeconfig:    ctxToconfig,
-			accumulatedMsgs:    []string{},
-			err:                nil,
-			eventsChannel:      ec,
-			patternName:        strings.ToLower(pattern.Name),
+			token:                  token,
+			log:                    opts.Log,
+			provider:               opts.Provider,
+			prefObj:                opts.PrefObj,
+			userID:                 opts.UserID,
+			registry:               opts.Registry,
+			skipPrintLogs:          opts.SkipPrintLogs,
+			skipCrdAndOperator:     opts.SkipCRDAndOperator,
+			upgradeExistingRelease: opts.UpgradeExistingRelease,
+			ctxTokubeconfig:        ctxToconfig,
+			accumulatedMsgs:        []string{},
+			err:                    nil,
+			eventsChannel:          opts.EventBroadcaster,
+			opIsDelete:             opts.IsDelete,
+			patternName:            strings.ToLower(opts.Pattern.Name),
 		}
+		fmt.Println("line 244 reached")
+
 		chain := stages.CreateChain()
 		chain.
-			Add(stages.Import(sip, sap)).
-			Add(stages.ServiceIdentifierAndMutator(sip, sap)).
-			Add(stages.Filler(skipPrintLogs)).
+			// Add(stages.Import(sip, sap)).
+			Add(stages.Format()).
+			// Add(stages.ServiceIdentifierAndMutator(sip, sap)).
+			Add(stages.Filler(opts.SkipPrintLogs)).
 			// Calling this stage `The Validation stage` is a bit deceiving considering
 			// that the validation stage also formats the `data` (chain function parameter) that the
 			// subsequent stages depend on.
-			// We are skipping the `Validation` part in case of dryRun
-			Add(stages.Validator(sip, sap, dryRun))
-		if dryRun {
+			// We are skipping the `Validation` based on "verify" query paramerter
+			Add(stages.Validator(sip, sap, opts.Validate)) // not required as client side RJSF validation is enough, but for meshplayctl client it's required
+		if opts.DryRun {
 			chain.Add(stages.DryRun(sip, sap))
 		}
-		if !verify && !dryRun {
+		if !opts.DryRun {
 			chain.
-				Add(stages.Provision(sip, sap)).
-				Add(stages.Persist(sip, sap))
+				Add(stages.Provision(sip, sap, sap.log))
+			// Removed Persist stage
+			// Add(stages.Persist(sip, sap, sap.log))
 		}
 		chain.
 			Add(func(data *stages.Data, err error, next stages.ChainStageNextFunction) {
 				data.Lock.Lock()
 				for k, v := range data.Other {
+					var key string
 					if strings.HasSuffix(k, stages.ProvisionSuffixKey) {
-						msg, ok := v.(string)
-						if ok {
-							sap.accumulatedMsgs = append(sap.accumulatedMsgs, msg)
-						}
+						key, _ = strings.CutSuffix(k, stages.ProvisionSuffixKey)
 					}
 					if k == stages.DryRunResponseKey {
-						if v != nil {
-							resp["dryRunResponse"] = v
-						}
+						key = k
 					}
+					resp[key] = v
 				}
 				data.Lock.Unlock()
 				sap.err = err
 			}).
 			Process(&stages.Data{
-				Pattern: &pattern,
-				Other:   map[string]interface{}{},
+				Pattern:                       &opts.Pattern,
+				Other:                         map[string]interface{}{},
+				DeclartionToDefinitionMapping: make(map[uuid.UUID]component.ComponentDefinition),
 			})
-		resp["messages"] = mergeMsgs(sap.accumulatedMsgs)
 		return resp, sap.err
 	}
 	return internal(k8scontexts)
@@ -308,14 +321,6 @@ func (sip *serviceInfoProvider) GetMeshplayPatternResource(name, namespace, typ,
 	return nil, fmt.Errorf("resource not found")
 }
 
-func (sip *serviceInfoProvider) GetServiceMesh() (string, string) {
-	return "", ""
-}
-
-func (sip *serviceInfoProvider) GetAPIVersionForKind(string) string {
-	return ""
-}
-
 func (sip *serviceInfoProvider) IsDelete() bool {
 	return sip.opIsDelete
 }
@@ -331,13 +336,14 @@ type serviceActionProvider struct {
 	userID          string
 	// kubeconfig  []byte
 	// kubecontext     *models.K8sContext
-	skipCrdAndOperator bool
-	skipPrintLogs      bool
-	accumulatedMsgs    []string
-	err                error
-	eventsChannel      *models.Broadcast
-	registry           *meshmodel.RegistryManager
-	patternName        string
+	skipCrdAndOperator     bool
+	upgradeExistingRelease bool
+	skipPrintLogs          bool
+	accumulatedMsgs        []string
+	err                    error
+	eventsChannel          *models.Broadcast
+	registry               *meshmodel.RegistryManager
+	patternName            string
 }
 
 func (sap *serviceActionProvider) GetRegistry() *meshmodel.RegistryManager {
@@ -351,18 +357,25 @@ func (sap *serviceActionProvider) Log(msg string) {
 }
 func (sap *serviceActionProvider) Terminate(err error) {
 	if !sap.skipPrintLogs {
-		logrus.Error(err)
+		sap.log.Error(err)
 	}
 	sap.err = err
 }
-func (sap *serviceActionProvider) Mutate(p *core.Pattern) {
+func (sap *serviceActionProvider) Mutate(p *pattern.PatternFile) {
 	//TODO: externalize these mutation rules with policies.
 	//1. Enforce the deployment of CRDs before other resources
-	for name, svc := range p.Services {
-		if svc.Type == "CustomResourceDefinition.K8s" {
-			for _, svc := range p.Services {
-				if svc.Type != "CustomResourceDefinition.K8s" {
-					svc.DependsOn = append(svc.DependsOn, name)
+	for _, component := range p.Components {
+		if component.Component.Kind == "CustomResourceDefinition" {
+			for _, comp := range p.Components {
+				if comp.Component.Kind != "CustomResourceDefinition" {
+					dependsOnSlice, err := utils.Cast[[]string](comp.Metadata.AdditionalProperties["dependsOn"])
+					if err != nil {
+						err = errors.Wrapf(err, "Failed to cast 'dependsOn' to []string for component %s", comp.DisplayName)
+						sap.log.Error(err)
+						sap.Terminate(err)
+					}
+					dependsOnSlice = append(dependsOnSlice, comp.Id.String())
+					comp.Metadata.AdditionalProperties["dependsOn"] = dependsOnSlice
 				}
 			}
 		}
@@ -372,7 +385,7 @@ func (sap *serviceActionProvider) Mutate(p *core.Pattern) {
 // v1.StatusApplyConfiguration has deprecated, needed to find a different option to do this
 // NOTE: Currently tied to kubernetes
 // Returns ComponentName->ContextID->Response
-func (sap *serviceActionProvider) DryRun(comps []v1alpha1.Component) (resp map[string]map[string]core.DryRunResponseWrapper, err error) {
+func (sap *serviceActionProvider) DryRun(comps []*component.ComponentDefinition) (resp map[string]map[string]core.DryRunResponseWrapper, err error) {
 	for _, cmp := range comps {
 		for ctxID, kc := range sap.ctxTokubeconfig {
 			cl, err := meshkube.New([]byte(kc))
@@ -386,45 +399,36 @@ func (sap *serviceActionProvider) DryRun(comps []v1alpha1.Component) (resp map[s
 			if resp == nil {
 				resp = make(map[string]map[string]core.DryRunResponseWrapper)
 			}
-			if resp[cmp.Name] == nil {
-				resp[cmp.Name] = make(map[string]core.DryRunResponseWrapper)
+			if resp[cmp.DisplayName] == nil {
+				resp[cmp.DisplayName] = make(map[string]core.DryRunResponseWrapper)
 			}
-			resp[cmp.Name][ctxID] = dResp
+			resp[cmp.DisplayName][ctxID] = dResp
 		}
 	}
 	return
 }
 
-func dryRunComponent(cl *meshkube.Client, cmp v1alpha1.Component) (core.DryRunResponseWrapper, error) {
-	st, ok, err := k8s.DryRunHelper(cl, cmp)
-	dResp := core.DryRunResponseWrapper{Success: ok, Component: &core.Service{
-		Name:        cmp.Name,
-		Type:        cmp.Spec.Type,
-		Namespace:   cmp.Namespace,
-		APIVersion:  cmp.Spec.APIVersion,
-		Version:     cmp.Spec.Version,
-		Model:       cmp.Spec.Model,
-		Labels:      cmp.Labels,
-		Annotations: cmp.Annotations,
-	}}
+func dryRunComponent(cl *meshkube.Client, cmd *component.ComponentDefinition) (core.DryRunResponseWrapper, error) {
+	st, ok, err := k8s.DryRunHelper(cl, *cmd)
+	dResp := core.DryRunResponseWrapper{Success: ok, Component: cmd}
 	if ok {
-		dResp.Component.Settings = filterSettings(st)
+		dResp.Component.Configuration = filterConfiguration(st)
 	} else if err != nil {
 		dResp.Error = &core.DryRunResponse{Status: err.Error()}
 	} else {
-		dResp.Error = parseDryRunFailure(st, cmp.Name)
+		dResp.Error = parseDryRunFailure(st, cmd.DisplayName)
 	}
 	return dResp, nil
 }
 
-func filterSettings(settings map[string]interface{}) map[string]interface{} {
-	filteredSettings := make(map[string]interface{})
-	for k, v := range settings {
+func filterConfiguration(configuration map[string]interface{}) map[string]interface{} {
+	filteredConfiguration := make(map[string]interface{})
+	for k, v := range configuration {
 		if k != "apiVersion" && k != "kind" && k != "metadata" {
-			filteredSettings[k] = v
+			filteredConfiguration[k] = v
 		}
 	}
-	return filteredSettings
+	return filteredConfiguration
 }
 
 func parseDryRunFailure(settings map[string]interface{}, name string) *core.DryRunResponse {
@@ -477,49 +481,62 @@ func getComponentFieldPathFromK8sFieldPath(path string) (newpath string) {
 	return fmt.Sprintf("%s.%s", "settings", path)
 }
 
-func (sap *serviceActionProvider) Provision(ccp stages.CompConfigPair) (string, error) { // Marshal the component
-	jsonComp, err := json.Marshal(ccp.Component)
-	if err != nil {
-		return "", fmt.Errorf("failed to serialize the data: %s", err)
-	}
+func (sap *serviceActionProvider) Provision(ccp stages.CompConfigPair) ([]patterns.DeploymentMessagePerContext, error) { // Marshal the component
+	// jsonComp, err := json.Marshal(ccp.Component)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to serialize the data: %s", err)
+	// }
 
 	// Marshal the configuration
-	jsonConfig, err := json.Marshal(ccp.Configuration)
-	if err != nil {
-		return "", fmt.Errorf("failed to serialize the data: %s", err)
-	}
+	// configuration attribute removed.
+	// jsonConfig, err := json.Marshal(ccp.Configuration)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to serialize the data: %s", err)
+	// }
 
-	for host := range ccp.Hosts {
+	msgs := []patterns.DeploymentMessagePerContext{}
+	for _, host := range ccp.Hosts {
 		// Hack until adapters fix the concurrent client
 		// creation issue: https://github.com/khulnasoft/meshplay-adapter-library/issues/32
 		time.Sleep(50 * time.Microsecond)
+		sap.log.Debug("Execute operations on: ", host.Kind)
 
-		logrus.Debugf("Adapter to execute operations on: %s", host.Hostname)
-
+		_hostPort, ok := host.Metadata["port"]
 		// Local call
-		if host.Port == 0 {
+		if !ok {
 			//TODO: Accommodate internal calls to use context mapping with kubeconfig
 			var kconfigs []string
 			for _, v := range sap.ctxTokubeconfig {
 				kconfigs = append(kconfigs, v)
 			}
-			resp, err := patterns.ProcessOAM(
+			resp, err := patterns.Process(
 				kconfigs,
-				[]string{string(jsonComp)},
-				string(jsonConfig),
+				[]component.ComponentDefinition{ccp.Component},
 				sap.opIsDelete,
 				sap.patternName,
 				sap.eventsChannel,
 				sap.userID,
 				sap.provider,
-				host.IHost,
+				host,
 				sap.skipCrdAndOperator,
+				sap.upgradeExistingRelease,
 			)
 			return resp, err
 		}
-		addr := host.Hostname
-		if host.Port != 0 {
-			addr += ":" + strconv.Itoa(host.Port)
+
+		hostName, err := utils.Cast[string](host.Metadata["host_name"])
+		if err != nil {
+			return nil, fmt.Errorf("error execute operation on %v: %v", host, err)
+		}
+
+		hostPort, err := utils.Cast[int](_hostPort)
+		if err != nil {
+			return nil, fmt.Errorf("error execute operation on %v: %v", host, err)
+		}
+
+		addr := hostName
+		if hostPort != 0 {
+			addr += ":" + strconv.Itoa(hostPort)
 		}
 		// Create mesh client
 		mClient, err := meshes.CreateClient(
@@ -527,68 +544,73 @@ func (sap *serviceActionProvider) Provision(ccp stages.CompConfigPair) (string, 
 			addr,
 		)
 		if err != nil {
-			return "", fmt.Errorf("error creating a mesh client: %v", err)
+			return nil, fmt.Errorf("error creating a mesh client: %v", err)
 		}
 		defer func() {
 			_ = mClient.Close()
 		}()
 
-		// Execute operation on the adapter with raw data
-		// if strings.HasPrefix(adapter, string(rawAdapter)) {
-		// 	resp, err := mClient.MClient.ApplyOperation(context.TODO(), &meshes.ApplyRuleRequest{
-		// 		Username:    sap.userID,
-		// 		DeleteOp:    sap.opIsDelete,
-		// 		OpName:      "custom",
-		// 		Namespace:   "",
-		// 		KubeConfigs: sap.kubeconfigs,
-		// 	})
-
-		// 	return resp.String(), err
-		// }
-
-		// Else it is an OAM adapter call
+		// Else it is an  adapter call
 		//TODO: Accommodate gRPC calls to use context mapping with kubeconfig
 		var kconfigs []string
 		for _, v := range sap.ctxTokubeconfig {
 			kconfigs = append(kconfigs, v)
 		}
-		resp, err := mClient.MClient.ProcessOAM(context.TODO(), &meshes.ProcessOAMRequest{
-			Username:    sap.userID,
-			DeleteOp:    sap.opIsDelete,
-			OamComps:    []string{string(jsonComp)},
-			OamConfig:   string(jsonConfig),
-			KubeConfigs: kconfigs,
-		})
-
-		return resp.GetMessage(), err
-	}
-
-	return "", nil
-}
-
-func (sap *serviceActionProvider) Persist(name string, svc core.Service, isUpdate bool) error {
-	if !sap.opIsDelete {
-		if isUpdate {
-			// Do nothing
-			return nil
+		compStr, err := utils.Marshal(ccp.Component)
+		if err != nil {
+			err = errors.Wrapf(err, "error marshalling component \"%s\" of type : %s", ccp.Component.DisplayName, ccp.Component.Component.Kind)
+			return nil, err
 		}
-
-		_, err := sap.provider.SaveMeshplayPatternResource(
-			sap.token,
-			&models.PatternResource{
-				ID:        svc.ID,
-				Name:      name,
-				Namespace: svc.Namespace,
-				Type:      svc.Type,
-				OAMType:   "workload",
+		resp, err := mClient.MClient.Provision(context.TODO(), &meshes.ProvisionRequest{
+			Username:     sap.userID,
+			DeleteOp:     sap.opIsDelete,
+			KubeConfigs:  kconfigs,
+			Declarations: []string{compStr},
+		})
+		sucess := err == nil
+		msgs = append(msgs, patterns.DeploymentMessagePerContext{
+			SystemName: hostName,
+			Location:   fmt.Sprintf("%s:%s", hostName, strconv.Itoa(hostPort)),
+			Summary: []patterns.DeploymentMessagePerComp{
+				{
+					Kind:       ccp.Component.Component.Kind,
+					Model:      ccp.Component.Model.Name,
+					CompName:   ccp.Component.DisplayName,
+					DesignName: sap.patternName,
+					Success:    sucess,
+					Message:    resp.GetMessage(),
+					Error:      err,
+				},
 			},
-		)
-
-		return err
+		})
 	}
 
-	return sap.provider.DeleteMeshplayPatternResource(
-		sap.token,
-		svc.ID.String(),
-	)
+	return msgs, nil
 }
+
+// func (sap *serviceActionProvider) Persist(name string, svc core.Service, isUpdate bool) error {
+// 	if !sap.opIsDelete {
+// 		if isUpdate {
+// 			// Do nothing
+// 			return nil
+// 		}
+
+// 		_, err := sap.provider.SaveMeshplayPatternResource(
+// 			sap.token,
+// 			&models.PatternResource{
+// 				ID:        svc.ID,
+// 				Name:      name,
+// 				Namespace: svc.Namespace,
+// 				Type:      svc.Type,
+// 				OAMType:   "workload",
+// 			},
+// 		)
+
+// 		return err
+// 	}
+
+// 	return sap.provider.DeleteMeshplayPatternResource(
+// 		sap.token,
+// 		svc.ID.String(),
+// 	)
+// }

@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -90,14 +90,14 @@ meshplayctl perf apply meshplay-profile --load-generator wrk2
 // Execute a Performance test with specified queries per second
 meshplayctl perf apply meshplay-profile --url https://192.168.1.15/productpage --qps 30
 
-// Execute a Performance test with specified service mesh
+// Execute a Performance test with specified infrastructure
 meshplayctl perf apply meshplay-profile --url https://192.168.1.15/productpage --mesh istio
 
 // Execute a Performance test creating a new performance profile and pass options to the load generator used
 // If any options are already present in the profile or passed through flags, the --options flag will take precedence over the profile and flag options 
-// Options for nighthawk - https://github.com/layer5io/getnighthawk/blob/v1.0.5/pkg/proto/options.pb.go#L882-L1018
+// Options for nighthawk - https://github.com/khulnasoft/getnighthawk/blob/v1.0.5/pkg/proto/options.pb.go#L882-L1018
 // Options for fortio - https://github.com/fortio/fortio/blob/v1.57.0/fhttp/httprunner.go#L77-L84
-// Options for wrk2 - https://github.com/khulnasoft-lab/gowrk2/blob/v0.6.1/api/gowrk2.go#L47-L53
+// Options for wrk2 - https://github.com/khulnasoft/gowrk2/blob/v0.6.1/api/gowrk2.go#L47-L53
 meshplayctl perf apply meshplay-profile-new --url "https://google.com" --options [filepath|json-string]
 meshplayctl perf apply meshplay-profile-new --url "https://google.com" --options path/to/options.json
 meshplayctl perf apply meshplay-profile-new --url "https://google.com" --load-generator nighthawk --options '{"requests_per_second": 10, "max_pending_requests": 5}'
@@ -178,9 +178,9 @@ meshplayctl perf apply meshplay-profile-new --url "https://google.com" --load-ge
 
 		// Run test based on flags
 		if testName == "" {
-			utils.Log.Debug("Test Name not provided")
+			log.Debug("Test Name not provided")
 			testName = utils.StringWithCharset(8)
-			utils.Log.Debug("Using random test name: ", testName)
+			log.Debug("Using random test name: ", testName)
 		}
 
 		// Throw error if a profile name is not provided
@@ -203,7 +203,7 @@ meshplayctl perf apply meshplay-profile-new --url "https://google.com" --load-ge
 		profileName = strings.Join(args, "%20")
 
 		// Check if the profile name is valid, if not prompt the user to create a new one
-		utils.Log.Debug("Fetching performance profile")
+		log.Debug("Fetching performance profile")
 		profiles, _, err := fetchPerformanceProfiles(mctlCfg.GetBaseMeshplayURL(), profileName, pageSize, pageNumber-1)
 		if err != nil {
 			utils.Log.Error(err)
@@ -322,7 +322,7 @@ meshplayctl perf apply meshplay-profile-new --url "https://google.com" --load-ge
 		}
 		req.URL.RawQuery = q.Encode()
 
-		utils.Log.Info("Initiating Performance test ...")
+		log.Info("Initiating Performance test ...")
 
 		resp, err := utils.MakeRequest(req)
 
@@ -336,9 +336,9 @@ meshplayctl perf apply meshplay-profile-new --url "https://google.com" --load-ge
 		if err != nil {
 			return errors.Wrap(err, utils.PerfError("failed to read response body"))
 		}
-		utils.Log.Debug(string(data))
+		log.Debug(string(data))
 
-		utils.Log.Info("Test Completed Successfully!")
+		log.Info("Test Completed Successfully!")
 		return nil
 	},
 }
@@ -346,7 +346,7 @@ meshplayctl perf apply meshplay-profile-new --url "https://google.com" --load-ge
 func init() {
 	applyCmd.Flags().StringVar(&testURL, "url", "", "(optional) Endpoint URL to test (required with --profile)")
 	applyCmd.Flags().StringVar(&testName, "name", "", "(optional) Name of the Test")
-	applyCmd.Flags().StringVar(&testMesh, "mesh", "", "(optional) Name of the Service Mesh")
+	applyCmd.Flags().StringVar(&testMesh, "mesh", "", "(optional) Name of the infrastructure")
 	applyCmd.Flags().StringVar(&qps, "qps", "", "(optional) Queries per second")
 	applyCmd.Flags().StringVar(&concurrentRequests, "concurrent-requests", "", "(optional) Number of Parallel Requests")
 	applyCmd.Flags().StringVar(&testDuration, "duration", "", "(optional) Length of test (e.g. 10s, 5m, 2h). For more, see https://golang.org/pkg/time/#ParseDuration")
@@ -359,7 +359,7 @@ func init() {
 }
 
 func createPerformanceProfile(mctlCfg *config.MeshplayCtlConfig) (string, string, error) {
-	utils.Log.Debug("Creating new performance profile inside function")
+	log.Debug("Creating new performance profile inside function")
 
 	if profileName == "" {
 		return "", "", ErrNoProfileName()
@@ -398,7 +398,7 @@ func createPerformanceProfile(mctlCfg *config.MeshplayCtlConfig) (string, string
 	if loadTestBody != "" {
 		// Check if the loadTestBody is a filepath or a string
 		if _, err := os.Stat(loadTestBody); err == nil {
-			utils.Log.Info("Reading test body from file")
+			log.Info("Reading test body from file")
 			bodyFile, err := os.ReadFile(loadTestBody)
 			if err != nil {
 				return "", "", ErrReadFilepath(err)
@@ -498,6 +498,6 @@ func createPerformanceProfile(mctlCfg *config.MeshplayCtlConfig) (string, string
 	profileID = response.ID.String()
 	profileName = response.Name
 
-	utils.Log.Debug("New profile created")
+	log.Debug("New profile created")
 	return profileID, profileName, nil
 }

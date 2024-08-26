@@ -6,7 +6,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/khulnasoft/meshkit/database"
-	"github.com/sirupsen/logrus"
+	"github.com/khulnasoft/meshkit/logger"
 )
 
 type MeshplayResultsPersister struct {
@@ -35,7 +35,7 @@ type localMeshplayResultDBRepresentation struct {
 	PerformanceProfileInfo PerformanceProfile `json:"-" gorm:"constraint:OnDelete:SET NULL;foreignKey:PerformanceProfile"`
 }
 
-func (mrp *MeshplayResultsPersister) GetResults(page, pageSize uint64, profileID string) ([]byte, error) {
+func (mrp *MeshplayResultsPersister) GetResults(page, pageSize uint64, profileID string, log logger.Handler) ([]byte, error) {
 	var res []*localMeshplayResultDBRepresentation
 	var count int64
 	query := mrp.DB.Where("performance_profile = ?", profileID)
@@ -50,13 +50,13 @@ func (mrp *MeshplayResultsPersister) GetResults(page, pageSize uint64, profileID
 		Page:       page,
 		PageSize:   pageSize,
 		TotalCount: int(count),
-		Results:    convertLocalRepresentationSliceToMeshplayResultSlice(res),
+		Results:    convertLocalRepresentationSliceToMeshplayResultSlice(res, log),
 	}
 
 	return marshalMeshplayResultsPage(resultPage), err
 }
 
-func (mrp *MeshplayResultsPersister) GetAllResults(page, pageSize uint64) ([]byte, error) {
+func (mrp *MeshplayResultsPersister) GetAllResults(page, pageSize uint64, log logger.Handler) ([]byte, error) {
 	var res []*localMeshplayResultDBRepresentation
 	var count int64
 	query := mrp.DB.Table("meshplay_results")
@@ -71,17 +71,17 @@ func (mrp *MeshplayResultsPersister) GetAllResults(page, pageSize uint64) ([]byt
 		Page:       page,
 		PageSize:   pageSize,
 		TotalCount: int(count),
-		Results:    convertLocalRepresentationSliceToMeshplayResultSlice(res),
+		Results:    convertLocalRepresentationSliceToMeshplayResultSlice(res, log),
 	}
 
 	return marshalMeshplayResultsPage(resultPage), err
 }
 
-func (mrp *MeshplayResultsPersister) GetResult(key uuid.UUID) (*MeshplayResult, error) {
+func (mrp *MeshplayResultsPersister) GetResult(key uuid.UUID, log logger.Handler) (*MeshplayResult, error) {
 	var lres localMeshplayResultDBRepresentation
 
 	err := mrp.DB.Table("meshplay_results").Find(&lres).Where("id = ?", key).Error
-	res := convertLocalRepresentationToMeshplayResult(&lres)
+	res := convertLocalRepresentationToMeshplayResult(&lres, log)
 	return res, err
 }
 
@@ -104,18 +104,19 @@ func marshalMeshplayResultsPage(mrp *MeshplayResultPage) []byte {
 	return res
 }
 
-func convertLocalRepresentationSliceToMeshplayResultSlice(local []*localMeshplayResultDBRepresentation) (res []*MeshplayResult) {
+func convertLocalRepresentationSliceToMeshplayResultSlice(local []*localMeshplayResultDBRepresentation, log logger.Handler) (res []*MeshplayResult) {
 	for _, val := range local {
-		res = append(res, convertLocalRepresentationToMeshplayResult(val))
+		res = append(res, convertLocalRepresentationToMeshplayResult(val, log))
 	}
 
 	return
 }
 
-func convertLocalRepresentationToMeshplayResult(local *localMeshplayResultDBRepresentation) *MeshplayResult {
+func convertLocalRepresentationToMeshplayResult(local *localMeshplayResultDBRepresentation, log logger.Handler) *MeshplayResult {
 	var jsonmap map[string]interface{}
 	if err := json.Unmarshal(local.Result, &jsonmap); err != nil {
-		logrus.Error(err)
+		err = ErrUnmarshal(err, "MeshplayResult")
+		log.Error(err)
 		return nil
 	}
 

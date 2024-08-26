@@ -23,24 +23,26 @@ abstract: Install Meshplay on Kubernetes using Helm. Deploy Meshplay in Kubernet
 
 ## Install Meshplay on Your Kubernetes Cluster Using Helm
 
-{% capture code_content %}helm repo add meshplay https://khulnasoft.com/charts/
-helm install meshplay khulnasoft/meshplay --namespace meshplay --create-namespace
-helm install meshplay-operator khulnasoft/meshplay-operator{% endcapture %}
+{% capture code_content %}helm repo add meshplay https://meshplay.io/charts/
+helm install meshplay meshplay/meshplay --namespace meshplay --create-namespace
+{% endcapture %}
 {% include code.html code=code_content %}
 
 Optionally, Meshplay Server supports customizing the callback URL for your remote provider, like so:
 
-{% capture code_content %}helm install meshplay khulnasoft/meshplay --namespace meshplay --set env.MESHPLAY_SERVER_CALLBACK_URL=https://custom-host --create-namespace{% endcapture %}
+{% capture code_content %}helm install meshplay meshplay/meshplay --namespace meshplay --set env.MESHPLAY_SERVER_CALLBACK_URL=https://custom-host --create-namespace{% endcapture %}
 {% include code.html code=code_content %}
 
 ### Customizing Meshplay's Installation with values.yaml
 
-Meshplay's Helm chart supports a number of configuration options. Please refer to the [Meshplay Helm chart](https://github.com/khulnasoft/meshplay/tree/master/install/kubernetes/helm/meshplay#readme) and [Meshplay Operator Helm Chart](https://github.com/khulnasoft/meshplay/tree/master/install/kubernetes/helm/meshplay-operator#readme) for more information.
+Meshplay's Helm chart supports a number of configuration options. Please refer to the [Meshplay Helm chart](https://github.com/meshplay/meshplay/tree/master/install/kubernetes/helm/meshplay#readme) and [Meshplay Operator Helm Chart](https://github.com/meshplay/meshplay/tree/master/install/kubernetes/helm/meshplay-operator#readme) for more information.
 
-### Accessing Meshplay UI for Clusters
+## Post-Installation Steps
 
-To access Meshplay's UI , please refer to the [accessing-ui](/tasks/accessing-meshplay-ui) guide for detailed instructions.
+Optionally, you can verify the health of your Meshplay deployment, using <a href='/reference/meshplayctl/system/check'>meshplayctl system check</a>.
 
-{% include suggested-reading.html language="en" %}
+You're ready to use Meshplay! Open your browser and navigate to the Meshplay UI.
+
+{% include_cached installation/accessing-meshplay-ui.md display-title="true" %}
 
 {% include related-discussions.html tag="meshplay" %}

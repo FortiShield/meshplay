@@ -141,6 +141,9 @@ const components = {
   ValueContainer,
 };
 
+// NOTE: This is a wrapper for react-select
+// It is used to customize the look and feel of the react-select component
+// NOTE: Migrate to functional component and move to sistent
 class ReactSelectWrapper extends React.Component {
   render() {
     const {
@@ -154,7 +157,7 @@ class ReactSelectWrapper extends React.Component {
       options,
       error,
       isMulti = false,
-      noOptionsMessage = 'No Options',
+      noOptionsMessage = 'Type to create a new Environment',
     } = this.props;
 
     const selectStyles = {

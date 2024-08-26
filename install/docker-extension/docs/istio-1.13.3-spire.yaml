@@ -99,7 +99,7 @@ services:
       gateways:
       - bookinfo
       hosts:
-      - bookinfo.khulnasoft.com
+      - bookinfo.meshplay.io
       name: Virtual Service
       namespace: default
     traits:
@@ -868,7 +868,7 @@ services:
       namespace: productpage-v1
       outboundTrafficPolicy:
         egressProxy:
-          host: bookinfo.khulnasoft.com
+          host: bookinfo.meshplay.io
           subset: v1
         mode: ALLOW_ANY
     traits:

@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,17 +17,17 @@ package root
 import "github.com/khulnasoft/meshkit/errors"
 
 // Please reference the following before contributing an error code:
-// https://docs.khulnasoft.com/project/contributing/contributing-error
-// https://github.com/khulnasoft/meshkit/blob/master/errors/errors.go
+// https://docs-meshplay.khulnasoft.com/project/contributing/contributing-error
+// https://github.com/meshplay/meshkit/blob/master/errors/errors.go
 const (
-	ErrProcessingConfigCode        = "1088"
-	ErrCreatingConfigFileCode      = "1089"
-	ErrAddingTokenToConfigCode     = "1090"
-	ErrAddingContextToConfigCode   = "1091"
-	ErrUnmarshallingConfigFileCode = "1092"
-	ErrGettingRequestContextCode   = "1093"
-	ErrUnmarshallingAPIDataCode    = "1094"
-	ErrConnectingToServerCode      = "1095"
+	ErrProcessingConfigCode        = "meshplayctl-1010"
+	ErrCreatingConfigFileCode      = "meshplayctl-1011"
+	ErrAddingTokenToConfigCode     = "meshplayctl-1012"
+	ErrAddingContextToConfigCode   = "meshplayctl-1013"
+	ErrUnmarshallingConfigFileCode = "meshplayctl-1014"
+	ErrGettingRequestContextCode   = "meshplayctl-1015"
+	ErrUnmarshallingAPIDataCode    = "meshplayctl-1016"
+	ErrConnectingToServerCode      = "meshplayctl-1017"
 )
 
 var (
@@ -45,7 +45,7 @@ func ErrProcessingConfig(err error) error {
 }
 
 func ErrConnectingToServer(err error) error {
-	return errors.New(ErrConnectingToServerCode, errors.Fatal, []string{"Unable to communicate with Meshplay server"}, []string{"Unable to communicate with Meshplay server", err.Error(), "See https://docs.khulnasoft.com for help getting started with Meshplay"}, []string{}, []string{"See https://docs.khulnasoft.com for help getting started with Meshplay"})
+	return errors.New(ErrConnectingToServerCode, errors.Fatal, []string{"Unable to communicate with Meshplay server"}, []string{"Unable to communicate with Meshplay server", err.Error(), "See https://docs-meshplay.khulnasoft.com for help getting started with Meshplay"}, []string{}, []string{"See https://docs-meshplay.khulnasoft.com for help getting started with Meshplay"})
 }
 
 func ErrGettingRequestContext(err error) error {

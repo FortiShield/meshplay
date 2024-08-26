@@ -7,10 +7,10 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/gorilla/mux"
+	"github.com/khulnasoft/meshplay/server/machines"
 	mhelpers "github.com/khulnasoft/meshplay/server/machines/helpers"
 	"github.com/khulnasoft/meshplay/server/machines/kubernetes"
 	"github.com/khulnasoft/meshplay/server/models"
-	"github.com/khulnasoft/meshplay/server/machines"
 	"github.com/khulnasoft/meshkit/models/events"
 )
 
@@ -133,7 +133,7 @@ func (h *Handler) DeleteContext(w http.ResponseWriter, req *http.Request, _ *mod
 			h.log.Debug(event)
 			return
 		}
-		
+
 		smInstanceTracker.Remove(connectionUUID)
 	}(inst)
 

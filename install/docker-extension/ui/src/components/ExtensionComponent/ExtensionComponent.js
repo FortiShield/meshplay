@@ -34,7 +34,7 @@ import {
 import { MeshplayAnimation } from '../MeshplayAnimation/MeshplayAnimation'
 import { randomApplicationNameGenerator } from '../../utils'
 import CatalogChart from '../Catalog/Chart'
-import CatalogCard from '../Catalog/CatalogCard';
+import {CatalogCard, SistentThemeProviderWithoutBaseLine} from '@khulnasoft/sistent';
 import { MESHMAP, meshplayCloudUrl } from '../utils/constants';
 
 const AuthenticatedMsg = 'Authenticated'
@@ -111,7 +111,7 @@ const ExtensionsComponent = () => {
   const [changing, isChanging] = useState(false)
   // const [emptystate, isEmptystate] = useState(true)
   // const [meshAdapters, setMeshAdapters] = useState(null)
-  const [pattern, setPattern] = useState(null)
+  const [catalogDesigns, setCatalogDesigns] = useState(null)
   const [filter, setFilter] = useState(null)
   const [userDesigns, setUserDesigns] = useState(null)
 
@@ -171,7 +171,7 @@ const ExtensionsComponent = () => {
           fetch(`${meshplayCloudUrl}/api/catalog/content/pattern`)
             .then((result) => result.text())
             .then((result) => {
-              setPattern(JSON.parse(result))
+              setCatalogDesigns(JSON.parse(result))
             })
             .catch(console.error)
           fetch(`${meshplayCloudUrl}/api/catalog/content/filter`)
@@ -482,7 +482,7 @@ const ExtensionsComponent = () => {
         </SectionWrapper>
         {isLoggedIn &&
           (<SectionWrapper>
-            <CatalogChart filter={filter} pattern={pattern} isTheme={isDarkTheme} />
+            <CatalogChart filter={filter} pattern={catalogDesigns} isTheme={isDarkTheme} />
             <Grid sx={{ backgroundColor: isDarkTheme ? '#666A75' : '#D7DADE', borderRadius: "15px", height: "23rem", display: "flex", justifyContent: "center" }}>
 
               <div style={{ paddingTop: isLoggedIn ? '1.2rem' : null, margin: "10px 0" }}>
@@ -492,25 +492,29 @@ const ExtensionsComponent = () => {
                     height: ['22rem', '17rem', '14rem'],
                   }}
                 >
-                  {userDesigns?.patterns.length > 0 ? (
+                  {catalogDesigns?.patterns.length > 0 ? (
                     <div>
                       <Typography variant="h5" sx={{ padding: '3rem 0 1rem 0', fontWeight: "bold" }}>
                         Designs
                       </Typography>
                       <MeshModels>
                         {
-                          userDesigns?.patterns?.slice(0, 2).map((pattern, index) => {
+                          catalogDesigns?.patterns?.slice(0, 2).map((pattern, index) => {
                             let patternType =
                               pattern.catalog_data && pattern.catalog_data.type && pattern.catalog_data.type !== ""
                                 ? pattern.catalog_data.type
                                 : "deployment";
                             return (
+                             <SistentThemeProviderWithoutBaseLine>                          
                               <CatalogCard
                                 pattern={pattern}
                                 key={`design-${index}`}
                                 patternType={patternType}
                                 catalog={true}
-                              />
+                                cardHeight='18rem'
+                                cardWidth='15rem'
+                              />                            
+                             </SistentThemeProviderWithoutBaseLine>
                             )
                           })
                         }
@@ -521,7 +525,7 @@ const ExtensionsComponent = () => {
                       <Typography variant="h5" sx={{ padding: '3rem 0 1rem 0', fontWeight: "bold" }}>
                         Designs
                       </Typography>
-                      <a href={user?.role_names?.includes(MESHMAP) ? "https://playground.khulnasoft.com/extension/meshmap" : "https://play.khulnasoft.com"} style={{ textDecoration: "none" }}>
+                      <a href={user?.role_names?.includes(MESHMAP) ? "https://playground.meshplay.io/extension/meshmap" : "https://play.meshplay.io"} style={{ textDecoration: "none" }}>
                       <PublishCard>
                         <PublishIcon width={"60"} height={"60"} />
                         <h5>Publish your own design</h5>
@@ -544,7 +548,7 @@ const ExtensionsComponent = () => {
                 </VersionText>
               </Tooltip>
               <a
-                href={`https://docs.khulnasoft.com/project/releases/${meshplayVersion}`}
+                href={`https://docs-meshplay.khulnasoft.com/project/releases/${meshplayVersion}`}
                 target="_blank"
                 rel="noreferrer"
                 style={{ color: isDarkTheme ? 'white' : 'black' }}

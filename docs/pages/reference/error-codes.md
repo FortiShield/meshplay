@@ -13,13 +13,24 @@ abstract: "Meshplay Error Code Reference for all Meshplay components so that you
 .title {
   text-transform: capitalize;
 }
-
+div.error-heading {
+  text-transform: uppercase;
+}
+p.error-details {
+    margin-left: 1.5rem;
+    font-size: 1rem;
+    text-wrap: wrap;
+    width:85%
+}
+td {
+  vertical-align: middle;
+}
 .tbl-head-row{
   background-color:#F2F2F2;
+  text-align: left
 }
-
 .tbl-head-row .error-name-code{
-  display:flex;
+  /* display:flex; */
   justify-content:space-between;
   align-items:flex-end;
   height:5rem;
@@ -35,7 +46,7 @@ abstract: "Meshplay Error Code Reference for all Meshplay components so that you
 }
 
 .tbl-body-row .error-name-code{
-  display:flex;
+  /* display:flex; */
   justify-content:flex-start;
 }
 
@@ -64,10 +75,16 @@ abstract: "Meshplay Error Code Reference for all Meshplay components so that you
 
 ## Error Codes and Troubleshooting
 
-Meshplay and its components use a common framework (defined within MeshKit) to generate and document an error with a unique error code identifier: the combination of Meshplay component moniker and numberic code - `[component-moniker]-[numeric code]`. Each error code identifies the source component for the error and a standard set of information to describe the error and provide helpful details for troubleshooting the situation surrounding the specific error.
+Meshplay and its components use a common framework (defined within MeshKit) to generate and document an event with a unique error code identifier as the combination of `[component type]-[component name]-[event moniker]-[numeric code]`. Each error code identifies the source component for the error and a standard set of information to describe the error and provide helpful details for troubleshooting the situation surrounding the specific error.
 
-{% include alert.html type="info" title="Error codes are combination of component moniker and numberic code" content="
-Note: The numeric portion of error codes are component-scoped. The numeric portion of error codes are allowed to overlap between Meshplay components. The combination of the `[component-moniker]-[numeric code]` is what makes a given error code globally unique." %}
+{% include alert.html type="info" title="Error codes are combination of component type, component name, event moniker and numberic code" content="Error codes are a hyphenated collection of details that include:
+<ul>
+<li><b>Component Type</b> (string): The type of the component that emits this error event; e.g. <code>adapter</code></li>
+<li><b>Component Name</b> (string): The name of the component that emits this error event; e.g. <code>ameshplay-istio</code></li>
+<li><b>Error Moniker</b> (string): A semi-human readable short key used in descriptive reference to the specific event at-hand; e.g. <code>ErrClosingDatabaseInstanceCode</code></li>
+<li><b>Numberic Code</b> (number): Unique number identifying a specific error as scoped by a specific component; e.g. <code>a1000</code></li>
+</ul>
+The numeric portion of error codes are component-scoped. The numeric portion of error codes are allowed to overlap between Meshplay components. The combination of the <code>[component type]-[component name]-[event moniker]-[numeric code]</code> is what makes a given error code globally unique." %}
 
 ## Error Code Categories by Component
 
@@ -86,7 +103,7 @@ Note: The numeric portion of error codes are component-scoped. The numeric porti
            {% capture thecycle %}{% cycle 'odd', 'even' %}{% endcapture %}
             {% if thecycle == 'even' %} 
             {% if component[1].component_type == 'adapter' %}
-              {% capture link %}meshplay-adapter-for-{{component[1].component_name}}{% endcapture %}
+              {% capture link %}meshplay-adapter-for-{{component[1].component_name | lowercase}}{% endcapture %}
             {% elsif component[1].component_type == 'component' %}
                {% capture link %}meshplay-server{% endcapture %}
             {% else %}
@@ -134,9 +151,10 @@ Note: The numeric portion of error codes are component-scoped. The numeric porti
 <table class="tbl">
   <thead>
     <tr class="tbl-head-row">
-      <th class="error-name-code"><span>Error Name - Code</span></th>
       <th style="width:15%">Severity</th>
+      <th class="error-name-code"><span>Error Name - Code</span></th>
       <th style="width:85%">Short Description</th>
+      <th>Discussion</th>
     </tr>
   </thead>
   <tbody class="tbl-body">
@@ -149,23 +167,21 @@ Note: The numeric portion of error codes are component-scoped. The numeric porti
         {% assign severity = "background-color: transparent; color: black;" %}
       {% endif %}
       <tr class="tbl-body-row hover-effect" onclick="toggle_visibility('{{ component[1].component_name }}-{{ err_code[1]["name"] }}-more-info');">
-        <td class="error-name-code">
+        <td style="{{ severity }}">{{ err_code[1]["severity"] }}</td>
+        <td id="{{ heading | slugify }}-{{err_code[1]["code"] }}" class="error-name-code">
           <code>{{ err_code[1]["name"] | xml_escape }}-{{ err_code[1]["code"] }}</code>
         </td>
-        <td style="{{ severity }}">{{ err_code[1]["severity"] }}</td>
         <td>{{ err_code[1]["short_description"] | xml_escape }}</td>
+        <td><a href="https://discuss.khulnasoft.com/search?q={{ err_code[1]['name'] | xml_escape }}-{{ err_code[1]['code'] }}" target="_blank">search forum</a></td>
       </tr>
       <tr id="{{ component[1].component_name }}-{{ err_code[1]["name"] }}-more-info" class="tbl-hidden-row">
-        <td style="word-break:break-all;">
-          <div><i><b>Probable Cause:</b></i></div>{{ err_code[1]["probable_cause"] | xml_escape }}
-          </td>
-          <td>
-          <div><i><b>Suggested Remediation:</b></i></div>
-          {{ err_code[1]["suggested_remediation"] | xml_escape }}
-          </td>
-          <td>
-          <div><i><b>Long Description:</b></i></div>
-          {{ err_code[1]["long_description"] | xml_escape }}
+        <td style="word-break:break-all;" colspan="3">
+          <div class="error-heading">Long Description</div>
+          <p class="error-details">{{ err_code[1]["long_description"] | xml_escape }}</p>
+          <div class="error-heading">Probable Cause</div>
+          <p class="error-details">{{ err_code[1]["probable_cause"] | xml_escape }}</p>
+          <div class="error-heading">Suggested Remediation</div>
+          <p class="error-details">{{ err_code[1]["suggested_remediation"] | xml_escape }}</p>
         </td>
       </tr>
     {% endfor %}

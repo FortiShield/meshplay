@@ -1,4 +1,4 @@
-# Copyright 2019 Khulnasoft Authors
+# Copyright Meshplay Authors
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@ if ! command_exists unzip ; then
 fi
 
 if [ "x${MESHPLAY_VERSION}" = "x" ] ; then
-  MESHPLAY_VERSION=$(curl -L -s https://github.com/khulnasoft/meshplay/releases/latest | \
+  MESHPLAY_VERSION=$(curl -L -s https://github.com/meshplay/meshplay/releases/latest | \
                   grep "/releases/tag/" | head -1 | awk -F '"' '{print $4}' | \
                   awk -F '/' '{print $NF}' )
 fi
@@ -134,7 +134,7 @@ if [ "x${MESHPLAY_VERSION}" = "x" ] ; then
 fi
 
 NAME="meshplayctl-${MESHPLAY_VERSION}"
-URL="https://github.com/khulnasoft/meshplay/releases/download${MESHPLAY_VERSION}/meshplayctl_${MESHPLAY_VERSION:1}_${OSEXT}_${OSARCHITECTURE}.zip"
+URL="https://github.com/meshplay/meshplay/releases/download/${MESHPLAY_VERSION}/meshplayctl_${MESHPLAY_VERSION:1}_${OSEXT}_${OSARCHITECTURE}.zip"
 
 printf "\nDownloading %s for %s...\n\n" "$NAME" "$OSEXT"
 curl -L ${URL} -o ${PWD}/meshplay.zip
@@ -182,7 +182,7 @@ else
   fi
 fi
 
-#Transfering permissions and ownership to client USER
+#Transferring permissions and ownership to client USER
 if [ "$SUDO_USER" == "" ] ;
 then
   if chown $WHOAMI $install_dir/meshplayctl ; then
@@ -255,5 +255,5 @@ if [ ! -z "$ADAPTERS" ]; then
     meshplayctl system context create custom -s $adapterString --yes
 fi
 
-printf "\nStarting Meshplay...\n"
+printf "\nDeploying Meshplay...\n"
 meshplayctl system start --yes --platform $PLATFORM

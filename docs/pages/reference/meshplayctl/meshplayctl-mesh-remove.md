@@ -12,11 +12,11 @@ subcommand: remove
 
 # meshplayctl mesh remove
 
-remove a service mesh in the kubernetes cluster
+remove cloud and cloud native infrastructure
 
 ## Synopsis
 
-remove service mesh in the connected kubernetes cluster
+remove cloud and cloud native infrastructure
 <pre class='codeblock-pre'>
 <div class='codeblock'>
 meshplayctl mesh remove [flags]
@@ -26,7 +26,7 @@ meshplayctl mesh remove [flags]
 
 ## Examples
 
-Remove a service mesh(linkerd)
+Remove Linkerd deployment
 <pre class='codeblock-pre'>
 <div class='codeblock'>
 meshplayctl mesh remove linkerd
@@ -34,7 +34,7 @@ meshplayctl mesh remove linkerd
 </div>
 </pre> 
 
-Remove a service mesh(linkerd) under a specific namespace(linkerd-ns)
+Remove a Linkerd control plane found under a specific namespace (linkerd-ns)
 <pre class='codeblock-pre'>
 <div class='codeblock'>
 meshplayctl mesh remove linkerd --namespace linkerd-ns

@@ -29,7 +29,7 @@
 Keeping Your Fork Updated
 In order to get the latest updates from the development trunk do a one-time setup to establish the main GitHub repo as a remote by entering:<br><br>
 
-`git remote add upstream https://github.com/khulnasoft/meshplay.git`
+`git remote add upstream https://github.com/meshplay/meshplay.git`
 <br><br>
 ("meshplay" is used as the example repo. Be sure to reference the _actual_ repo you're contributing to e.g. "meshplay-linkerd").
 <br><br>

@@ -1,12 +1,26 @@
 import React from 'react';
-import { IconButton, InputAdornment, TextField, useTheme, InputLabel } from '@material-ui/core';
+import {
+  IconButton,
+  InputAdornment,
+  TextField,
+  useTheme,
+  InputLabel,
+  styled,
+} from '@material-ui/core';
 import HelpOutlineIcon from '../../../../assets/icons/HelpOutlineIcon';
 import { CustomTextTooltip } from '../CustomTextTooltip';
 import ErrorOutlineIcon from '../../../../assets/icons/ErrorOutlineIcon';
 import { ERROR_COLOR } from '../../../../constants/colors';
 import { iconSmall } from '../../../../css/icons.styles';
-import { getHyperLinkDiv } from '../helper';
 import { makeStyles } from '@material-ui/styles';
+
+const CustomTextField = styled(TextField)(({ theme, overrideFlag }) => {
+  return {
+    '& div': {
+      backgroundColor: overrideFlag ? (theme.palette.type === 'dark' ? '#303030' : '#fff') : '',
+    },
+  };
+});
 
 const BaseInput = (props) => {
   const additional = props.schema?.__additional_property; // check if the field is additional
@@ -30,7 +44,6 @@ const BaseInput = (props) => {
       borderRadius: '3px',
     },
   }));
-
   const theme = useTheme();
   const classes = styles();
   return (
@@ -41,10 +54,11 @@ const BaseInput = (props) => {
             {prettifiedName}
           </InputLabel>
         )}
-        <TextField
+        <CustomTextField
           variant={additional ? 'standard' : 'outlined'}
           size="small"
           focused={focused}
+          overrideFlag={props.formContext.overrideFlag}
           type={props.options?.inputType}
           key={props.id}
           disabled={props?.disabled || props?.readonly}
@@ -52,10 +66,10 @@ const BaseInput = (props) => {
             props.options?.inputType === 'file'
               ? null
               : additional && props?.value === 'New Value'
-              ? ''
-              : props?.value && xEncodeInURI
-              ? decodeURIComponent(props?.value)
-              : props?.value
+                ? ''
+                : props?.value && xEncodeInURI
+                  ? decodeURIComponent(props?.value)
+                  : props?.value
           } // remove the default value i.e. New Value for additionalFields
           id={props.id}
           margin="dense"
@@ -70,8 +84,8 @@ const BaseInput = (props) => {
                   e.target.value === ''
                     ? props.options.emptyValue
                     : xEncodeInURI
-                    ? encodeURIComponent(e.target.value)
-                    : e.target.value,
+                      ? encodeURIComponent(e.target.value)
+                      : e.target.value,
                 )
           }
           InputLabelProps={{
@@ -88,18 +102,12 @@ const BaseInput = (props) => {
               <InputAdornment position="start">
                 {props.rawErrors?.length > 0 && (
                   <CustomTextTooltip
-                    backgroundColor={ERROR_COLOR}
+                    bgColor={ERROR_COLOR}
                     flag={props?.formContext?.overrideFlag}
-                    title={
-                      <div>
-                        {props.rawErrors?.map((error, index) => (
-                          <div key={index}>{error}</div>
-                        ))}
-                      </div>
-                    }
+                    title={props.rawErrors?.join('  ')}
                     interactive={true}
                   >
-                    <IconButton component="span" size="small">
+                    <IconButton component="span" size="small" tabIndex={-1}>
                       <ErrorOutlineIcon
                         width="14px"
                         height="14px"
@@ -111,12 +119,11 @@ const BaseInput = (props) => {
                 )}
                 {props.schema?.description && (
                   <CustomTextTooltip
-                    backgroundColor="#3C494F"
                     flag={props?.formContext?.overrideFlag}
-                    title={getHyperLinkDiv(props.schema?.description)}
+                    title={props.schema?.description}
                     interactive={true}
                   >
-                    <IconButton component="span" size="small">
+                    <IconButton component="span" size="small" tabIndex={-1}>
                       <HelpOutlineIcon
                         width="14px"
                         height="14px"

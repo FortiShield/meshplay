@@ -1,14 +1,14 @@
 ---
-layout: enhanced
+layout: default
 title: "Extensibility: UI"
 permalink: extensibility/ui
 type: Extensibility
-abstract: "Meshplay offers support for more adapters than any other project or product in the world. Meshplay UI has a number of extension points that allow for users to customize their experience with third-party plugins."
+abstract: "Meshplay offers support for more adapters than any other project or product in the world. Meshplay UI has a number of extension points that allow users to customize their experience with third-party plugins."
 language: en
 list: include
 ---
 
-Meshplay UI has a number of extension points that allow for users to customize their experience with third-party plugins.
+Meshplay UI has a number of extension points that allow users to customize their experience with third-party plugins.
 
 ## Designing Custom Components for Meshplay Extension Point
 
@@ -18,7 +18,7 @@ Meshplay can provide the extension point in various ways by providing the featur
 ### Extensibility: RJSF Custom Component
 
 RJSFWrapperComponent are the customizations done on RJSF forms overriding the default behaviour of meshplay-ui rjsf forms.
-The [Rjsf forms are wrapped](https://github.com/khulnasoft/meshplay/blob/0bc68d1cd0ba80a565afa68bce80899c22db9a2e/ui/components/MeshplayMeshInterface/PatternService/RJSF.js#L66) under these component to receive the custom-props from Meshplay-extension.
+The [Rjsf forms are wrapped](https://github.com/meshplay/meshplay/blob/0bc68d1cd0ba80a565afa68bce80899c22db9a2e/ui/components/MeshplayMeshInterface/PatternService/RJSF.js#L66) under these component to receive the custom-props from Meshplay-extension.
 {% capture code_content %} <RJSFWrapperComponent {...props}>
 <RJSFForm
 isLoading={isLoading}
@@ -31,7 +31,7 @@ jsonSchema={jsonSchema}
 />
 </RJSFWrapperComponent>{% endcapture %}
 {% include code.html code=code_content %}
-These props are received in the RJSF forms like this: [RJSF Component](https://github.com/khulnasoft/meshplay/blob/0bc68d1cd0ba80a565afa68bce80899c22db9a2e/ui/components/MeshplayMeshInterface/PatternService/RJSF.js#L91)
+These props are received in the RJSF forms like this: [RJSF Component](https://github.com/meshplay/meshplay/blob/0bc68d1cd0ba80a565afa68bce80899c22db9a2e/ui/components/MeshplayMeshInterface/PatternService/RJSF.js#L91)
 
 #### Passing new custom prop to forms:
 
@@ -47,7 +47,7 @@ customComponent: YOUR_NEW_CUSTOM_COMPONENT_OR_PROP
 return children
 }{% endcapture %}
 {% include code.html code=code_content %}
-Extract the props in the [RJSFForm Component](https://github.com/khulnasoft/meshplay/blob/0bc68d1cd0ba80a565afa68bce80899c22db9a2e/ui/components/MeshplayMeshInterface/PatternService/RJSF.js#L91)
+Extract the props in the [RJSFForm Component](https://github.com/meshplay/meshplay/blob/0bc68d1cd0ba80a565afa68bce80899c22db9a2e/ui/components/MeshplayMeshInterface/PatternService/RJSF.js#L91)
 
 _Extensibility documentation missing?_
 Submit an issue to request more documentation.

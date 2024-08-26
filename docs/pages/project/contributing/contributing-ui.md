@@ -25,15 +25,15 @@ The following is a list of top-level frameworks, libraries, design system used i
 
 ## Meshplay Server APIs
 
-The [API overview](https://docs.khulnasoft.com/extensibility/api) in the Extensibility guide offers high-level insight, while each API reference (below) offers details pertaining to each API endpoints' behavior and use.
+The [API overview](https://docs-meshplay.khulnasoft.com/extensibility/api) in the Extensibility guide offers high-level insight, while each API reference (below) offers details pertaining to each API endpoints' behavior and use.
 
 ### REST API
 
-Meshplay provides a REST API available through the default port of `9081/tcp` at `<hostname>:<port>/api/`. See the [REST API Reference](https://docs.khulnasoft.com/reference/rest-apis) for a complete list of endpoints available with short description of their purpose and example code.
+Meshplay provides a REST API available through the default port of `9081/tcp` at `<hostname>:<port>/api/`. See the [REST API Reference](https://docs-meshplay.khulnasoft.com/reference/rest-apis) for a complete list of endpoints available with short description of their purpose and example code.
 
 ### GraphQL API
 
-Meshplay provides a GraphQl API available through the default port of `9081/tcp` at `<hostname>:<port>/api/graphql/query`. See the [GraphQL API Reference](https://docs.khulnasoft.com/reference/graphql-apis) [Relay](https://relay.dev) is the client used.
+Meshplay provides a GraphQl API available through the default port of `9081/tcp` at `<hostname>:<port>/api/graphql/query`. See the [GraphQL API Reference](https://docs-meshplay.khulnasoft.com/reference/graphql-apis) [Relay](https://relay.dev) is the client used.
 
 ## Design
 
@@ -55,7 +55,7 @@ The designs in this specification should result in enabling:
 
 ## Setup
 
-{% include alert.html type="info" title="Windows User?" content="See <a href='https://docs.khulnasoft.com/project/contributing/meshplay-windows'>Setting up Meshplay Development Environment on Windows</a>."
+{% include alert.html type="info" title="Windows User?" content="See <a href='https://docs-meshplay.khulnasoft.com/project/contributing/meshplay-windows'>Setting up Meshplay Development Environment on Windows</a>."
 %}
 
 ### Node Version Recommendations
@@ -107,7 +107,7 @@ Potential Solution:
 - Go to your meshplay folder in your local-system where you’ve cloned it.
   Execute:
 
-- `git remote add upstream https://github.com/khulnasoft/meshplay`
+- `git remote add upstream https://github.com/meshplay/meshplay`
 - `git fetch upstream`
 - Restart the meshplay server
 - Additionally, before restarting the server, if you like to pull the latest changes, you can do: `git pull upstream master`
@@ -126,7 +126,7 @@ Any UI changes made now will _automatically_ be rebuilt and served in your brows
 
 ### Running Cypress integration tests
 
-To run cypress integration tests, a convenience make target called `ui-integration-tests` that installs dependencies in `/ui` and `/provider-ui` folders as prerequisite and invokes `ci-test-integration` npm script found in [/ui/package.json](https://github.com/khulnasoft/meshplay/blob/master/ui/package.json)
+To run cypress integration tests, a convenience make target called `ui-integration-tests` that installs dependencies in `/ui` and `/provider-ui` folders as prerequisite and invokes `ci-test-integration` npm script found in [/ui/package.json](https://github.com/meshplay/meshplay/blob/master/ui/package.json)
 {% include code.html code="make ui-integration-tests" %}
 {% include alert.html type="info" title="Above command must be run from Meshplay repository's root folder." %}
 
@@ -147,7 +147,7 @@ meshplay
             └── style
 ```
 
-Images and icons used in Meshplay UI need to be sourced from the [public directory of images](https://github.com/khulnasoft/meshplay/tree/master/ui/public/static/img). The files written inside this directory should only end with the extensions like `.svg`, `.png`, `.jpg` or `.jpeg`. Always use vector-based graphics (`.svg`), unless your have extenuating circumstances.
+Images and icons used in Meshplay UI need to be sourced from the [public directory of images](https://github.com/meshplay/meshplay/tree/master/ui/public/static/img). The files written inside this directory should only end with the extensions like `.svg`, `.png`, `.jpg` or `.jpeg`. Always use vector-based graphics (`.svg`), unless your have extenuating circumstances.
 
 ##### Conventions for SVG files
 
@@ -176,6 +176,4 @@ Images and icons used in Meshplay UI need to be sourced from the [public directo
 For accessing the svg file as data-url, the utf8 encoding should be used in place of base64.Use [encodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) on SVG data URIs. \
 
 {% include code.html code="let svg = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgFile);" %}
-
-{% include suggested-reading.html %}
 

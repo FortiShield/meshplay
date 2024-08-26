@@ -359,6 +359,16 @@ paths:
             summary: Handle GET request for events.
             tags:
                 - EventsAPI
+        post:
+            description: |-
+                Receives client-generated events bound for the Notification Center.
+            operationId: idClientEventHandler
+            responses:
+                "200":
+                    $ref: '#/responses/eventResponseWrapper'
+            summary: Handle POST request for client-generated events.
+            tags:
+                - EventsAPI
     /api/events/{id}:
         delete:
             description: Deletes event associated with the id.
@@ -1221,7 +1231,7 @@ paths:
                 - GetAllMeshmodelRelationships
     /api/meshmodels/relationships/evaluate:
         post:
-            description: Handle POST request for evaluating relationships in the provided design file by running a set of provided rego queries on the design file
+            description: Handle POST request for evaluating relationships in the provided design file by running a set of provided evaluation queries on the design file
             operationId: relationshipPolicyEvalPayloadWrapper
             responses: {}
             tags:
@@ -1383,6 +1393,24 @@ paths:
                 "200":
                     description: ""
             summary: Handle POST request for Pattern Deploy
+            tags:
+                - PatternsAPI
+    /api/pattern/download/{id}:
+        get:
+            description: Fetches the pattern with the given id
+            operationId: idGetMeshplayPattern
+            parameters:
+                - description: id for a specific
+                  format: uuid
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+                  x-go-name: ID
+            responses:
+                "200":
+                    $ref: '#/responses/meshplayPatternResponseWrapper'
+            summary: Handle GET for a Meshplay Pattern
             tags:
                 - PatternsAPI
     /api/pattern/download/{id}/{sourcetype}:
@@ -2613,6 +2641,8 @@ responses:
                 type: string
             displayhostname:
                 type: string
+            evaluationQuery:
+                type: string
             hostID: {}
             hostname:
                 type: string
@@ -2620,8 +2650,6 @@ responses:
                 type: string
             metadata: {}
             model: {}
-            rego_query:
-                type: string
             selectors: {}
             subType:
                 type: string

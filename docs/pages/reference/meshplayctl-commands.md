@@ -18,11 +18,14 @@ Meshplay CLI commands are categorized by function, which are:
 
 - `meshplayctl` - Global flags and CLI configuration
 - `meshplayctl system` - Meshplay Lifecycle and Troubleshooting
-- `meshplayctl mesh` - Cloud Native Lifecycle & Configuration Management: provisioning and configuration best practices
-- `meshplayctl perf` - Cloud Native Performance Management: Workload and cloud native performance characterization
-- `meshplayctl pattern` - Cloud Native Pattern Configuration & Management: cloud native patterns and Open Application Model integration
-- `meshplayctl app` - Cloud Native Application Management
+- `meshplayctl mesh` - Lifecycle & Configuration Management: provisioning and configuration best practices
+- `meshplayctl perf` - Performance Management: Workload and cloud native performance characterization
+- `meshplayctl pattern` - Design Patterns: cloud native patterns and best practices
 - `meshplayctl filter` - Data Plane Intelligence: Registry and configuration of WebAssembly filters for Envoy
+- `meshplayctl model` - A unit of packaging to define managed infrastructure and their relationships, and details specifics of how to manage them.
+- `meshplayctl components` - Fundamental building block used to represent and define the infrastructure under management
+- `meshplayctl registry` - Model Database: Manage the state and contents of Meshplay's internal registry of capabilities.
+- `meshplayctl exp` - Experimental features
 
 ## Global Commands and Flags
 
@@ -462,51 +465,35 @@ Installation, troubleshooting and debugging of Meshplay and its adapters
     <th>Flag</th>
     <th>Function</th>
   </tr>
-  {% assign command7 = site.data.meshplayctlcommands.cmds.mesh %}
+  {% assign command7 = site.data.meshplayctlcommands.cmds.adapter %}
+    {% assign subcommand_flag_count = 0 %}
+    {% for subcommand_hash in command7.subcommands %}
+      {% assign subcommand = subcommand_hash[1] %}
+      {% assign subcommand_flag_count = subcommand_flag_count | plus: subcommand.flags.size %}
+    {% endfor %}
+    {% assign total_rowspan = command7.subcommands.size | plus: subcommand_flag_count | plus: command7.flags.size | plus: 1 %}
     <tr>
-      <td rowspan=13><a href="{{ site.baseurl }}/reference/meshplayctl/mesh">{{ command7.name }}</a></td>
+      <td rowspan={{ total_rowspan }}><a href="{{ site.baseurl }}/reference/meshplayctl/{{ command7.name }}">{{ command7.name }}</a></td>
       <td></td>
       <td></td>
       <td>{{ command7.description }}</td>
     </tr>
-    {% assign subcommand1 = command7.subcommands.validate %}
+    {% for subcommand_hash in command7.subcommands %}{% assign subcommand = subcommand_hash[1] %}
       <tr>
-        <td rowspan=5><a href="{{ site.baseurl }}/reference/meshplayctl/mesh/validate">{{ subcommand1.name }}</a></td>
+        <td rowspan={{ subcommand.flags.size | plus: 1 }} ><a href="{{ site.baseurl }}/reference/meshplayctl/{{ command7.name }}/{{ subcommand.name }}">{{ subcommand.name }}</a></td>
         <td></td>
-        <td>{{ subcommand1.description }}</td>
+        <td>{{ subcommand.description }}</td>
       </tr>
-      {% for flag_hash in subcommand1.flags %}{% assign flag = flag_hash[1] %}
+      {% for flag_hash in subcommand.flags %}{% assign flag = flag_hash[1] %}
         <tr>
           <td>{{ flag.name }}</td>
           <td>{{ flag.description }}</td>
         </tr>
       {% endfor %}
-    {% assign subcommand2 = command7.subcommands.remove %}
-      <tr>
-        <td rowspan=2><a href="{{ site.baseurl }}/reference/meshplayctl/mesh/remove">{{ subcommand2.name }}</a></td>
-        <td></td>
-        <td>{{ subcommand2.description }}</td>
-      </tr>
-      {% for flag_hash in subcommand2.flags %}{% assign flag = flag_hash[1] %}
-        <tr>
-          <td>{{ flag.name }}</td>
-          <td>{{ flag.description }}</td>
-        </tr>
-      {% endfor %}
-    {% assign subcommand3 = command7.subcommands.deploy %}
-      <tr>
-        <td rowspan=4><a href="{{ site.baseurl }}/reference/meshplayctl/mesh/deploy">{{ subcommand3.name }}</a></td>
-        <td></td>
-        <td>{{ subcommand3.description }}</td>
-      </tr>
-      {% for flag_hash in subcommand3.flags %}{% assign flag = flag_hash[1] %}
-        <tr>
-          <td>{{ flag.name }}</td>
-          <td>{{ flag.description }}</td>
-        </tr>
-      {% endfor %}
+    {% endfor %}
 </thead>
 </table>
+
 
 ## Cloud Native Pattern Configuration and Management
 
@@ -520,7 +507,7 @@ Installation, troubleshooting and debugging of Meshplay and its adapters
   </tr>
   {% assign command7 = site.data.meshplayctlcommands.cmds.pattern %}
     <tr>
-      <td rowspan=10><a href="{{ site.baseurl }}/reference/meshplayctl/pattern">{{ command7.name }}</a></td>
+      <td rowspan=23><a href="{{ site.baseurl }}/reference/meshplayctl/pattern">{{ command7.name }}</a></td>
       <td></td>
       <td></td>
       <td>{{ command7.description }}</td>
@@ -551,7 +538,7 @@ Installation, troubleshooting and debugging of Meshplay and its adapters
       {% endfor %}
     {% assign subcommand3 = command7.subcommands.list %}
       <tr>
-        <td rowspan=2><a href="{{ site.baseurl }}/reference/meshplayctl/pattern/list">{{ subcommand3.name }}</a></td>
+        <td rowspan=3><a href="{{ site.baseurl }}/reference/meshplayctl/pattern/list">{{ subcommand3.name }}</a></td>
         <td></td>
         <td>{{ subcommand3.description }}</td>
       </tr>
@@ -561,77 +548,9 @@ Installation, troubleshooting and debugging of Meshplay and its adapters
           <td>{{ flag.description }}</td>
         </tr>
       {% endfor %}
-    {% assign subcommand3 = command7.subcommands.delete %}
+    {% assign subcommand4 = command7.subcommands.delete %}
       <tr>
-        <td rowspan=2><a href="{{ site.baseurl }}/reference/meshplayctl/pattern/delete">{{ subcommand3.name }}</a></td>
-        <td></td>
-        <td>{{ subcommand3.description }}</td>
-      </tr>
-      {% for flag_hash in subcommand3.flags %}{% assign flag = flag_hash[1] %}
-        <tr>
-          <td>{{ flag.name }}</td>
-          <td>{{ flag.description }}</td>
-        </tr>
-      {% endfor %}
-</thead>
-</table>
-
-## Cloud Native Application Management
-
-<table>
-<thead>
-  <tr>
-    <th>Main Command</th>
-    <th>Command</th>
-    <th>Flag</th>
-    <th>Function</th>
-  </tr>
-  {% assign command8 = site.data.meshplayctlcommands.cmds.app %}
-    <tr>
-      <td rowspan=15><a href="{{ site.baseurl }}/reference/meshplayctl/app">{{ command8.name }}</a></td>
-      <td></td>
-      <td></td>
-      <td>{{ command8.description }}</td>
-    </tr>
-    {% assign subcommand1 = command8.subcommands.import %}
-      <tr>
-        <td rowspan=3><a href="{{ site.baseurl }}/reference/meshplayctl/app/import">{{ subcommand1.name }}</a></td>
-        <td></td>
-        <td>{{ subcommand1.description }}</td>
-      </tr>
-      {% for flag_hash in subcommand1.flags %}{% assign flag = flag_hash[1] %}
-        <tr>
-          <td>{{ flag.name }}</td>
-          <td>{{ flag.description }}</td>
-        </tr>
-      {% endfor %}
-    {% assign subcommand2 = command8.subcommands.onboard %}
-      <tr>
-        <td rowspan=4><a href="{{ site.baseurl }}/reference/meshplayctl/app/onboard">{{ subcommand2.name }}</a></td>
-        <td></td>
-        <td>{{ subcommand2.description }}</td>
-      </tr>
-      {% for flag_hash in subcommand2.flags %}{% assign flag = flag_hash[1] %}
-        <tr>
-          <td>{{ flag.name }}</td>
-          <td>{{ flag.description }}</td>
-        </tr>
-      {% endfor %}
-    {% assign subcommand3 = command8.subcommands.offboard %}
-      <tr>
-        <td rowspan=2><a href="{{ site.baseurl }}/reference/meshplayctl/app/offboard">{{ subcommand3.name }}</a></td>
-        <td></td>
-        <td>{{ subcommand3.description }}</td>
-      </tr>
-      {% for flag_hash in subcommand3.flags %}{% assign flag = flag_hash[1] %}
-        <tr>
-          <td>{{ flag.name }}</td>
-          <td>{{ flag.description }}</td>
-        </tr>
-      {% endfor %}
-    {% assign subcommand4 = command8.subcommands.list %}
-      <tr>
-        <td rowspan=2><a href="{{ site.baseurl }}/reference/meshplayctl/app/list">{{ subcommand4.name }}</a></td>
+        <td rowspan=2><a href="{{ site.baseurl }}/reference/meshplayctl/pattern/delete">{{ subcommand4.name }}</a></td>
         <td></td>
         <td>{{ subcommand4.description }}</td>
       </tr>
@@ -641,9 +560,9 @@ Installation, troubleshooting and debugging of Meshplay and its adapters
           <td>{{ flag.description }}</td>
         </tr>
       {% endfor %}
-    {% assign subcommand5 = command8.subcommands.view %}
+    {% assign subcommand5 = command7.subcommands.import %}
       <tr>
-        <td rowspan=3><a href="{{ site.baseurl }}/reference/meshplayctl/app/view">{{ subcommand5.name }}</a></td>
+        <td rowspan=3><a href="{{ site.baseurl }}/reference/meshplayctl/pattern/import">{{ subcommand5.name }}</a></td>
         <td></td>
         <td>{{ subcommand5.description }}</td>
       </tr>
@@ -653,9 +572,45 @@ Installation, troubleshooting and debugging of Meshplay and its adapters
           <td>{{ flag.description }}</td>
         </tr>
       {% endfor %}
+    {% assign subcommand6 = command7.subcommands.onboard %}
+      <tr>
+        <td rowspan=4><a href="{{ site.baseurl }}/reference/meshplayctl/pattern/onboard">{{ subcommand6.name }}</a></td>
+        <td></td>
+        <td>{{ subcommand6.description }}</td>
+      </tr>
+      {% for flag_hash in subcommand6.flags %}{% assign flag = flag_hash[1] %}
+        <tr>
+          <td>{{ flag.name }}</td>
+          <td>{{ flag.description }}</td>
+        </tr>
+      {% endfor %}
+      {% assign subcommand6 = command7.subcommands.export %}
+      <tr>
+        <td rowspan=3><a href="{{ site.baseurl }}/reference/meshplayctl/pattern/export">{{ subcommand6.name }}</a></td>
+        <td></td>
+        <td>{{ subcommand6.description }}</td>
+      </tr>
+      {% for flag_hash in subcommand6.flags %}{% assign flag = flag_hash[1] %}
+        <tr>
+          <td>{{ flag.name }}</td>
+          <td>{{ flag.description }}</td>
+        </tr>
+      {% endfor %}
+    {% assign subcommand7 = command7.subcommands.offboard %}
+      <tr>
+        <td rowspan=2><a href="{{ site.baseurl }}/reference/meshplayctl/pattern/offboard">{{ subcommand7.name }}</a></td>
+        <td></td>
+        <td>{{ subcommand7.description }}</td>
+      </tr>
+      {% for flag_hash in subcommand7.flags %}{% assign flag = flag_hash[1] %}
+        <tr>
+          <td>{{ flag.name }}</td>
+          <td>{{ flag.description }}</td>
+        </tr>
+      {% endfor %}
 </thead>
 </table>
-
+ 
 ## Data Plane Intelligence
 
 <table>
@@ -723,4 +678,196 @@ Installation, troubleshooting and debugging of Meshplay and its adapters
       {% endfor %}
 </thead>
 </table>
+
+## Meshplay Registry Management
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Subcommand</th>
+    <th>Flag</th>
+    <th>Function</th>
+  </tr>
+  {% assign command10 = site.data.meshplayctlcommands.cmds.registry %}
+    <tr>
+      <td rowspan=14><a href="{{ site.baseurl }}/reference/meshplayctl/registry">{{ command10.name }}</a></td>
+      <td></td>
+      <td></td>
+      <td>{{ command10.description }}</td>
+    </tr>
+    {% for flag_hash in command10.flags %}{% assign flag = flag_hash[1] %}
+      <tr>
+        <td></td>
+        <td>{{ flag.name }}</td>
+        <td>{{ flag.description }}</td>
+      </tr>
+    {% endfor %}
+{% assign subcommand1 = command10.subcommands.publish %}
+      <tr>
+        <td rowspan=2><a href="{{ site.baseurl }}/reference/meshplayctl/registry/publish">{{ subcommand1.name }}</a></td>
+        <td></td>
+        <td>{{ subcommand1.description }}</td>
+      </tr>
+      {% for flag_hash in subcommand1.flags %}{% assign flag = flag_hash[1] %}
+        <tr>
+          <td>{{ flag.name }}</td>
+          <td>{{ flag.description }}</td>
+        </tr>
+      {% endfor %}
+{% assign subcommand2 = command10.subcommands.update %}
+<tr>
+        <td rowspan=4><a href="{{ site.baseurl }}/reference/meshplayctl/registry/update">{{ subcommand2.name }}</a></td>
+        <td></td>
+        <td>{{ subcommand2.description }}</td>
+      </tr>
+      {% for flag_hash in subcommand2.flags %}{% assign flag = flag_hash[1] %}
+        <tr>
+          <td>{{ flag.name }}</td>
+          <td>{{ flag.description }}</td>
+        </tr>
+      {% endfor %}
+{% assign subcommand3 = command10.subcommands.generate %}
+<tr>
+        <td rowspan=6><a href="{{ site.baseurl }}/reference/meshplayctl/registry/generate">{{ subcommand3.name }}</a></td>
+        <td></td>
+        <td>{{ subcommand3.description }}</td>
+      </tr>
+      {% for flag_hash in subcommand3.flags %}{% assign flag = flag_hash[1] %}
+        <tr>
+          <td>{{ flag.name }}</td>
+          <td>{{ flag.description }}</td>
+        </tr>
+      {% endfor %}
+</thead>
+</table>
+
+## Meshplay Models
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Subcommand</th>
+    <th>Flag</th>
+    <th>Function</th>
+  </tr>
+  {% assign command12 = site.data.meshplayctlcommands.cmds.model %}
+    <tr>
+      <td rowspan=10><a href="{{ site.baseurl }}/reference/meshplayctl/{{ command12.name }}">{{ command12.name }}</a></td>
+      <td></td>
+      <td></td>
+      <td>{{ command12.description }}</td>
+    </tr>
+    {% for flag_hash in command12.flags %}{% assign flag = flag_hash[1] %}
+      <tr>
+        <td></td>
+        <td>{{ flag.name }}</td>
+        <td>{{ flag.description }}</td>
+      </tr>
+    {% endfor %}
+    {% for subcommand_hash in command12.subcommands %}{% assign subcomand = subcommand_hash[1] %}
+      <tr>
+        <td rowspan={{ subcomand.flags.size | plus:1 }} ><a href="{{ site.baseurl }}/reference/meshplayctl/{{ command12.name }}/{{ subcomand.name }}">{{ subcomand.name }}</a></td>
+        <td></td>
+        <td>{{ subcomand.description }}</td>
+      </tr>
+      {% for flag_hash in subcomand.flags %}{% assign flag = flag_hash[1] %}
+        <tr>
+          <td>{{ flag.name }}</td>
+          <td>{{ flag.description }}</td>
+        </tr>
+      {% endfor %}
+    {% endfor %}
+</thead>
+</table>
+
+## Meshplay Components
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Subcommand</th>
+    <th>Flag</th>
+    <th>Function</th>
+  </tr>
+  {% assign command13 = site.data.meshplayctlcommands.cmds.components %}
+    <tr>
+      <td rowspan=9><a href="{{ site.baseurl }}/reference/meshplayctl/{{ command13.name }}">{{ command13.name }}</a></td>
+      <td></td>
+      <td></td>
+      <td>{{ command13.description }}</td>
+    </tr>
+    {% for flag_hash in command13.flags %}{% assign flag = flag_hash[1] %}
+      <tr>
+        <td></td>
+        <td>{{ flag.name }}</td>
+        <td>{{ flag.description }}</td>
+      </tr>
+    {% endfor %}
+    {% for subcommand_hash in command13.subcommands %}{% assign subcomand = subcommand_hash[1] %}
+      <tr>
+        <td rowspan={{ subcomand.flags.size | plus:1 }} ><a href="{{ site.baseurl }}/reference/meshplayctl/{{ command13.name }}/{{ subcomand.name }}">{{ subcomand.name }}</a></td>
+        <td></td>
+        <td>{{ subcomand.description }}</td>
+      </tr>
+      {% for flag_hash in subcomand.flags %}{% assign flag = flag_hash[1] %}
+        <tr>
+          <td>{{ flag.name }}</td>
+          <td>{{ flag.description }}</td>
+        </tr>
+      {% endfor %}
+    {% endfor %}
+</thead>
+</table>
+
+## Experimental Features(exp)
+
+<table>
+<thead>
+  <tr>
+    <th>Command</th>
+    <th>Subcommand</th>
+    <th>Flag</th>
+    <th>Function</th>
+  </tr>
+  {% assign command14 = site.data.meshplayctlcommands.cmds.exp %}
+  {% for cmd_hash in command14 %}
+    {% assign cmd = cmd_hash[1] %}
+    {% assign subcommand_flag_count = 0 %}
+    {% for subcommand_hash in cmd.subcommands %}
+      {% assign subcommand = subcommand_hash[1] %}
+      {% assign subcommand_flag_count = subcommand_flag_count | plus: subcommand.flags.size %}
+    {% endfor %}
+    {% assign total_rowspan = cmd.subcommands.size | plus: subcommand_flag_count | plus: cmd.flags.size | plus: 1 %}
+    <tr>
+      <td rowspan="{{ total_rowspan }}"><a href="{{ site.baseurl }}/reference/meshplayctl/exp/{{ cmd.name }}">{{ cmd.name }}</a></td>
+      <td></td>
+      <td></td>
+      <td>{{ cmd.description }}</td>
+    </tr>
+    {% for flag_hash in cmd.flags %}{% assign flag = flag_hash[1] %}
+      <tr>
+        <td></td>
+        <td>{{ flag.name }}</td>
+        <td>{{ flag.description }}</td>
+      </tr>
+    {% endfor %}
+    {% for subcommand_hash in cmd.subcommands %}{% assign subcommand = subcommand_hash[1] %}
+      <tr>
+        <td rowspan="{{ subcommand.flags.size | plus: 1 }}"><a href="{{ site.baseurl }}/reference/meshplayctl/exp/{{ cmd.name }}/{{ subcommand.name }}">{{ subcommand.name }}</a></td>
+        <td></td>
+        <td>{{ subcommand.description }}</td>
+      </tr>
+      {% for flag_hash in subcommand.flags %}{% assign flag = flag_hash[1] %}
+        <tr>
+          <td>{{ flag.name }}</td>
+          <td>{{ flag.description }}</td>
+        </tr>
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+</thead>
+</table>
+
 {% include related-discussions.html tag="meshplayctl" %}

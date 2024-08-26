@@ -36,8 +36,7 @@ Also see: [Install Meshplay on Kubernetes]({{ site.baseurl }}/installation/kuber
     - [Preflight: Plan your access to Meshplay UI](#preflight-plan-your-access-to-meshplay-ui)
   - [Installation: Using `meshplayctl`](#installation-using-meshplayctl)
   - [Installation: Using Helm](#installation-using-helm)
-- [Post-Installation Steps](#post-installation-steps)
-  - [Access Meshplay UI](#access-meshplay-ui)
+  - [Post-Installation Steps](#post-installation-steps)
 
 # In-cluster Installation
 
@@ -91,14 +90,12 @@ If you encounter any authentication issues, you can use `meshplayctl system logi
 
 For detailed instructions on installing Meshplay using Helm V3, please refer to the [Helm Installation](/installation/helm) guide.
 
-# Post-Installation Steps
+## Post-Installation Steps
 
-## Access Meshplay UI
+Optionally, you can verify the health of your Meshplay deployment, using <a href='/reference/meshplayctl/system/check'>meshplayctl system check</a>.
 
-To access Meshplay's UI, please refer to the [instruction](/tasks/accessing-meshplay-ui) for detailed guidance.
+You're ready to use Meshplay! Open your browser and navigate to the Meshplay UI.
 
-Note:   _You can also verify health of your system using [meshplayctl system check](/reference/meshplayctl/system/check)_
-
-{% include suggested-reading.html language="en" %}
+{% include_cached installation/accessing-meshplay-ui.md display-title="true" %}
 
 {% include related-discussions.html tag="meshplay" %}

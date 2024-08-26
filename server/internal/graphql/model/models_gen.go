@@ -71,10 +71,11 @@ type CatalogPattern struct {
 }
 
 type CatalogSelector struct {
-	Page     string `json:"page"`
-	Pagesize string `json:"pagesize"`
-	Search   string `json:"search"`
-	Order    string `json:"order"`
+	Page     string  `json:"page"`
+	Pagesize string  `json:"pagesize"`
+	Search   string  `json:"search"`
+	Order    string  `json:"order"`
+	Metrics  *string `json:"metrics,omitempty"`
 }
 
 type ClusterResources struct {
@@ -180,7 +181,7 @@ type K8sContext struct {
 	Server             string `json:"server"`
 	Owner              string `json:"owner"`
 	CreatedBy          string `json:"created_by"`
-	MeshplayInstanceID string `json:"meshplay_instance_id"`
+	MeshplayInstanceID  string `json:"meshplay_instance_id"`
 	KubernetesServerID string `json:"kubernetes_server_id"`
 	DeploymentType     string `json:"deployment_type"`
 	Version            string `json:"version"`
@@ -226,20 +227,20 @@ type MeshModelSummarySelector struct {
 }
 
 type MeshSyncEvent struct {
-	Type      string      `json:"type"`
-	Object    interface{} `json:"object"`
-	ContextID string      `json:"contextId"`
+	Type         string      `json:"type"`
+	Object       interface{} `json:"object"`
+	ConnectionID string      `json:"connectionID"`
 }
 
 type MeshplayControllersStatusListItem struct {
-	ContextID  string                   `json:"contextId"`
-	Controller MeshplayController       `json:"controller"`
-	Status     MeshplayControllerStatus `json:"status"`
-	Version    *string                  `json:"version,omitempty"`
+	ConnectionID string                  `json:"connectionID"`
+	Controller   MeshplayController       `json:"controller"`
+	Status       MeshplayControllerStatus `json:"status"`
+	Version      string                  `json:"version"`
 }
 
 type MeshplayResult struct {
-	MeshplayID         *string                `json:"meshplay_id,omitempty"`
+	MeshplayID          *string                `json:"meshplay_id,omitempty"`
 	Name               *string                `json:"name,omitempty"`
 	Mesh               *string                `json:"mesh,omitempty"`
 	PerformanceProfile *string                `json:"performance_profile,omitempty"`
@@ -265,44 +266,17 @@ type NullString struct {
 	Valid  bool   `json:"Valid"`
 }
 
-type OAMCapability struct {
-	OamDefinition interface{} `json:"oam_definition,omitempty"`
-	ID            *string     `json:"id,omitempty"`
-	OamRefSchema  *string     `json:"oam_ref_schema,omitempty"`
-	Host          *string     `json:"host,omitempty"`
-	Restricted    *bool       `json:"restricted,omitempty"`
-	Metadata      interface{} `json:"metadata,omitempty"`
-}
-
 type OperatorControllerStatus struct {
-	Name      string `json:"name"`
-	Version   string `json:"version"`
-	Status    Status `json:"status"`
-	Error     *Error `json:"error,omitempty"`
-	ContextID string `json:"contextID"`
-}
-
-type OperatorControllerStatusPerK8sContext struct {
-	ContextID                string                    `json:"contextID"`
-	OperatorControllerStatus *OperatorControllerStatus `json:"OperatorControllerStatus"`
-}
-
-type OperatorStatus struct {
-	Status      Status                      `json:"status"`
-	Version     string                      `json:"version"`
-	Controllers []*OperatorControllerStatus `json:"controllers"`
-	Error       *Error                      `json:"error,omitempty"`
-	ContextID   string                      `json:"contextID"`
+	Name         string `json:"name"`
+	Version      string `json:"version"`
+	Status       Status `json:"status"`
+	Error        *Error `json:"error,omitempty"`
+	ConnectionID string `json:"connectionID"`
 }
 
 type OperatorStatusInput struct {
 	TargetStatus Status `json:"targetStatus"`
 	ContextID    string `json:"contextID"`
-}
-
-type OperatorStatusPerK8sContext struct {
-	ContextID      string          `json:"contextID"`
-	OperatorStatus *OperatorStatus `json:"operatorStatus"`
 }
 
 type PageFilter struct {
@@ -314,6 +288,7 @@ type PageFilter struct {
 	To           *string  `json:"to,omitempty"`
 	UpdatedAfter *string  `json:"updated_after,omitempty"`
 	Visibility   []string `json:"visibility,omitempty"`
+	Metrics      *string  `json:"metrics,omitempty"`
 }
 
 type PatternPageResult struct {
@@ -346,9 +321,9 @@ type PerfPageProfiles struct {
 }
 
 type PerfPageResult struct {
-	Page       int               `json:"page"`
-	PageSize   int               `json:"page_size"`
-	TotalCount int               `json:"total_count"`
+	Page       int              `json:"page"`
+	PageSize   int              `json:"page_size"`
+	TotalCount int              `json:"total_count"`
 	Results    []*MeshplayResult `json:"results,omitempty"`
 }
 

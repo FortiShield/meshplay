@@ -4,7 +4,7 @@ This PR fixes #
 
 
 
-**[Signed commits](https://github.com/khulnasoft/meshplay/blob/master/CONTRIBUTING.md#signing-off-on-commits-developer-certificate-of-origin)**
+**[Signed commits](https://github.com/meshplay/meshplay/blob/master/CONTRIBUTING.md#signing-off-on-commits-developer-certificate-of-origin)**
 - [ ] Yes, I signed my commits.
  
 

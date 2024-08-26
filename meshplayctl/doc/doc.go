@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ func linkHandler(name string) string {
 	return strings.ToLower(words[1])
 }
 
-// doc is a function to generate the markdown docs for meshplayctl
+// docs is a function to generate the markdown docs for meshplayctl
 func doc() {
 	markDownPath := "../../docs/pages/reference/meshplayctl/" // Path for docs
 	//yamlPath := "./internal/cli/root/testDoc/"

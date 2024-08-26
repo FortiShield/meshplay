@@ -9,102 +9,133 @@ import (
 )
 
 // Please reference the following before contributing an error code:
-// https://docs.khulnasoft.com/project/contributing/contributing-error
-// https://github.com/khulnasoft/meshkit/blob/master/errors/errors.go
+// https://docs-meshplay.khulnasoft.com/project/contributing/contributing-error
+// https://github.com/meshplay/meshkit/blob/master/errors/errors.go
 const (
-	ErrGrafanaClientCode                  = "1450"
-	ErrPageSizeCode                       = "1451"
-	ErrPageNumberCode                     = "1452"
-	ErrResultIDCode                       = "1453"
-	ErrPerfIDCode                         = "1454"
-	ErrMarshalCode                        = "1455"
-	ErrUnmarshalCode                      = "1456"
-	ErrGenerateUUIDCode                   = "1457"
-	ErrLocalProviderSupportCode           = "1458"
-	ErrGrafanaOrgCode                     = "1459"
-	ErrGrafanaBoardsCode                  = "1460"
-	ErrGrafanaDashboardCode               = "1461"
-	ErrGrafanaDataSourceCode              = "1462"
-	ErrNilQueryCode                       = "1463"
-	ErrGrafanaDataCode                    = "1464"
-	ErrApplicationFileNameCode            = "1465"
-	ErrFilterFileNameCode                 = "1466"
-	ErrPatternFileNameCode                = "1467"
-	ErrMakeDirCode                        = "1468"
-	ErrFolderStatCode                     = "1469"
-	ErrUserIDCode                         = "1470"
-	ErrDBConnectionCode                   = "1471"
-	ErrNilConfigDataCode                  = "1472"
-	ErrDBOpenCode                         = "1473"
-	ErrDBRLockCode                        = "1474"
-	ErrDBLockCode                         = "1475"
-	ErrDBReadCode                         = "1476"
-	ErrDBDeleteCode                       = "1477"
-	ErrCopyCode                           = "1478"
-	ErrDBPutCode                          = "1479"
-	ErrPrometheusGetNodesCode             = "1480"
-	ErrPrometheusLabelSeriesCode          = "1481"
-	ErrPrometheusQueryRangeCode           = "1482"
-	ErrPrometheusStaticBoardCode          = "1483"
-	ErrTokenRefreshCode                   = "1484"
-	ErrGetTokenCode                       = "1485"
-	ErrDataReadCode                       = "1486"
-	ErrTokenDecodeCode                    = "1487"
-	ErrNilJWKsCode                        = "1488"
-	ErrNilKeysCode                        = "1489"
-	ErrTokenExpiredCode                   = "1490"
-	ErrTokenClaimsCode                    = "1491"
-	ErrTokenClientCheckCode               = "1492"
-	ErrTokenPraseCode                     = "1493"
-	ErrJWKsKeysCode                       = "1494"
-	ErrDecodeBase64Code                   = "1495"
-	ErrMarshalPKIXCode                    = "1496"
-	ErrEncodingPEMCode                    = "1497"
-	ErrPraseUnverifiedCode                = "1498"
-	ErrEncodingCode                       = "1499"
-	ErrFetchCode                          = "1500"
-	ErrPostCode                           = "1501"
-	ErrDeleteCode                         = "1502"
-	ErrInvalidCapabilityCode              = "1503"
-	ErrResultDataCode                     = "1504"
-	ErrUnableToPersistsResultCode         = "1505"
-	ErrValidURLCode                       = "1506"
-	ErrTestEndpointCode                   = "1507"
-	ErrLoadgeneratorCode                  = "1508"
-	ErrProtocolCode                       = "1509"
-	ErrTestClientCode                     = "1510"
-	ErrParsingTestCode                    = "1511"
-	ErrFieldCode                          = "1512"
-	ErrFetchDataCode                      = "1513"
-	ErrIndexOutOfRangeCode                = "1514"
-	ErrSessionCopyCode                    = "1515"
-	ErrSavingSeededComponentsCode         = "1516"
-	ErrGettingSeededComponentsCode        = "1517"
-	ErrDownloadingSeededComponentsCode    = "1518"
-	ErrContextIDCode                      = "1519"
-	ErrMeshplayInstanceIDCode              = "1520"
-	ErrMeshplayNotInClusterCode            = "1521"
-	ErrBrokerNotFoundCode                 = "1522"
-	ErrCreateOperatorDeploymentConfigCode = "1523"
-	ErrRequestMeshsyncStoreCode           = "1524"
-	ErrBrokerSubscriptionCode             = "1525"
-	ErrContextAlreadyPersistedCode        = "1526"
-	ErrGetPackageCode                     = "1527"
-	ErrTokenRevokeCode                    = "1528"
-	ErrTokenIntrospectCode                = "1529"
-	ErrShareDesignCode                    = "1530"
-	ErrUnreachableRemoteProviderCode      = "1531"
-	ErrShareFilterCode                    = "1532"
-	ErrPersistEventCode                   = "1533"
-	ErrUnreachableKubeAPICode             = "1534"
-	ErrFlushMeshSyncDataCode              = "1535"
-	ErrUpdateConnectionStatusCode         = "1540"
-	ErrResultNotFoundCode                 = "1546"
-	ErrPersistCredentialCode              = "1547"
-	ErrPersistConnectionCode              = "1548"
-	ErrPrometheusScanCode                 = "1549"
-	ErrGrafanaScanCode                    = "1550"
-	ErrDBCreateCode                       = "1557"
+	ErrGrafanaClientCode                  = "meshplay-server-1220"
+	ErrPageSizeCode                       = "meshplay-server-1221"
+	ErrPageNumberCode                     = "meshplay-server-1222"
+	ErrResultIDCode                       = "meshplay-server-1223"
+	ErrPerfIDCode                         = "meshplay-server-1224"
+	ErrMarshalCode                        = "meshplay-server-1225"
+	ErrUnmarshalCode                      = "meshplay-server-1226"
+	ErrGenerateUUIDCode                   = "meshplay-server-1227"
+	ErrLocalProviderSupportCode           = "meshplay-server-1228"
+	ErrGrafanaOrgCode                     = "meshplay-server-1229"
+	ErrGrafanaBoardsCode                  = "meshplay-server-1230"
+	ErrGrafanaDashboardCode               = "meshplay-server-1231"
+	ErrGrafanaDataSourceCode              = "meshplay-server-1232"
+	ErrNilQueryCode                       = "meshplay-server-1233"
+	ErrGrafanaDataCode                    = "meshplay-server-1234"
+	ErrApplicationFileNameCode            = "meshplay-server-1235"
+	ErrFilterFileNameCode                 = "meshplay-server-1236"
+	ErrPatternFileNameCode                = "meshplay-server-1237"
+	ErrMakeDirCode                        = "meshplay-server-1238"
+	ErrFolderStatCode                     = "meshplay-server-1239"
+	ErrUserIDCode                         = "meshplay-server-1240"
+	ErrDBConnectionCode                   = "meshplay-server-1241"
+	ErrNilConfigDataCode                  = "meshplay-server-1242"
+	ErrDBOpenCode                         = "meshplay-server-1243"
+	ErrDBRLockCode                        = "meshplay-server-1244"
+	ErrDBLockCode                         = "meshplay-server-1245"
+	ErrDBReadCode                         = "meshplay-server-1246"
+	ErrDBDeleteCode                       = "meshplay-server-1247"
+	ErrCopyCode                           = "meshplay-server-1248"
+	ErrDBPutCode                          = "meshplay-server-1249"
+	ErrPrometheusGetNodesCode             = "meshplay-server-1250"
+	ErrPrometheusLabelSeriesCode          = "meshplay-server-1251"
+	ErrPrometheusQueryRangeCode           = "meshplay-server-1252"
+	ErrPrometheusStaticBoardCode          = "meshplay-server-1253"
+	ErrTokenRefreshCode                   = "meshplay-server-1254"
+	ErrGetTokenCode                       = "meshplay-server-1255"
+	ErrDataReadCode                       = "meshplay-server-1256"
+	ErrTokenDecodeCode                    = "meshplay-server-1257"
+	ErrNilJWKsCode                        = "meshplay-server-1258"
+	ErrNilKeysCode                        = "meshplay-server-1259"
+	ErrTokenExpiredCode                   = "meshplay-server-1260"
+	ErrTokenClaimsCode                    = "meshplay-server-1261"
+	ErrTokenClientCheckCode               = "meshplay-server-1262"
+	ErrTokenPraseCode                     = "meshplay-server-1263"
+	ErrJWKsKeysCode                       = "meshplay-server-1264"
+	ErrDecodeBase64Code                   = "meshplay-server-1265"
+	ErrMarshalPKIXCode                    = "meshplay-server-1266"
+	ErrEncodingPEMCode                    = "meshplay-server-1267"
+	ErrPraseUnverifiedCode                = "meshplay-server-1268"
+	ErrEncodingCode                       = "meshplay-server-1269"
+	ErrFetchCode                          = "meshplay-server-1270"
+	ErrPostCode                           = "meshplay-server-1271"
+	ErrDeleteCode                         = "meshplay-server-1272"
+	ErrInvalidCapabilityCode              = "meshplay-server-1273"
+	ErrResultDataCode                     = "meshplay-server-1274"
+	ErrUnableToPersistsResultCode         = "meshplay-server-1275"
+	ErrValidURLCode                       = "meshplay-server-1276"
+	ErrTestEndpointCode                   = "meshplay-server-1277"
+	ErrLoadgeneratorCode                  = "meshplay-server-1278"
+	ErrProtocolCode                       = "meshplay-server-1279"
+	ErrTestClientCode                     = "meshplay-server-1280"
+	ErrParsingTestCode                    = "meshplay-server-1281"
+	ErrFieldCode                          = "meshplay-server-1282"
+	ErrFetchDataCode                      = "meshplay-server-1283"
+	ErrIndexOutOfRangeCode                = "meshplay-server-1284"
+	ErrSessionCopyCode                    = "meshplay-server-1285"
+	ErrSavingSeededComponentsCode         = "meshplay-server-1286"
+	ErrGettingSeededComponentsCode        = "meshplay-server-1287"
+	ErrDownloadingSeededComponentsCode    = "meshplay-server-1288"
+	ErrContextIDCode                      = "meshplay-server-1289"
+	ErrMeshplayInstanceIDCode              = "meshplay-server-1290"
+	ErrMeshplayNotInClusterCode            = "meshplay-server-1291"
+	ErrBrokerNotFoundCode                 = "meshplay-server-1292"
+	ErrCreateOperatorDeploymentConfigCode = "meshplay-server-1293"
+	ErrRequestMeshsyncStoreCode           = "meshplay-server-1294"
+	ErrBrokerSubscriptionCode             = "meshplay-server-1295"
+	ErrContextAlreadyPersistedCode        = "meshplay-server-1296"
+	ErrGetPackageCode                     = "meshplay-server-1297"
+	ErrTokenRevokeCode                    = "meshplay-server-1298"
+	ErrTokenIntrospectCode                = "meshplay-server-1299"
+	ErrShareDesignCode                    = "meshplay-server-1300"
+	ErrUnreachableRemoteProviderCode      = "meshplay-server-1301"
+	ErrShareFilterCode                    = "meshplay-server-1302"
+	ErrPersistEventCode                   = "meshplay-server-1303"
+	ErrInvalidEventDataCode               = "meshplay-server-1357"
+	ErrUnreachableKubeAPICode             = "meshplay-server-1304"
+	ErrFlushMeshSyncDataCode              = "meshplay-server-1305"
+	ErrUpdateConnectionStatusCode         = "meshplay-server-1306"
+	ErrResultNotFoundCode                 = "meshplay-server-1307"
+	ErrPersistCredentialCode              = "meshplay-server-1308"
+	ErrPersistConnectionCode              = "meshplay-server-1309"
+	ErrPrometheusScanCode                 = "meshplay-server-1310"
+	ErrGrafanaScanCode                    = "meshplay-server-1311"
+	ErrDBCreateCode                       = "meshplay-server-1312"
+	ErrDoRequestCode                      = "meshplay-server-1321"
+	ErrMarshalYAMLCode                    = "meshplay-server-1322"
+	ErrSessionNotReadIntactCode           = "meshplay-server-1332"
+	ErrSessionNotFoundCode                = "meshplay-server-1333"
+	ErrTokenRetryCode                     = "meshplay-server-1334"
+	ErrUrlParseCode                       = "meshplay-server-1335"
+	ErrCloseIoReaderCode                  = "meshplay-server-1336"
+	ErrDownloadPackageCode                = "meshplay-server-1337"
+	ErrOperationNotAvaibaleCode           = "meshplay-server-1338"
+	ErrTokenVerifyCode                    = "meshplay-server-1339"
+	ErrLogoutCode                         = "meshplay-server-1340"
+	ErrGetSessionCookieCode               = "meshplay-server-1341"
+	ErrCloneCode                          = "meshplay-server-1342"
+	ErrPublishCode                        = "meshplay-server-1343"
+	ErrUnPublishCode                      = "meshplay-server-1344"
+	ErrSaveConnectionCode                 = "meshplay-server-1345"
+	ErrGenerateK8sHandlerCode             = "meshplay-server-1346"
+	ErrRetrieveK8sClusterIDCode           = "meshplay-server-1347"
+	ErrCreateResourceEntryCode            = "meshplay-server-1348"
+	ErrInitializeDBHandlerCode            = "meshplay-server-1349"
+	ErrDeleteK8sResourceCode              = "meshplay-server-1350"
+	ErrCreateK8sResourceCode              = "meshplay-server-1351"
+	ErrGetResourceCode                    = "meshplay-server-1352"
+	ErrDeleteResourceCode                 = "meshplay-server-1353"
+	ErrRecreateResourceCode               = "meshplay-server-1354"
+	ErrUpdateResourceCode                 = "meshplay-server-1355"
+	ErrEmptySessionCode                   = "meshplay-server-1356"
+	ErrSeedingComponentsCode              = "meshplay-server-1358"
+	ErrImportFailureCode                  = "meshplay-server-1359"
+	ErrMarshallingDesignIntoYAMLCode      = "meshplay-server-1135"
 )
 
 var (
@@ -126,29 +157,50 @@ var (
 	ErrLoadgenerator           = errors.New(ErrLoadgeneratorCode, errors.Alert, []string{"specify valid Loadgenerator"}, []string{}, []string{}, []string{})
 	ErrProtocol                = errors.New(ErrProtocolCode, errors.Alert, []string{"specify the Protocol for all clients"}, []string{}, []string{}, []string{})
 	ErrTestClient              = errors.New(ErrTestClientCode, errors.Alert, []string{"minimum one test client needs to be specified"}, []string{}, []string{}, []string{})
-	ErrParsingTest             = errors.New(ErrParsingTestCode, errors.Alert, []string{"error parsing test duration, please refer to: https://docs.khulnasoft.com/guides/meshplayctl#performance-management"}, []string{}, []string{}, []string{})
+	ErrParsingTest             = errors.New(ErrParsingTestCode, errors.Alert, []string{"error parsing test duration, please refer to: https://docs-meshplay.khulnasoft.com/guides/meshplayctl#performance-management"}, []string{}, []string{}, []string{})
 	ErrField                   = errors.New(ErrFieldCode, errors.Alert, []string{"Error: name field is blank"}, []string{}, []string{}, []string{})
 	ErrIndexOutOfRange         = errors.New(ErrIndexOutOfRangeCode, errors.Alert, []string{"Error: index out of range"}, []string{}, []string{}, []string{})
 	ErrContextID               = errors.New(ErrContextIDCode, errors.Alert, []string{"Error: Context ID is empty"}, []string{}, []string{}, []string{})
 	ErrMeshplayInstanceID       = errors.New(ErrMeshplayInstanceIDCode, errors.Alert, []string{"Error: Meshplay Instance ID is empty or is invalid"}, []string{}, []string{}, []string{})
 	ErrMeshplayNotInCluster     = errors.New(ErrMeshplayNotInClusterCode, errors.Alert, []string{"Error: Meshplay is not running inside a cluster"}, []string{}, []string{}, []string{})
 	ErrContextAlreadyPersisted = errors.New(ErrContextAlreadyPersistedCode, errors.Alert, []string{"kubernetes context already persisted with provider"}, []string{"kubernetes context already persisted with provider"}, []string{}, []string{})
+	ErrTokenRetry              = errors.New(ErrTokenRetryCode, errors.Alert, []string{"Error occurred, retrying after refresh to fetch token"}, []string{}, []string{}, []string{})
+	ErrOperationNotAvaibale    = errors.New(ErrOperationNotAvaibaleCode, errors.Alert, []string{"Operation not available"}, []string{}, []string{}, []string{})
+	ErrEmptySession            = errors.New(ErrEmptySessionCode, errors.Alert, []string{"No session found in the request"}, []string{"Unable to find \"token\" cookie in the request."}, []string{"User is not authenticated with the selected Provider.", "Browser might be restricting use of cookies."}, []string{"Choose a Provider and login to establish an active session (receive a new token and cookie). Optionally, try using a private/incognito browser window.", "Verify that your browser settings allow cookies."})
 )
 
+func ErrCloseIoReader(err error) error {
+	return errors.New(ErrCloseIoReaderCode, errors.Alert,
+		[]string{"Error closing response body reader."},
+		[]string{err.Error()},
+		[]string{"An error occurred while attempting to close response body reader."},
+		[]string{"Ensure the response body reader is in a state that allows it to be closed."})
+}
 func ErrGetPackage(err error) error {
 	return errors.New(ErrGetPackageCode, errors.Alert, []string{"Could not get the package"}, []string{"", err.Error()}, []string{""}, []string{"Make sure the configurations are correct"})
 }
-
+func ErrUrlParse(err error) error {
+	return errors.New(ErrUrlParseCode, errors.Alert, []string{"Error parsing the URL"}, []string{"", err.Error()}, []string{""}, []string{"Make sure the URL is correct"})
+}
 func ErrBrokerSubscription(err error) error {
 	return errors.New(ErrBrokerSubscriptionCode, errors.Alert, []string{"Could not subscribe to the broker subject"}, []string{"", err.Error()}, []string{""}, []string{"Make sure meshplay broker is healthy"})
 }
-
+func ErrLogout(err error) error {
+	return errors.New(ErrLogoutCode, errors.Alert, []string{"Unable to perform logout"}, []string{err.Error()}, []string{"Session might already been revoked", "Remote provider is not able to complete the request"}, []string{"Close the tabs and open Meshplay UI again. Optionally, try using a private/incognito browser window."})
+}
 func ErrRequestMeshsyncStore(err error) error {
 	return errors.New(ErrRequestMeshsyncStoreCode, errors.Alert, []string{"Meshsync store request could not be issued"}, []string{"", err.Error()}, []string{""}, []string{"Make sure meshplay broker is healthy"})
 }
 
 func ErrCreateOperatorDeploymentConfig(err error) error {
 	return errors.New(ErrCreateOperatorDeploymentConfigCode, errors.Alert, []string{"Operator deployment configuration could not be created."}, []string{"", err.Error()}, []string{""}, []string{""})
+}
+func ErrCreateResourceEntry(err error) error {
+	return errors.New(ErrCreateResourceEntryCode, errors.Alert,
+		[]string{"Failed to create resource entry"},
+		[]string{err.Error()},
+		[]string{"Possible causes include invalid input data, database issues, or network problems."},
+		[]string{"Verify the input data is correct. Ensure the database is reachable and properly configured."})
 }
 
 func ErrBrokerNotFound(err error) error {
@@ -170,15 +222,36 @@ func ErrPageNumber(err error) error {
 func ErrPerfID(err error) error {
 	return errors.New(ErrPerfIDCode, errors.Alert, []string{"Invalid peformance profile ID"}, []string{err.Error()}, []string{}, []string{})
 }
-
+func ErrPublish(err error, obj string) error {
+	return errors.New(ErrPublishCode, errors.Alert, []string{fmt.Sprintf("Error while publishing %s to catlog", obj)}, []string{err.Error()}, []string{}, []string{})
+}
+func ErrUnpPublish(err error, obj string) error {
+	return errors.New(ErrUnPublishCode, errors.Alert, []string{fmt.Sprintf("Error while unpublishing %s from catlog", obj)}, []string{err.Error()}, []string{}, []string{})
+}
 func ErrMarshal(err error, obj string) error {
 	return errors.New(ErrMarshalCode, errors.Alert, []string{"Unable to marshal the : ", obj}, []string{err.Error()}, []string{"Object is not a valid json object"}, []string{"Make sure if the object passed has json tags"})
+}
+func ErrGenerateK8sHandler(err error, contextName string) error {
+	return errors.New(ErrGenerateK8sHandlerCode, errors.Alert,
+		[]string{fmt.Sprintf("Error generating Kubernetes handler, skipping context %s", contextName)},
+		[]string{err.Error()},
+		[]string{"Possible causes include invalid Kubernetes context, missing configuration, or network issues."},
+		[]string{"Verify the Kubernetes context configuration. Ensure the Kubernetes cluster is reachable and the configuration is correct."})
+}
+func ErrRetrieveK8sClusterID(err error, contextName string) error {
+	return errors.New(ErrRetrieveK8sClusterIDCode, errors.Alert,
+		[]string{fmt.Sprintf("Could not retrieve Kubernetes cluster ID, skipping context %s", contextName)},
+		[]string{err.Error()},
+		[]string{"Possible causes include invalid Kubernetes context, missing or incorrect configuration, or network issues."},
+		[]string{"Verify the Kubernetes context configuration. Ensure the Kubernetes cluster is reachable and the configuration is correct."})
 }
 
 func ErrUnmarshal(err error, obj string) error {
 	return errors.New(ErrUnmarshalCode, errors.Alert, []string{"Unable to unmarshal the : ", obj}, []string{err.Error()}, []string{"Object is not a valid json object"}, []string{"Make sure if the object passed is a valid json"})
 }
-
+func ErrGetSessionCookie(err error) error {
+	return errors.New(ErrGetSessionCookieCode, errors.Alert, []string{"Error occurred while getting session cookie"}, []string{err.Error()}, []string{}, []string{})
+}
 func ErrEncoding(err error, obj string) error {
 	return errors.New(ErrEncodingCode, errors.Alert, []string{"Error encoding the : ", obj}, []string{err.Error()}, []string{"Object is not a valid json object"}, []string{"Make sure if the object passed is a valid json"})
 }
@@ -210,7 +283,9 @@ func ErrEncodingPEM(err error) error {
 func ErrPraseUnverified(err error) error {
 	return errors.New(ErrPraseUnverifiedCode, errors.Alert, []string{"Error occurred while prasing tokens (unverified)"}, []string{err.Error()}, []string{}, []string{})
 }
-
+func ErrClone(err error, obj string) error {
+	return errors.New(ErrCloneCode, errors.Alert, []string{fmt.Sprintf("Error occurred while cloning the %s", obj)}, []string{err.Error()}, []string{}, []string{})
+}
 func ErrDataRead(err error, r string) error {
 	return errors.New(ErrDataReadCode, errors.Alert, []string{"Error occurred while reading from the Reader", r}, []string{err.Error()}, []string{}, []string{})
 }
@@ -232,7 +307,7 @@ func ErrGrafanaOrg(err error) error {
 }
 
 func ErrGrafanaBoards(err error) error {
-	return errors.New(ErrGrafanaBoardsCode, errors.Alert, []string{"Unable to get Grafana Boards"}, []string{err.Error()}, []string{"Grafana endpoint might not be reachable from meshplay", "Grafana endpoint is incorrect"}, []string{"Check if your Grafana endpoint is correct", "Connect to Grafana from the settings page in the UI"})
+	return errors.New(ErrGrafanaBoardsCode, errors.Alert, []string{"Unable to get Grafana Boards"}, []string{err.Error()}, []string{"Grafana endpoint might not be reachable from Meshplay", "Grafana endpoint is incorrect"}, []string{"Check if your Grafana endpoint is correct", "Connect to Grafana from the settings page in the UI"})
 }
 
 func ErrGrafanaDashboard(err error, UID string) error {
@@ -241,6 +316,25 @@ func ErrGrafanaDashboard(err error, UID string) error {
 
 func ErrGrafanaDataSource(err error, ds string) error {
 	return errors.New(ErrGrafanaDataSourceCode, errors.Alert, []string{"Error getting Grafana Board's Datasource", ds}, []string{err.Error()}, []string{}, []string{})
+}
+func ErrDownloadPackage(err error, packageName string) error {
+	return errors.New(ErrDownloadPackageCode, errors.Alert, []string{fmt.Sprintf("Error downloading %s ", packageName)}, []string{err.Error()}, []string{}, []string{})
+
+}
+func ErrSessionNotReadIntact(userID string) error {
+	return errors.New(ErrSessionNotReadIntactCode, errors.Alert,
+		[]string{fmt.Sprintf("session for user with id: %s was NOT read intact.", userID)},
+		[]string{},
+		[]string{"The session data might be corrupted or not properly saved."},
+		[]string{""})
+}
+
+func ErrSessionNotFound(userID string) error {
+	return errors.New(ErrSessionNotFoundCode, errors.Alert,
+		[]string{fmt.Sprintf("unable to find session for user with id: %s.", userID)},
+		[]string{},
+		[]string{"The session might not exist or could have been deleted."},
+		[]string{"Check if the session data was correctly saved."})
 }
 
 func ErrGrafanaData(err error, apiEndpoint string) error {
@@ -301,6 +395,9 @@ func ErrPrometheusQueryRange(err error, query string, startTime, endTime time.Ti
 
 func ErrTokenRefresh(err error) error {
 	return errors.New(ErrTokenRefreshCode, errors.Alert, []string{"Error occurred while Refresing the token"}, []string{err.Error()}, []string{}, []string{})
+}
+func ErrTokenVerify(err error) error {
+	return errors.New(ErrTokenVerifyCode, errors.Alert, []string{"Validation of refreshed token failed."}, []string{err.Error()}, []string{}, []string{})
 }
 
 func ErrTokenRevoke(err error) error {
@@ -366,9 +463,12 @@ func ErrShareFilter(err error) error {
 func ErrUnreachableRemoteProvider(err error) error {
 	return errors.New(ErrUnreachableRemoteProviderCode, errors.Alert, []string{"Could not reach remote provider"}, []string{"", err.Error()}, []string{"Remote provider server may be down or not accepting requests."}, []string{"Make sure remote provider server is healthy and accepting requests."})
 }
-
 func ErrPersistEvent(err error) error {
 	return errors.New(ErrPersistEventCode, errors.Alert, []string{"Could not persist event"}, []string{err.Error()}, []string{"Database could be down or not reachable", "Meshplay Database handler is not accessible to perform operations"}, []string{"Restart Meshplay Server or Perform Hard Reset"})
+}
+
+func ErrInvalidEventData() error {
+	return errors.New(ErrInvalidEventDataCode, errors.Alert, []string{"The event provided is not valid"}, []string{"ActedUpon, Action, Category and Severity are required fields of an event"}, []string{}, []string{"Ensure that ActedUpon, Action, Category and Severity are present in the event"})
 }
 
 func ErrUnreachableKubeAPI(err error, server string) error {
@@ -394,15 +494,100 @@ func ErrPersistCredential(err error) error {
 func ErrPersistConnection(err error) error {
 	return errors.New(ErrPersistConnectionCode, errors.Alert, []string{"unable to persist connection details"}, []string{err.Error()}, []string{"The connection object is not valid"}, []string{"Ensure all the required fields are provided"})
 }
-
+func ErrSaveConnection(err error) error {
+	return errors.New(ErrSaveConnectionCode, errors.Alert, []string{"Unable to save Meshplay connection"}, []string{err.Error()}, []string{}, []string{})
+}
 func ErrGrafanaScan(err error) error {
-	return errors.New(ErrGrafanaScanCode, errors.Alert, []string{"Unable to connect to grafana"}, []string{err.Error()}, []string{"Grafana endpoint might not be reachable from meshplay", "Grafana endpoint is incorrect"}, []string{"Check if your Grafana Endpoint is correct", "Connect to Grafana from the settings page in the UI"})
+	return errors.New(ErrGrafanaScanCode, errors.Alert, []string{"Unable to connect to grafana"}, []string{err.Error()}, []string{"Grafana endpoint might not be reachable from Meshplay", "Grafana endpoint is incorrect"}, []string{"Check if your Grafana Endpoint is correct", "Connect to Grafana from the settings page in the UI"})
 }
 
 func ErrPrometheusScan(err error) error {
-	return errors.New(ErrPrometheusScanCode, errors.Alert, []string{"Unable to connect to prometheus"}, []string{err.Error()}, []string{"Prometheus endpoint might not be reachable from meshplay", "Prometheus endpoint is incorrect"}, []string{"Check if your Prometheus endpoint are correct", "Connect to Prometheus from the settings page in the UI"})
+	return errors.New(ErrPrometheusScanCode, errors.Alert, []string{"Unable to connect to prometheus"}, []string{err.Error()}, []string{"Prometheus endpoint might not be reachable from Meshplay", "Prometheus endpoint is incorrect"}, []string{"Check if your Prometheus endpoint are correct", "Connect to Prometheus from the settings page in the UI"})
 }
 
 func ErrDBCreate(err error) error {
 	return errors.New(ErrDBCreateCode, errors.Alert, []string{"Unable to create record"}, []string{err.Error()}, []string{"Record already exist", "Database connection is not reachable"}, []string{"Delete the record or try updating the record instead of recreating", "Rest the database connection"})
+}
+func ErrInitializeDBHandler(err error) error {
+	return errors.New(ErrInitializeDBHandlerCode, errors.Alert,
+		[]string{"Unable to initialize database handler"},
+		[]string{err.Error()},
+		[]string{"Possible causes include incorrect database file path, invalid database engine configuration, or insufficient permissions."},
+		[]string{"Verify the database file path and ensure it is correct. Check the database engine configuration and ensure the application has the necessary permissions to access the database file."})
+}
+
+func ErrDoRequest(err error, method, endpoint string) error {
+	return errors.New(ErrDoRequestCode, errors.Alert, []string{fmt.Sprintf("unable to make %s request to %s", method, endpoint)}, []string{err.Error()}, []string{"Requested resource is not reachable.", "Unable to instantiate TCP connection"}, []string{"Ensure correct URL is specified", "Ensure network connectivity to the resource from your network"})
+}
+
+func ErrMarshalYAML(err error, obj string) error {
+	return errors.New(ErrMarshalYAMLCode, errors.Alert, []string{"unable to marshal yaml \"%s\""}, []string{err.Error()}, []string{"Object has invalid yaml format"}, []string{"Make sure to input a valid yaml object"})
+}
+func ErrDeleteK8sResource(err error, name, namespace string) error {
+	return errors.New(ErrDeleteK8sResourceCode, errors.Alert,
+		[]string{fmt.Sprintf("Failed to delete resource with name \"%s\" in namespace \"%s\"", name, namespace)},
+		[]string{err.Error()},
+		[]string{"Possible causes include invalid resource name or namespace, insufficient permissions, or network issues."},
+		[]string{"Verify the resource name and namespace are correct. Ensure you have the necessary permissions to delete the resource. Check network connectivity to the Kubernetes cluster."})
+}
+func ErrCreateK8sResource(err error, name, namespace string) error {
+	return errors.New(ErrCreateK8sResourceCode, errors.Alert,
+		[]string{fmt.Sprintf("Failed to create resource with name \"%s\" in namespace \"%s\"", name, namespace)},
+		[]string{err.Error()},
+		[]string{"Possible causes include invalid resource name or namespace, insufficient permissions, or network issues."},
+		[]string{"Verify the resource name and namespace are correct. Ensure you have the necessary permissions to create the resource. Check network connectivity to the Kubernetes cluster."})
+}
+func ErrGetResource(err error, name, namespace string) error {
+	return errors.New(ErrGetResourceCode, errors.Alert,
+		[]string{fmt.Sprintf("Failed to get pre-existing resource with name \"%s\" in namespace \"%s\"", name, namespace)},
+		[]string{err.Error()},
+		[]string{"Possible causes include invalid resource name or namespace, insufficient permissions, or resource not found."},
+		[]string{"Verify the resource name and namespace are correct. Ensure you have the necessary permissions to access the resource."})
+}
+func ErrDeleteResource(err error, name, namespace string) error {
+	return errors.New(ErrDeleteResourceCode, errors.Alert,
+		[]string{fmt.Sprintf("Failed to delete resource with name \"%s\" in namespace \"%s\"", name, namespace)},
+		[]string{err.Error()},
+		[]string{"Possible causes include invalid resource name or namespace, insufficient permissions, or network issues."},
+		[]string{"Verify the resource name and namespace are correct. Ensure you have the necessary permissions to delete the resource. Check network connectivity to the Kubernetes cluster."})
+}
+func ErrRecreateResource(err error, name, namespace string) error {
+	return errors.New(ErrRecreateResourceCode, errors.Alert,
+		[]string{fmt.Sprintf("Failed to recreate resource with name \"%s\" in namespace \"%s\"", name, namespace)},
+		[]string{err.Error()},
+		[]string{"Possible causes include invalid resource configuration, insufficient permissions, or network issues."},
+		[]string{"Verify the resource configuration and ensure it is correct. Ensure you have the necessary permissions to recreate the resource. Check network connectivity to the Kubernetes cluster."})
+}
+func ErrUpdateResource(name, namespace string) error {
+	return errors.New(ErrUpdateResourceCode, errors.Alert,
+		[]string{fmt.Sprintf("Failed to update the resource with name \"%s\" in namespace \"%s\"", name, namespace)},
+		[]string{},
+		[]string{"Possible causes include invalid resource configuration, insufficient permissions, or network issues."},
+		[]string{"Verify the resource configuration and ensure it is correct. Ensure you have the necessary permissions to update the resource. Check network connectivity to the Kubernetes cluster."})
+}
+
+func ErrSeedingComponents(err error) error {
+	return errors.New(
+		ErrSeedingComponentsCode,
+		errors.Alert,
+		[]string{"Failed to register the given models into meshplay's registry"},
+		[]string{err.Error()},
+		[]string{"Given models may not be in accordance with Meshplay's schema", "Internal(OS level) error while reading files"},
+		[]string{"Make sure the models being seeded are valid in accordance with Meshplay's schema", "If it is an internal error, please try again after some time"},
+	)
+}
+
+func ErrImportFailure(hostname string, failedMsg string) error {
+	return errors.New(
+		ErrImportFailureCode,
+		errors.Alert,
+		[]string{fmt.Sprintf("Errors while registering entities for registrant: %s", hostname)},
+		[]string{failedMsg},
+		[]string{"Entity definition might not be in accordance with schema", "Entity version might not be supported by Meshplay"},
+		[]string{"See the registration logs (found at $HOME/.meshplay/logs/registry/registry-logs.log) to find out which Entity failed to be imported with more specific error information."},
+	)
+}
+
+func ErrMarshallingDesignIntoYAML(err error) error {
+	return errors.New(ErrMarshallingDesignIntoYAMLCode, errors.Alert, []string{"Failed to marshal design into YAML"}, []string{err.Error()}, []string{"unable to marshal design into YAML", "design may be corrupted"}, []string{"check if the design is valid and not corrupted"})
 }

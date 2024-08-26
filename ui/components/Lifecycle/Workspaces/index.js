@@ -9,7 +9,16 @@ import classNames from 'classnames';
 
 import { store } from '../../../store';
 import WorkspaceIcon from '../../../assets/icons/Workspace';
-import { EmptyState, GenericModal, TransferList } from '../General';
+import { EmptyState, GenericModal } from '../General';
+import {
+  TransferList,
+  Modal as SisitentModal,
+  ModalBody,
+  ModalFooter,
+  PrimaryActionButtons,
+  createAndEditWorkspaceSchema,
+  createAndEditWorkspaceUiSchema,
+} from '@khulnasoft/sistent';
 import useStyles from '../../../assets/styles/general/tool.styles';
 import styles from '../Environments/styles';
 import SearchBar from '../../../utils/custom-search';
@@ -27,27 +36,20 @@ import {
   useUnassignEnvironmentFromWorkspaceMutation,
   useUpdateWorkspaceMutation,
 } from '../../../rtk-query/workspace';
-import dataFetch from '../../../lib/data-fetch';
 import { updateProgress } from '../../../lib/store';
 import { useNotification } from '../../../utils/hooks/useNotification';
 import WorkspaceCard from './workspace-card';
-import Modal from '../../Modal';
+import { RJSFModalWrapper } from '../../Modal';
 import PromptComponent, { PROMPT_VARIANTS } from '../../PromptComponent';
 import { debounce } from 'lodash';
 import { EVENT_TYPES } from '../../../lib/event-types';
 import EnvironmentIcon from '../../../assets/icons/Environment';
-import { DeleteIcon } from '@khulnasoft/sistent-svg';
+import { DeleteIcon } from '@khulnasoft/sistent';
 import theme from '../../../themes/app';
 import { keys } from '@/utils/permission_constants';
 import CAN from '@/utils/can';
 import DefaultError from '@/components/General/error-404/index';
-
-const ERROR_MESSAGE = {
-  FETCH_ORGANIZATIONS: {
-    name: 'FETCH_ORGANIZATIONS',
-    error_msg: 'There was an error fetching available orgs',
-  },
-};
+import { UsesSistent } from '@/components/SistentWrapper';
 
 const ACTION_TYPES = {
   CREATE: 'create',
@@ -65,8 +67,6 @@ const Workspaces = ({ organization, classes }) => {
   const [search, setSearch] = useState('');
 
   const [orgId, setOrgId] = useState('');
-  const [orgValue, setOrgValue] = useState([]);
-  const [orgLabel, setOrgLabel] = useState([]);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [actionType, setActionType] = useState('');
   const [initialData, setInitialData] = useState({});
@@ -278,51 +278,36 @@ const Workspaces = ({ organization, classes }) => {
 
   useEffect(() => {
     setOrgId(organization?.id);
-    fetchAvailableOrgs();
   }, [organization]);
 
-  const fetchAvailableOrgs = async () => {
-    dataFetch(
-      '/api/identity/orgs',
-      {
-        method: 'GET',
-        credentials: 'include',
-      },
-      (result) => {
-        if (result) {
-          const label = result?.organizations.map((option) => option.name);
-          const value = result?.organizations.map((option) => option.id);
-          setOrgLabel(label);
-          setOrgValue(value);
-        }
-      },
-      handleError(ERROR_MESSAGE.FETCH_ORGANIZATIONS),
-    );
-  };
-
-  const fetchSchema = async (actionType) => {
-    dataFetch(
-      `/api/schema/resource/workspace`,
-      {
-        credentials: 'include',
-        method: 'GET',
-      },
-      (res) => {
-        if (res) {
-          const rjsfSchemaOrg = res.rjsfSchema?.properties?.organization;
-          const uiSchemaOrg = res.uiSchema?.organization;
-          rjsfSchemaOrg.enum = orgValue;
-          rjsfSchemaOrg.enumNames = orgLabel;
-          actionType === ACTION_TYPES.CREATE
-            ? (uiSchemaOrg['ui:widget'] = 'select')
-            : (uiSchemaOrg['ui:widget'] = 'hidden');
-          setWorkspaceModal({
-            open: true,
-            schema: res,
-          });
-        }
-      },
-    );
+  const fetchSchema = () => {
+    const updatedSchema = {
+      schema: createAndEditWorkspaceSchema,
+      uiSchema: createAndEditWorkspaceUiSchema,
+    };
+    updatedSchema.schema?.properties?.organization &&
+      ((updatedSchema.schema = {
+        ...updatedSchema.schema,
+        properties: {
+          ...updatedSchema.schema.properties,
+          organization: {
+            ...updatedSchema.schema.properties.organization,
+            enum: [organization?.id],
+            enumNames: [organization?.name],
+          },
+        },
+      }),
+      (updatedSchema.uiSchema = {
+        ...updatedSchema.uiSchema,
+        organization: {
+          ...updatedSchema.uiSchema.organization,
+          ['ui:widget']: 'hidden',
+        },
+      }));
+    setWorkspaceModal({
+      open: true,
+      schema: updatedSchema,
+    });
   };
 
   const handleError = (action) => (error) => {
@@ -361,7 +346,7 @@ const Workspaces = ({ organization, classes }) => {
       });
       setEditWorkspaceId('');
     }
-    fetchSchema(actionType);
+    fetchSchema();
   };
 
   const handleWorkspaceModalClose = () => {
@@ -620,7 +605,7 @@ const Workspaces = ({ organization, classes }) => {
               onSearch={(value) => {
                 setSearch(value);
               }}
-              placeholder="Search connections..."
+              placeholder="Search Workspaces..."
               expanded={isSearchExpanded}
               setExpanded={setIsSearchExpanded}
             />
@@ -637,8 +622,9 @@ const Workspaces = ({ organization, classes }) => {
                   fill={theme.palette.secondary.error}
                   onClick={handleDeleteWorkspacesModalOpen}
                   disabled={
+                    CAN(keys.DELETE_WORKSPACE.action, keys.DELETE_WORKSPACE.subject) &&
                     selectedWorkspaces.length > 0
-                      ? !CAN(keys.DELETE_WORKSPACE.action, keys.DELETE_WORKSPACE.subject)
+                      ? false
                       : true
                   }
                 />
@@ -701,87 +687,128 @@ const Workspaces = ({ organization, classes }) => {
             ? CAN(keys.CREATE_WORKSPACE.action, keys.CREATE_WORKSPACE.subject)
             : CAN(keys.EDIT_WORKSPACE.action, keys.EDIT_WORKSPACE.subject)) &&
             workspaceModal.open && (
-              <Modal
-                open={workspaceModal.open}
-                schema={workspaceModal.schema.rjsfSchema}
-                uiSchema={workspaceModal.schema.uiSchema}
-                handleClose={handleWorkspaceModalClose}
-                handleSubmit={
-                  actionType === ACTION_TYPES.CREATE ? handleCreateWorkspace : handleEditWorkspace
-                }
-                title={actionType === ACTION_TYPES.CREATE ? 'Create Workspace' : 'Edit Workspace'}
-                submitBtnText={actionType === ACTION_TYPES.CREATE ? 'Save' : 'Update'}
-                initialData={initialData}
-              />
+              <UsesSistent>
+                <SisitentModal
+                  open={workspaceModal.open}
+                  closeModal={handleWorkspaceModalClose}
+                  title={actionType === ACTION_TYPES.CREATE ? 'Create Workspace' : 'Edit Workspace'}
+                >
+                  <RJSFModalWrapper
+                    schema={workspaceModal.schema.schema}
+                    uiSchema={workspaceModal.schema.uiSchema}
+                    handleSubmit={
+                      actionType === ACTION_TYPES.CREATE
+                        ? handleCreateWorkspace
+                        : handleEditWorkspace
+                    }
+                    submitBtnText={actionType === ACTION_TYPES.CREATE ? 'Save' : 'Update'}
+                    initialData={initialData}
+                    handleClose={handleWorkspaceModalClose}
+                  />
+                </SisitentModal>
+              </UsesSistent>
             )}
-          <GenericModal
-            open={assignEnvironmentModal}
-            handleClose={handleAssignEnvironmentModalClose}
-            title={`Assign Environments to ${environmentAssignWorkspace.name}`}
-            body={
-              <TransferList
-                name="Environments"
-                assignableData={environmentsData}
-                assignedData={handleAssignEnvironmentsData}
-                originalAssignedData={workspaceEnvironmentsData}
-                emptyStateIconLeft={
-                  <EnvironmentIcon
-                    height="5rem"
-                    width="5rem"
-                    fill="#808080"
-                    secondaryFill="#979797"
-                  />
-                }
-                emtyStateMessageLeft="No environments available"
-                emptyStateIconRight={
-                  <EnvironmentIcon
-                    height="5rem"
-                    width="5rem"
-                    fill="#808080"
-                    secondaryFill="#979797"
-                  />
-                }
-                emtyStateMessageRight="No environments assigned"
-                assignablePage={handleAssignablePageEnvironment}
-                assignedPage={handleAssignedPageEnvironment}
-                originalLeftCount={environments?.total_count}
-                originalRightCount={environmentsOfWorkspace?.total_count}
-              />
-            }
-            action={handleAssignEnvironments}
-            buttonTitle="Save"
-            disabled={disableTranferButton}
-            leftHeaderIcon={<EnvironmentIcon height="2rem" width="2rem" fill="white" />}
-            helpText="Assign environment to workspace"
-            maxWidth="md"
-          />
-          <GenericModal
-            open={assignDesignModal}
-            handleClose={handleAssignDesignModalClose}
-            title={`Assign Designs to ${designAssignWorkspace.name}`}
-            body={
-              <TransferList
-                name="Designs"
-                assignableData={designsData}
-                assignedData={handleAssignDesignsData}
-                originalAssignedData={workspaceDesignsData}
-                emptyStateIconLeft={<DesignsIcon height="5rem" width="5rem" />}
-                emtyStateMessageLeft="No designs available"
-                emptyStateIconRight={<DesignsIcon height="5rem" width="5rem" />}
-                emtyStateMessageRight="No designs assigned"
-                assignablePage={handleAssignablePageDesign}
-                assignedPage={handleAssignedPageDesign}
-                originalLeftCount={designs?.total_count}
-                originalRightCount={designsOfWorkspace?.total_count}
-              />
-            }
-            action={handleAssignDesigns}
-            buttonTitle="Save"
-            disabled={disableTranferButton}
-            leftHeaderIcon={<DesignsIcon height="2rem" width="2rem" fill="#ffffff" />}
-            helpText="Assign designs to workspace"
-            maxWidth="md"
-          />
+          <UsesSistent>
+            <SisitentModal
+              open={assignEnvironmentModal}
+              closeModal={handleAssignEnvironmentModalClose}
+              title={`Assign Environments to ${environmentAssignWorkspace.name}`}
+              headerIcon={<EnvironmentIcon height="2rem" width="2rem" fill="white" />}
+              maxWidth="md"
+            >
+              <ModalBody>
+                <TransferList
+                  name="Environments"
+                  assignableData={environmentsData}
+                  assignedData={handleAssignEnvironmentsData}
+                  originalAssignedData={workspaceEnvironmentsData}
+                  emptyStateIconLeft={
+                    <EnvironmentIcon
+                      height="5rem"
+                      width="5rem"
+                      fill="#808080"
+                      secondaryFill="#979797"
+                    />
+                  }
+                  emtyStateMessageLeft="No environments available"
+                  emptyStateIconRight={
+                    <EnvironmentIcon
+                      height="5rem"
+                      width="5rem"
+                      fill="#808080"
+                      secondaryFill="#979797"
+                    />
+                  }
+                  emtyStateMessageRight="No environments assigned"
+                  assignablePage={handleAssignablePageEnvironment}
+                  assignedPage={handleAssignedPageEnvironment}
+                  originalLeftCount={environments?.total_count}
+                  originalRightCount={environmentsOfWorkspace?.total_count}
+                  leftPermission={CAN(
+                    keys.ASSIGN_ENVIRONMENT_TO_WORKSPACE.action,
+                    keys.ASSIGN_ENVIRONMENT_TO_WORKSPACE.subject,
+                  )}
+                  rightPermission={CAN(
+                    keys.REMOVE_ENVIRONMENT_FROM_WORKSPACE.action,
+                    keys.REMOVE_ENVIRONMENT_FROM_WORKSPACE.subject,
+                  )}
+                />
+              </ModalBody>
+              <ModalFooter variant="filled" helpText="Assign environment to workspace">
+                <PrimaryActionButtons
+                  primaryText="Save"
+                  secondaryText="Cancel"
+                  primaryButtonProps={{
+                    onClick: handleAssignEnvironments,
+                    disabled: disableTranferButton,
+                  }}
+                  secondaryButtonProps={{
+                    onClick: handleAssignEnvironmentModalClose,
+                  }}
+                />
+              </ModalFooter>
+            </SisitentModal>
+
+            <SisitentModal
+              open={assignDesignModal}
+              closeModal={handleAssignDesignModalClose}
+              title={`Assign Designs to ${designAssignWorkspace.name}`}
+              headerIcon={<DesignsIcon height="2rem" width="2rem" fill="#ffffff" />}
+              maxWidth="md"
+            >
+              <ModalBody>
+                <TransferList
+                  name="Designs"
+                  assignableData={designsData}
+                  assignedData={handleAssignDesignsData}
+                  originalAssignedData={workspaceDesignsData}
+                  emptyStateIconLeft={<DesignsIcon height="5rem" width="5rem" />}
+                  emtyStateMessageLeft="No designs available"
+                  emptyStateIconRight={<DesignsIcon height="5rem" width="5rem" />}
+                  emtyStateMessageRight="No designs assigned"
+                  assignablePage={handleAssignablePageDesign}
+                  assignedPage={handleAssignedPageDesign}
+                  originalLeftCount={designs?.total_count}
+                  originalRightCount={designsOfWorkspace?.total_count}
+                  leftPermission={true}
+                  rightPermission={true}
+                />
+              </ModalBody>
+              <ModalFooter variant="filled" helpText="Assign designs to workspace">
+                <PrimaryActionButtons
+                  primaryText="Save"
+                  secondaryText="Cancel"
+                  primaryButtonProps={{
+                    onClick: handleAssignDesigns,
+                    disabled: disableTranferButton,
+                  }}
+                  secondaryButtonProps={{
+                    onClick: handleAssignDesignModalClose,
+                  }}
+                />
+              </ModalFooter>
+            </SisitentModal>
+          </UsesSistent>
           <GenericModal
             open={deleteWorkspacesModal}
             handleClose={handleDeleteWorkspacesModalClose}

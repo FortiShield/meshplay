@@ -5,23 +5,23 @@ import (
 )
 
 // Please reference the following before contributing an error code:
-// https://docs.khulnasoft.com/project/contributing/contributing-error
-// https://github.com/khulnasoft/meshkit/blob/master/errors/errors.go
+// https://docs-meshplay.khulnasoft.com/project/contributing/contributing-error
+// https://github.com/meshplay/meshkit/blob/master/errors/errors.go
 const (
-	ErrNilClientCode                            = "1300"
-	ErrCreateDataCode                           = "1301"
-	ErrQueryCode                                = "1302"
-	ErrMeshsyncSubscriptionCode                 = "1303"
-	ErrMeshplayClientCode                        = "1304"
-	ErrSubscribeChannelCode                     = "1305"
-	ErrPublishBrokerCode                        = "1306"
-	ErrEmptyHandlerCode                         = "1307"
-	ErrApplyHelmChartCode                       = "1308"
-	ErrMeshplayControllersStatusSubscriptionCode = "1309"
-	ErrMeshSyncEventsSubscriptionCode           = "1310"
-	ErrMeshplayClientNilCode                     = "1311"
-	ErrUpdateDataCode                           = "1312"
-	ErrDeleteDataCode                           = "1313"
+	ErrNilClientCode                            = "meshplay-server-1170"
+	ErrCreateDataCode                           = "meshplay-server-1171"
+	ErrQueryCode                                = "meshplay-server-1172"
+	ErrMeshsyncSubscriptionCode                 = "meshplay-server-1173"
+	ErrMeshplayClientCode                        = "meshplay-server-1174"
+	ErrSubscribeChannelCode                     = "meshplay-server-1175"
+	ErrPublishBrokerCode                        = "meshplay-server-1176"
+	ErrEmptyHandlerCode                         = "meshplay-server-1177"
+	ErrApplyHelmChartCode                       = "meshplay-server-1178"
+	ErrMeshplayControllersStatusSubscriptionCode = "meshplay-server-1179"
+	ErrMeshSyncEventsSubscriptionCode           = "meshplay-server-1180"
+	ErrMeshplayClientNilCode                     = "meshplay-server-1181"
+	ErrUpdateDataCode                           = "meshplay-server-1182"
+	ErrDeleteDataCode                           = "meshplay-server-1183"
 )
 
 var (

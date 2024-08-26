@@ -37,7 +37,7 @@ export default function Footer() {
                 verticalAlign : 'top'
               }} />
               {' '}
-              by the Khulnasoft Community
+              by the KhulnaSoft Community
             </span>
           </Typography>
         </Item>

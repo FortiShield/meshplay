@@ -5,13 +5,13 @@ import (
 )
 
 // Please reference the following before contributing an error code:
-// https://docs.khulnasoft.com/project/contributing/contributing-error
-// https://github.com/khulnasoft/meshkit/blob/master/errors/errors.go
+// https://docs-meshplay.khulnasoft.com/project/contributing/contributing-error
+// https://github.com/meshplay/meshkit/blob/master/errors/errors.go
 const (
-	ErrGetK8sComponentsCode     = "1400"
-	ErrParseK8sManifestCode     = "1401"
-	ErrCreatePatternServiceCode = "1402"
-	ErrPatternFromCytoscapeCode = "1403"
+	ErrGetK8sComponentsCode     = "meshplay-server-1314"
+	ErrParseK8sManifestCode     = "meshplay-server-1315"
+	ErrCreatePatternServiceCode = "meshplay-server-1316"
+	ErrPatternFromCytoscapeCode = "meshplay-server-1317"
 )
 
 func ErrGetK8sComponents(err error) error {

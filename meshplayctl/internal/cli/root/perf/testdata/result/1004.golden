@@ -110,7 +110,7 @@ Load Generator: fortio
 #####################
 Name: istio_1629902923911
 UserID: 145496f6-f5d2-40b9-841e-1b5471b60411
-Endpoint: https://github.com/khulnasoft/meshplay/issues/3972
+Endpoint: https://github.com/meshplay/meshplay/issues/3972
 QPS: 29
 Test run duration: 30s
 Latencies _ms: Avg: 0.03391772960451975, Max: 0.2726887, Min: 0.0273589, P50: 0.03106733524355301, P90: 0.04535, P99: 0.07229999999999999

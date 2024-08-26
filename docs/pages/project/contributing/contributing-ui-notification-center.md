@@ -11,13 +11,13 @@ list: include
 ---
 
 <div class="prereqs"><p><strong style="font-size: 20px;">Prerequisite Reading</strong></p>
-  <ol><li><a ahref="contributing-ui">Contributing to Meshplay UI</a></li></ol>
+  <ol><li><a href="contributing-ui">Contributing to Meshplay UI</a></li></ol>
 </div>
 
 ## <a name="contributing-ui-notification-center">Contributing to Meshplay UI - Notification Center</a>
 
 <video style="width:min(100%,750px)" height="auto" autoplay muted loop>
-  <source src="https://github.com/khulnasoft/meshplay/assets/65964225/345672de-3f61-4be0-b3c8-0e7480cc496c" type="video/mp4">
+  <source src="https://github.com/meshplay/meshplay/assets/65964225/345672de-3f61-4be0-b3c8-0e7480cc496c" type="video/mp4">
  Your browser does not support the video tag
 </video>
 
@@ -219,4 +219,3 @@ Certain metadata, such as Kubernetes responses and Errors, hold high importance 
 ### Reusability
 While this system was initially developed for our events and notification center, the components it comprises are highly reusable and can be employed in other contexts where dynamic formatting of structured data is required.
 
-{% include suggested-reading.html %}

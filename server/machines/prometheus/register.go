@@ -2,13 +2,17 @@ package prometheus
 
 import (
 	"context"
+	"os"
 
 	"github.com/gofrs/uuid"
 	"github.com/khulnasoft/meshplay/server/machines"
 	"github.com/khulnasoft/meshplay/server/models"
 	"github.com/khulnasoft/meshplay/server/models/connections"
+	"github.com/khulnasoft/meshkit/logger"
 	"github.com/khulnasoft/meshkit/models/events"
 	"github.com/khulnasoft/meshkit/utils"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 type RegisterAction struct{}
@@ -18,6 +22,19 @@ func (ra *RegisterAction) ExecuteOnEntry(ctx context.Context, machineCtx interfa
 }
 
 func (ra *RegisterAction) Execute(ctx context.Context, machineCtx interface{}, data interface{}) (machines.EventType, *events.Event, error) {
+	logLevel := viper.GetInt("LOG_LEVEL")
+	if viper.GetBool("DEBUG") {
+		logLevel = int(logrus.DebugLevel)
+	}
+	log, err := logger.New("meshplay", logger.Options{
+		Format:   logger.SyslogLogFormat,
+		LogLevel: logLevel,
+	})
+	if err != nil {
+		logrus.Error(err)
+		os.Exit(1)
+	}
+
 	user, _ := ctx.Value(models.UserCtxKey).(*models.User)
 	sysID, _ := ctx.Value(models.SystemIDKey).(*uuid.UUID)
 	userUUID := uuid.FromStringOrNil(user.ID)
@@ -47,7 +64,7 @@ func (ra *RegisterAction) Execute(ctx context.Context, machineCtx interface{}, d
 		eventBuilder.WithMetadata(map[string]interface{}{"error": err})
 		return machines.NoOp, eventBuilder.Build(), err
 	}
-	promClient := models.NewPrometheusClient()
+	promClient := models.NewPrometheusClient(&log)
 
 	err = promClient.Validate(ctx, promConn.URL, promCred.APIKeyOrBasicAuth)
 

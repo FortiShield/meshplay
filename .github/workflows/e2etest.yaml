@@ -21,16 +21,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Uploading file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: patternfile
           path: ./.github/samples/emojivoto.yaml
 
   TestAdapterForEmojivotoInstall:
     needs: SetPatternfileForEmojivotoInstall
-    uses: khulnasoft/meshplay/.github/workflows/test_adaptersv2.yaml@master
+    uses: meshplay/meshplay/.github/workflows/test_adaptersv2.yaml@master
     with: 
       expected_resources: vote-bot, emoji,voting,web,emoji-svc,voting-svc,web-svcw
       expected_resources_types: pod,pod,pod,pod,service,service,service

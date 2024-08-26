@@ -5,6 +5,7 @@ permalink: project/faq
 abstract: General commonly asked questions and answers about Meshplay.
 language: en
 type: project
+category: project
 ---
 
 ## General FAQs
@@ -14,7 +15,7 @@ type: project
     <h6>Question: What is Meshplay?</h6>
 </summary>
 
-<p><strong>Answer:</strong> As a self-service engineering platform, Meshplay enables collaborative design and operation of cloud native infrastructure.</p>
+<p><strong>Answer:</strong> Meshplay is a self-service engineering platform that enables collaborative design and operation of cloud and cloud native infrastructure.</p>
 </details>
 
 <details>
@@ -22,7 +23,7 @@ type: project
     <h6>Question: Why was Meshplay created?</h6>
 </summary>
 
-<p><strong>Answer:</strong> As an open source, vendor neutral project, Meshplay was created out of the necessity to enable platform engineers, site reliability engineers, devops engineers... engineers to collaborate in the management of their infrastucture and workloads. Meshplay was created to enable you to expect more from your infrastructure and to do so with confidence.</p>
+<p><strong>Answer:</strong> As an open source, vendor neutral project, Meshplay was created out of the necessity to enable platform engineers, site reliability engineers, DevSecOps teams - all engineers to collaborate in the management of their infrastucture and workloads. Meshplay was created as an extensible platform to serve a broad set of modern application management needs.</p>
 </details>
 
 <details>
@@ -30,7 +31,7 @@ type: project
     <h6>Question: What does Meshplay do?</h6>
 </summary>
 
-<p><strong>Answer:</strong> Infrastructure as design. Meshplay enables you to design and operate cloud native infrastructure visually, collaboratively, with confidence and in partnership with your teammates.</p>
+<p><strong>Answer:</strong> Collaborative infrastructure management. Meshplay enables you to design and operate cloud native infrastructure visually, collaboratively, with confidence, and in partnership with your teammates.</p>
 </details>
 
 <!-- - _offers a catalog of operational best practices._
@@ -40,17 +41,18 @@ type: project
 
 <details>
     <summary>
-    <h6>Question: Is Meshplay open source project?</h6>
+    <h6>Question: Is Meshplay an open source project?</h6>
 </summary>
-<p><strong>Answer:</strong> Yes, Meshplay is a Cloud Native Computing Foundation (CNCF) project and is licensed under Apache v2. As the cloud native management plane, Meshplay is an extensible platform, offering multiple extension points within which users and partners can customize and extend Meshplay's functionality.</p>
+<p><strong>Answer:</strong> Yes, Meshplay is a Cloud Native Computing Foundation (CNCF) project and is licensed under Apache v2. As an internal developer platform, Meshplay is <a href="/extensibility">highly extensible</a>, offering multiple forms of extension points within which users and partners can customize and extend Meshplay's functionality.</p>
 </details>
 
 <details>
     <summary>
 <h6>Question: Why should I use Meshplay?</h6>
 </summary>
-<p><strong>Answer:</strong> Meshplay is a powerful tool for managing ​Kubernetes infrastructure. It seamlessly integrates with different hundreds of tools and offers extensibility through many different <a href="{{site.baseurl}}/extensibility/#extension-points">extension points</a>. With Meshplay, you can easily discover your environment, collaboratively manage multiple Kubernetes clusters, connect your Git and Helm repos, and analyze app and infra performance.</p>
+<p><strong>Answer:</strong> Meshplay is a powerful tool for managing ​Kubernetes infrastructure. It seamlessly integrates with different hundreds of tools and offers extensibility through many different <a href="{{site.baseurl}}/extensibility#extension-points">extension points</a>. With Meshplay, you can easily discover your environment, collaboratively manage multiple Kubernetes clusters, connect your Git and Helm repos, and analyze app and infra performance.</p>
 </details>
+
 
 ## User FAQs
 
@@ -65,12 +67,12 @@ type: project
 <summary>
 <h6>Question: How do I install Meshplay?</h6>
 </summary>
-<p><strong>Answer:</strong> Meshplay runs on a <a href="{site.baseurl}}/installation">number of platforms</a>. You are encouraged to use <code>meshplayctl</code> to configure and control Meshplay deployments. Install `meshplayctl` using any of these options:</p>
+<p><strong>Answer:</strong> Meshplay runs on a <a href="{{site.baseurl}}/installation">number of platforms</a>. You are encouraged to use <code>meshplayctl</code> to configure and control Meshplay deployments. Install `meshplayctl` using any of these options:</p>
 <ul>
 <li><a href="/installation/linux-mac/bash">Bash user</a></li>
 <li><a href="/installation/linux-mac/brew">Brew user</a></li>
 <li><a href="/installation/windows/scoop">Scoop user</a></li>
-<li><a href="https://github.com/khulnasoft/meshplay/releases/latest">Direct download</a></li>
+<li><a href="https://github.com/meshplay/meshplay/releases/latest">Direct download</a></li>
 </ul>
 </details>
 
@@ -95,7 +97,7 @@ type: project
 
 <details>
 <summary><h6>Question: What systems does Meshplay manage?</h6></summary>
-<p><strong>Answer:</strong> Many. See Meshplay's <a href="https://khulnasoft.com/integrations">Integrations</a></p>
+<p><strong>Answer:</strong> Many. See Meshplay's <a href="https://meshplay.io/integrations">Integrations</a></p>
 </details>
 
 <details>
@@ -130,7 +132,7 @@ type: project
 <p>If MeshSync, Meshplay Broker and Meshplay Operator are healthy, then perhaps, there is corruption in the Meshplay Database. Use the following troubleshooting steps to resolve this issue:</p>
 <ul>
 <li>Try clearing the database by clicking on the `Flush MeshSync` button associated with the corresponding cluster.</li>
-<li>If still `Service Mesh` is not visible in UI, move on to `Hard Reset` of Database. This option is in the <code>Reset System</code> Tab in <code>Settings</code> page.</li>
+<li>If you don't see the specific entities in Meshplay UI, you may choose to reset Meshplay's database. This option is in the <code>Reset System</code> Tab in <code>Settings</code> page.</li>
 </ul>
 
 <p>Note: You can also verify health of your system using <a href="{{site.baseurl}}/reference/meshplayctl/system/check">meshplayctl system check</a></p>

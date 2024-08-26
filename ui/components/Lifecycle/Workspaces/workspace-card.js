@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Grid } from '@material-ui/core';
 import { ArrowForward, Edit } from '@material-ui/icons';
-import { DeleteIcon } from '@khulnasoft/sistent-svg';
+import { DeleteIcon } from '@khulnasoft/sistent';
 import {
   BulkSelectCheckbox,
   CardTitle,
@@ -21,6 +21,7 @@ import {
 } from '../../../rtk-query/workspace';
 import { keys } from '@/utils/permission_constants';
 import CAN from '@/utils/can';
+import { UsesSistent } from '@/components/SistentWrapper';
 
 export const formattoLongDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', {
@@ -217,6 +218,7 @@ const CardFront = ({
               count={environmentsCount}
               onAssign={onAssignEnvironment}
               classes={classes}
+              disabled={!CAN(keys.VIEW_ENVIRONMENTS.action, keys.VIEW_ENVIRONMENTS.subject)}
             />
           </Box>
           <Box className={classes.allocationButton} onClick={(e) => e.stopPropagation()}>
@@ -225,6 +227,7 @@ const CardFront = ({
               count={designsCount}
               onAssign={onAssignDesign}
               classes={classes}
+              disabled={!CAN(keys.VIEW_DESIGNS.action, keys.VIEW_DESIGNS.subject)}
             />
           </Box>
         </Grid>
@@ -255,7 +258,9 @@ const CardBack = ({
       <Grid xs={12}>
         <Grid xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
           <Grid xs={6} style={{ display: 'flex', alignItems: 'flex-start' }}>
-            <BulkSelectCheckbox onClick={(e) => e.stopPropagation()} onChange={onSelect} />
+            <UsesSistent>
+              <BulkSelectCheckbox onClick={(e) => e.stopPropagation()} onChange={onSelect} />
+            </UsesSistent>
             <CardTitle
               style={{ color: theme.palette.secondary.white }}
               variant="body2"

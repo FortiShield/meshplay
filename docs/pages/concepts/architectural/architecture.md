@@ -35,22 +35,17 @@ Meshplay deploys as a set of containers. Meshplay's containers can be deployed t
 
 In Meshplay v0.6.0, Adapters will register with Meshplay Server over HTTP POST. If Meshplay Server is not available, Meshplay Adapters will backoff and retry to connect to Meshplay Server perpetually.
 
-<a href="{{ site.baseurl }}/assets/img/architecture/meshplay-architecture.svg">
+<a href="{{ site.baseurl }}/assets/img/architecture/meshplay-architecture.svg" class="lightbox-image">
 <img src="{{ site.baseurl }}/assets/img/architecture/meshplay-architecture.svg" width="50%" /></a>
-<figure>
-  <figcaption>Figure: Meshplay architecture</figcaption>
-</figure>
 
 _Figure: Meshplay deploys inside or outside of a Kubernetes cluster_
 
 #### Adapters and Capabilities Registry
 
 Each Meshplay Adapter delivers its own unique specific functionality. As such, at time of deployment, the Meshplay Adapter will register its cloud native infrastructure-specific capabilities (its operations) with Meshplay Server's capability registry.
-<a href="{{ site.baseurl }}/assets/img/adapters/meshplay-adapter-operation-registration.svg">
+
+<a href="{{ site.baseurl }}/assets/img/adapters/meshplay-adapter-operation-registration.svg" class="lightbox-image">
 <img src="{{ site.baseurl }}/assets/img/adapters/meshplay-adapter-operation-registration.svg" width="50%" /></a>
-<figure>
-  <figcaption>Figure: Meshplay Adapter Operation Registratio</figcaption>
-</figure>
 
 _Figure: Meshplay Adapter Operation Registration_
 
@@ -58,19 +53,17 @@ _Figure: Meshplay Adapter Operation Registration_
 
 Meshplay's REST API may be consumed by any number of clients. Clients need to present valid JWT token.
 
-<a href="{{ site.baseurl }}/assets/img/architecture/Meshplay-client-architecture.svg">
+<a href="{{ site.baseurl }}/assets/img/architecture/Meshplay-client-architecture.svg" class="lightbox-image">
 <img src="{{ site.baseurl }}/assets/img/architecture/Meshplay-client-architecture.svg" width="50%" /></a>
-<figure>
-  <figcaption>Figure: Meshplay Client architecture</figcaption>
-</figure>
+
 
 _Figure: Clients use Meshplay's [REST API](extensibility/api#rest), [GraphQL API](extensibility/api#graphql), or a combination of both._
 
 ### Providers
 
-As a point of extension, Meshplay supports two types of providers: _Local_ and _Remote_.
+As a point of extensibility, Meshplay supports two types of [providers](/extensibility/providers): _Local_ and _Remote_.
 
-<a href="{{ site.baseurl }}/assets/img/architecture/Meshplay-provider-architecture.svg">
+<a href="{{ site.baseurl }}/assets/img/architecture/Meshplay-provider-architecture.svg" class="lightbox-image">
 <img src="{{ site.baseurl }}/assets/img/architecture/Meshplay-provider-architecture.svg" width="50%" /></a>
 <figure>
   <figcaption>Figure: Meshplay Provider architecture</figcaption>
@@ -80,8 +73,8 @@ As a point of extension, Meshplay supports two types of providers: _Local_ and _
 
 This diagram outlines logical constructs within Meshplay and their relationships.
 
-<a href="{{ site.baseurl }}/assets/img/architecture/meshplay_logical_object_model.svg">
-<img src="{{ site.baseurl }}/assets/img/architecture/meshplay_logical_object_model.svg" width="50%" /></a>
+<a href="{{ site.baseurl }}/assets/img/architecture/meshplay_extension_points.svg" class="lightbox-image">
+<img src="{{ site.baseurl }}/assets/img/architecture/meshplay_extension_points.svg" width="50%" /></a>
 <figure>
   <figcaption>Figure: Meshplay Object Model</figcaption>
 </figure>
@@ -90,7 +83,7 @@ This diagram outlines logical constructs within Meshplay and their relationships
 
 Meshplay Operator is the multi-cluster Kubernetes operator that manages MeshSync and Meshplay Broker.
 
-<a href="{{ site.baseurl }}/assets/img/architecture/meshplay-operator-and-meshsync.svg">
+<a href="{{ site.baseurl }}/assets/img/architecture/meshplay-operator-and-meshsync.svg" class="lightbox-image">
 <img src="{{ site.baseurl }}/assets/img/architecture/meshplay-operator-and-meshsync.svg" width="50%" /></a>
 <figure>
   <figcaption>Figure: Meshplay Operator and MeshSync</figcaption>
@@ -102,7 +95,7 @@ See the [**Operator**]({{ site.baseurl }}/concepts/architecture/operator) sectio
 
 Meshplay Server's database is responsible for collecting and centralizing the state of all elements under management, including infrastructure, application, and Meshplay's own components. Meshplay's database, while persisted to file, is treated as a cache.
 
-<a href="{{ site.baseurl }}/assets/img/architecture/meshplay-database.svg">
+<a href="{{ site.baseurl }}/assets/img/architecture/meshplay-database.svg" class="lightbox-image">
 <img src="{{ site.baseurl }}/assets/img/architecture/meshplay-database.svg" width="50%" /></a>
 <figure>
   <figcaption>Figure: Meshplay Docker Extension</figcaption>
@@ -114,7 +107,7 @@ _See the [**Database**]({{ site.baseurl }}/concepts/architecture/database) secti
 
 Meshplay's Docker extension provides a simple and flexible way to design and operate cloud native infrastructure on top of Kubernetes using Docker containers. The architecture of this extension is designed to be modular and extensible, with each component serving a specific purpose within the overall deployment process.
 
-<a href="{{ site.baseurl }}/assets/img/architecture/meshplay-docker-extension.svg">
+<a href="{{ site.baseurl }}/assets/img/architecture/meshplay-docker-extension.svg" class="lightbox-image">
 <img src="{{ site.baseurl }}/assets/img/architecture/meshplay-docker-extension.svg" width="50%" /></a>
 <figure>
   <figcaption>Figure: Meshplay Docker Extension</figcaption>
@@ -161,7 +154,7 @@ Meshplay uses the following list of network ports to interface with its various 
 | [Meshplay Broker](/concepts/architecture/broker)            | 7422/tcp | Incoming/outgoing leaf node connections. Unused as of Meshplay v0.6.0-rc-2 |
 | [Meshplay Broker](/concepts/architecture/broker)            | 7522/tcp | Gateway to gateway communication. Unused as of Meshplay v0.6.0-rc-2 |
 | [Meshplay Broker](/concepts/architecture/broker)            | 7777/tcp | used for Prometheus NATS Exporter. Unused as of Meshplay v0.6.0-rc-2 |
-| Learn Khulnasoft Application | 10011/tcp  | SMI conformance testing                        |
+| Learn KhulnaSoft Application | 10011/tcp  | SMI conformance testing                        |
 | [Meshplay Remote Providers]((/extensibility/providers)) | 443/tcp    | e.g. Meshplay Cloud                             |
 {% for adapter in site.adapters -%}
 {% if adapter.port -%}
@@ -314,4 +307,4 @@ See the [**Adapters**]({{ site.baseurl }}/concepts/architecture/adapters) sectio
 </table>
 <br>
 
-Please also see the [Troubleshooting Toolkit](https://docs.google.com/document/d/1q-aayRqx3QKIk2soTaTTTH-jmHcVXHwNYFsYkFawaME/edit#heading=h.ngupcd4j1pfm) and the [Meshplay v0.7.0: Connection States (Kubnernetes) Design Review](http://discuss.khulnasoft.com/t/meshplay-v0-7-0-connection-states-kubnernetes-design-review/958)
+Please also see the [Troubleshooting Toolkit](https://docs.google.com/document/d/1q-aayRqx3QKIk2soTaTTTH-jmHcVXHwNYFsYkFawaME/edit#heading=h.ngupcd4j1pfm) and the [Meshplay v0.7.0: Connection States (Kubnernetes) Design Review](http://discuss.meshplay.io/t/meshplay-v0-7-0-connection-states-kubnernetes-design-review/958)

@@ -50,6 +50,10 @@ const customMessages = [
   'Yikes. Things are a mesh here.',
 ];
 
+/**
+ * CustomErrorMessage component is used to display a custom error message when a page is not found.
+ * @returns {JSX.Element} JSX.Element
+ */
 function CustomErrorMessage() {
   const classes = styles();
   const [customMessage, setCustomMessage] = useState(customMessages[0]);
@@ -72,11 +76,11 @@ function CustomErrorMessage() {
         <img src="/static/img/service-mesh.svg" alt="service meshed" className={classes.mesh} />
         <Typography variant="body1">
           <p className={classes.helpMessage}>
-            Start a conversation at Khulnasoft community{' '}
+            Start a conversation at KhulnaSoft community{' '}
             <Link
               className={classes.discussionforumlink}
               underline="none"
-              href="http://discuss.khulnasoft.com/c/meshplay/5"
+              href="http://discuss.meshplay.khulnasoft.com/c/meshplay/5"
               target="_blank"
             >
               discussion forum

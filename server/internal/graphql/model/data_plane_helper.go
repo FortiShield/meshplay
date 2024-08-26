@@ -6,7 +6,8 @@ import (
 	"strings"
 
 	"github.com/khulnasoft/meshplay/server/models"
-	"github.com/khulnasoft/meshkit/utils"
+	"github.com/khulnasoft/meshkit/encoding"
+
 	meshsyncmodel "github.com/khulnasoft/meshsync/pkg/model"
 
 	corev1 "k8s.io/api/core/v1"
@@ -44,13 +45,13 @@ func GetDataPlaneState(ctx context.Context, selectors []MeshType, provider model
 				objstatus := corev1.PodStatus{}
 
 				// unmarshal resource_specs
-				err := utils.Unmarshal(obj.Spec.Attribute, &objspec)
+				err := encoding.Unmarshal([]byte(obj.Spec.Attribute), &objspec)
 				if err != nil {
 					return nil, err
 				}
 
 				// unmarshal resource_statuses
-				err = utils.Unmarshal(obj.Status.Attribute, &objstatus)
+				err = encoding.Unmarshal([]byte(obj.Status.Attribute), &objstatus)
 				if err != nil {
 					return nil, err
 				}

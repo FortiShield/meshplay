@@ -18,7 +18,6 @@ import Moment from 'react-moment';
 import { withStyles } from '@material-ui/core/styles';
 import { updateResultsSelection, clearResultsSelection, updateProgress } from '../../lib/store';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-// import dataFetch from "../../lib/data-fetch";
 import CustomToolbarSelect from '../CustomToolbarSelect';
 import MeshplayChart from '../MeshplayChart';
 import GrafanaCustomCharts from '../telemetry/grafana/GrafanaCustomCharts';
@@ -316,7 +315,7 @@ function generateColumnsForDisplay(
                       <Paper className={classes.paper}>
                         <TwitterShareButton
                           className={classes.socialIcon}
-                          url={'https://khulnasoft.com'}
+                          url={'https://meshplay.khulnasoft.com'}
                           title={socialMessage}
                           hashtags={['opensource']}
                         >
@@ -325,7 +324,7 @@ function generateColumnsForDisplay(
                         </TwitterShareButton>
                         <LinkedinShareButton
                           className={classes.socialIcon}
-                          url={'https://khulnasoft.com'}
+                          url={'https://meshplay.khulnasoft.com'}
                           summary={socialMessage}
                         >
                           {/* <img src={`/static/img/linkedin.svg`} /> */}
@@ -333,7 +332,7 @@ function generateColumnsForDisplay(
                         </LinkedinShareButton>
                         <FacebookShareButton
                           className={classes.socialIcon}
-                          url={'https://khulnasoft.com'}
+                          url={'https://meshplay.khulnasoft.com'}
                           quote={socialMessage}
                           hashtag={'#opensource'}
                         >
@@ -690,7 +689,7 @@ function MeshplayResults({
     filterType: 'textField',
     responsive: 'standard',
     resizableColumns: true,
-    selectableRows: true,
+    selectableRows: 'multiple',
     serverSide: true,
     count,
     rowsPerPage: pageSize,

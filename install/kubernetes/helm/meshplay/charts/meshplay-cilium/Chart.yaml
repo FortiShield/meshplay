@@ -1,9 +1,9 @@
 apiVersion: v2
 name: meshplay-cilium
 description: Meshplay Adapter for Cilium chart.
-icon: https://khulnasoft.com/images/logos/meshplay-logo.png
+icon: https://meshplay.io/images/logos/meshplay-logo.png
 source: 
-  - https://github.com/khulnasoft/meshplay-cilium
+  - https://github.com/meshplay/meshplay-cilium
 
 deprecated: false
 
@@ -31,5 +31,5 @@ maintainers:
     email: urakiny@gmail.com
   - name: leecalcote
     email: leecalcote@gmail.com
-  - name: Khulnasoft Authors
+  - name: KhulnaSoft Authors
     email: community@khulnasoft.com

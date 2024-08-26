@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Checkbox,
   IconButton,
   InputAdornment,
   ListItemText,
@@ -14,13 +13,14 @@ import { ERROR_COLOR } from '../../../../constants/colors';
 import { iconSmall } from '../../../../css/icons.styles';
 import theme from '../../../../themes/app';
 import { CustomTextTooltip } from '../CustomTextTooltip';
-import { getHyperLinkDiv } from '../helper';
 import {
   ariaDescribedByIds,
   enumOptionsIndexForValue,
   enumOptionsValueForIndex,
   labelValue,
 } from '@rjsf/utils';
+import { Checkbox } from '@khulnasoft/sistent';
+import { UsesSistent } from '@/components/SistentWrapper';
 
 export default function CustomSelectWidget({
   schema,
@@ -84,19 +84,14 @@ export default function CustomSelectWidget({
         onBlur={_onBlur}
         onFocus={_onFocus}
         InputProps={{
+          style: { paddingRight: '0px' },
           endAdornment: (
-            <InputAdornment position="start">
+            <InputAdornment position="start" style={{ position: 'absolute', right: '1rem' }}>
               {rawErrors?.length > 0 && (
                 <CustomTextTooltip
-                  backgroundColor={ERROR_COLOR}
+                  bgColor={ERROR_COLOR}
                   flag={formContext?.overrideFlag}
-                  title={
-                    <div>
-                      {rawErrors?.map((error, index) => (
-                        <div key={index}>{error}</div>
-                      ))}
-                    </div>
-                  }
+                  title={rawErrors?.join('  ')}
                   interactive={true}
                 >
                   <IconButton component="span" size="small">
@@ -111,9 +106,8 @@ export default function CustomSelectWidget({
               )}
               {schema?.description && (
                 <CustomTextTooltip
-                  backgroundColor="#3C494F"
                   flag={formContext?.overrideFlag}
-                  title={getHyperLinkDiv(schema?.description)}
+                  title={schema?.description}
                   interactive={true}
                 >
                   <IconButton component="span" size="small" style={{ marginRight: '4px' }}>
@@ -168,7 +162,11 @@ export default function CustomSelectWidget({
             const disabled = Array.isArray(enumDisabled) && enumDisabled?.indexOf(value) !== -1;
             return (
               <MenuItem key={i} value={String(i)} disabled={disabled}>
-                {multiple && <Checkbox checked={selectedIndexes?.indexOf(String(i)) !== -1} />}
+                {multiple && (
+                  <UsesSistent>
+                    <Checkbox checked={selectedIndexes?.indexOf(String(i)) !== -1} />
+                  </UsesSistent>
+                )}
                 <ListItemText primary={label} />
               </MenuItem>
             );

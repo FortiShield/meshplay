@@ -31,13 +31,13 @@ describe('Lifecycle Service Mesh', () => {
         cy.get('[data-cy="btnSubmitMeshAdapter"]').click();
         cy.contains('Adapter was configured!', { timeout: 10_000 }).should('exist');
       } else {
-        // TODO: Implement test code for Deploying from Settings > Adapters Page's "Available Mesh Adapter" Dropdown
+        // TODO: Implement test code for Deploying from Settings > Adapters Page's "Available Adapter" Dropdown
       }
 
       // Lifecycle > Service Mesh Page
-      cy.visit('/management/service-mesh');
+      cy.visit('/management/adapter');
       selectServiceMeshType(ADAPTER_LOCATION);
-      // "Select Service Mesh Type" Dropdown
+      // "Select Meshplay Adapter" Dropdown
       cy.get('[data-cy="lifecycle-service-mesh-type"]').should('contain.text', ADAPTER_LOCATION);
     });
 

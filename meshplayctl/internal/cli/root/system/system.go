@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@ package system
 
 import (
 	"fmt"
-
 	config "github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/config"
 
 	"github.com/khulnasoft/meshplay/meshplayctl/pkg/utils"
@@ -72,7 +71,6 @@ func init() {
 		logoutCmd,
 		tokenCmd,
 		dashboardCmd,
-		// ModelCmd,
 	}
 	// --context flag to temporarily change context. This is global to all system commands
 	SystemCmd.PersistentFlags().StringVarP(&tempContext, "context", "c", "", "(optional) temporarily change the current context.")

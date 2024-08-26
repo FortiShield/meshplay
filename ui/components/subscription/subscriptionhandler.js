@@ -7,12 +7,12 @@ export class GQLSubscription {
   subscription;
   state;
   callbackFunction;
-  contextIds;
+  connectionIDs;
   type;
 
-  constructor({ type, contextIds, callbackFunction }) {
+  constructor({ type, connectionIDs, callbackFunction }) {
     this.type = type;
-    this.contextIds = contextIds || [];
+    this.connectionIDs = connectionIDs || [];
     this.callbackFunction = callbackFunction;
   }
 
@@ -25,11 +25,10 @@ export class GQLSubscription {
       throw new Error('Subscription Type is Empty, initialise a subscription in a constructor');
     }
 
-    this.updateSubscription(this.contextIds);
+    this.updateSubscription(this.connectionIDs);
   };
 
   doCallback = (data) => {
-    console.log('CONTROLLER DATA RECEIVED: ', data);
     // assuming the data is in stream and contextId being the key to the data
     data = data[fnMapping[this.type].eventName];
     if (fnMapping[this.type]?.comparatorFn(this.state, data)) {
@@ -46,8 +45,8 @@ export class GQLSubscription {
     }
   };
 
-  updateSubscription = (contextIds) => {
+  updateSubscription = (connectionIDs) => {
     this.flushSubscription();
-    this.subscription = fnMapping[this.type].subscriptionFn(this.doCallback, contextIds);
+    this.subscription = fnMapping[this.type].subscriptionFn(this.doCallback, connectionIDs);
   };
 }

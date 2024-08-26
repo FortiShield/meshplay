@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package pattern
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/khulnasoft/meshplay/meshplayctl/pkg/utils"
 	"github.com/pkg/errors"
@@ -25,14 +26,15 @@ import (
 var (
 	availableSubcommands []*cobra.Command
 	file                 string
+	validSourceTypes     []string
 )
 
 // PatternCmd represents the root command for pattern commands
 var PatternCmd = &cobra.Command{
 	Use:   "pattern",
 	Short: "Cloud Native Patterns Management",
-	Long: `Manage service meshes using predefined patterns.
-Find more information at: https://docs.khulnasoft.com/reference/meshplayctl#command-reference`,
+	Long: `Manage cloud and cloud native infrastructure using predefined patterns.
+Find more information at: https://docs-meshplay.khulnasoft.com/reference/meshplayctl#command-reference`,
 	Example: `
 // Apply pattern file:
 meshplayctl pattern apply --file [path to pattern file | URL of the file]
@@ -51,7 +53,16 @@ meshplayctl pattern list
 			return cmd.Help()
 		}
 		if ok := utils.IsValidSubcommand(availableSubcommands, args[0]); !ok {
-			return errors.New(utils.PatternError(fmt.Sprintf("'%s' is an invalid command.  Use 'meshplayctl pattern --help' to display usage guide.\n", args[0])))
+			suggestions := make([]string, 0)
+			for _, subcmd := range availableSubcommands {
+				if strings.HasPrefix(subcmd.Name(), args[0]) {
+					suggestions = append(suggestions, subcmd.Name())
+				}
+			}
+			if len(suggestions) > 0 {
+				return errors.New(utils.PatternError(fmt.Sprintf("'%s' is an invalid command. \nDid you mean %v? \nUse 'meshplayctl pattern --help' to display usage guide.\n", args[0], suggestions)))
+			}
+			return errors.New(utils.PatternError(fmt.Sprintf("'%s' is an invalid command. Use 'meshplayctl pattern --help' to display usage guide.\n", args[0])))
 		}
 		return nil
 	},
@@ -60,6 +71,6 @@ meshplayctl pattern list
 func init() {
 	PatternCmd.PersistentFlags().StringVarP(&utils.TokenFlag, "token", "t", "", "Path to token file default from current context")
 
-	availableSubcommands = []*cobra.Command{applyCmd, deleteCmd, viewCmd, listCmd}
+	availableSubcommands = []*cobra.Command{applyCmd, deleteCmd, viewCmd, listCmd, importCmd, onboardCmd, offboardCmd, exportCmd}
 	PatternCmd.AddCommand(availableSubcommands...)
 }

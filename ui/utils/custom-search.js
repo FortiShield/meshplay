@@ -1,16 +1,17 @@
 import React, { useState, useRef } from 'react';
 import TextField from '@mui/material/TextField';
-import { Tooltip } from '@mui/material';
+import { CustomTooltip } from '@khulnasoft/sistent';
 import IconButton from '@mui/material/IconButton';
-import SearchIcon from '../assets/icons/search';
-import CloseIcon from '@mui/icons-material/Close';
+// import SearchIcon from '../assets/icons/search';
+// import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles } from '@material-ui/core/styles';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import debounce from './debounce';
+import { CloseIcon, SearchIcon } from '@khulnasoft/sistent';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
-    color: theme.palette.secondary.iconMain,
+    fill: theme.palette.secondary.iconMain,
     width: '1.5rem',
     height: '1.5rem',
   },
@@ -49,8 +50,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchBar = ({ onSearch, placeholder, expanded, setExpanded }) => {
-  const [searchText, setSearchText] = useState('');
+const SearchBar = ({ onSearch, placeholder, expanded, setExpanded, value = '' }) => {
+  const [searchText, setSearchText] = useState(value);
   const searchRef = useRef(null);
   const classes = useStyles();
 
@@ -86,7 +87,7 @@ const SearchBar = ({ onSearch, placeholder, expanded, setExpanded }) => {
   }
 
   return (
-    <div>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
       <TextField
         className={classes.searchInput}
         id="searchClick"
@@ -115,7 +116,7 @@ const SearchBar = ({ onSearch, placeholder, expanded, setExpanded }) => {
             }
           }}
         >
-          <Tooltip title="Close">
+          <CustomTooltip title="Close">
             <IconButton
               onClick={handleClearIconClick}
               sx={{
@@ -126,10 +127,10 @@ const SearchBar = ({ onSearch, placeholder, expanded, setExpanded }) => {
             >
               <CloseIcon className={classes.icon} />
             </IconButton>
-          </Tooltip>
+          </CustomTooltip>
         </ClickAwayListener>
       ) : (
-        <Tooltip title="Search">
+        <CustomTooltip title="Search">
           <IconButton
             onClick={handleSearchIconClick}
             sx={{
@@ -138,9 +139,9 @@ const SearchBar = ({ onSearch, placeholder, expanded, setExpanded }) => {
               },
             }}
           >
-            <SearchIcon />
+            <SearchIcon className={classes.icon} />
           </IconButton>
-        </Tooltip>
+        </CustomTooltip>
       )}
     </div>
   );

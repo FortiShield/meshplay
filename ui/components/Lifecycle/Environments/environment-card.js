@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Grid, Typography, Box, Checkbox } from '@material-ui/core';
+import { Button, Card, Grid, Typography, Box } from '@material-ui/core';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import { Delete, Edit } from '@material-ui/icons';
 
@@ -8,6 +8,8 @@ import { useGetEnvironmentConnectionsQuery } from '../../../rtk-query/environmen
 import classNames from 'classnames';
 import CAN from '@/utils/can';
 import { keys } from '@/utils/permission_constants';
+import { Checkbox } from '@khulnasoft/sistent';
+import { UsesSistent } from '@/components/SistentWrapper';
 
 export const formattoLongDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', {
@@ -17,9 +19,15 @@ export const formattoLongDate = (date) => {
   });
 };
 
-export const TransferButton = ({ title, count, onAssign, classes }) => {
+export const TransferButton = ({ title, count, onAssign, classes, disabled }) => {
   return (
-    <Button variant="contained" color="primary" className={classes.popupButton} onClick={onAssign}>
+    <Button
+      variant="contained"
+      color="primary"
+      disabled={disabled}
+      className={classes.popupButton}
+      onClick={onAssign}
+    >
       <Grid>
         <Typography className={classes.tabCount}>{count}</Typography>
         <Typography className={classes.tabTitle}>{title}</Typography>
@@ -81,7 +89,7 @@ const EnvironmentCard = ({
         >
           <Grid style={{ display: 'flex', flexDirection: 'row', pb: 1 }}>
             <Typography
-              className={classes.listItem}
+              className={classes.name}
               variant="body2"
               onClick={(e) => e.stopPropagation()}
             >
@@ -130,6 +138,7 @@ const EnvironmentCard = ({
                   count={environmentConnectionsCount}
                   onAssign={onAssignConnection}
                   classes={classes}
+                  disabled={!CAN(keys.VIEW_CONNECTIONS.action, keys.VIEW_CONNECTIONS.subject)}
                 />
               </Box>
               {/* temporary disable workspace allocation button  */}
@@ -142,6 +151,7 @@ const EnvironmentCard = ({
                     }
                     onAssign={onAssignConnection}
                     classes={classes}
+                    disabled={!CAN(keys.VIEW_WORKSPACE.action, keys.VIEW_WORKSPACE.subject)}
                   />
                 </Box>
               )}
@@ -160,12 +170,14 @@ const EnvironmentCard = ({
         >
           <Grid xs={12} style={{ display: 'flex', flexDirection: 'row', height: '40px' }}>
             <Grid xs={6} style={{ display: 'flex', alignItems: 'flex-start' }}>
-              <Checkbox
-                className={classes.bulkSelectCheckbox}
-                onClick={(e) => e.stopPropagation()}
-                onChange={onSelect}
-                disabled={deleted ? true : false}
-              />
+              <UsesSistent>
+                <Checkbox
+                  className={classes.bulkSelectCheckbox}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={onSelect}
+                  disabled={deleted ? true : false}
+                />
+              </UsesSistent>
               <Typography
                 className={classes.cardTitle}
                 style={{ color: 'white' }}

@@ -8,18 +8,19 @@ import (
 
 // Available Meshplay adapters
 var (
-	Istio   = Adapter{Name: "meshplay-istio", Location: "10000"}
-	Linkerd = Adapter{Name: "meshplay-linkerd", Location: "10001"}
-	Consul  = Adapter{Name: "meshplay-consul", Location: "10002"}
-	NSM     = Adapter{Name: "meshplay-nsm", Location: "10004"}
-	AWS     = Adapter{Name: "meshplay-app-mesh", Location: "10005"}
-	Traefik = Adapter{Name: "meshplay-traefik-mesh", Location: "10006"}
-	Kuma    = Adapter{Name: "meshplay-kuma", Location: "10007"}
-	Nginx   = Adapter{Name: "meshplay-nginx-sm", Location: "10010"}
-	Cilium  = Adapter{Name: "meshplay-cilium", Location: "10012"}
+	Istio     = Adapter{Name: "meshplay-istio", Location: "10000"}
+	Linkerd   = Adapter{Name: "meshplay-linkerd", Location: "10001"}
+	Consul    = Adapter{Name: "meshplay-consul", Location: "10002"}
+	NSM       = Adapter{Name: "meshplay-nsm", Location: "10004"}
+	AppMesh   = Adapter{Name: "meshplay-app-mesh", Location: "10005"}
+	Traefik   = Adapter{Name: "meshplay-traefik-mesh", Location: "10006"}
+	Kuma      = Adapter{Name: "meshplay-kuma", Location: "10007"}
+	Nginx     = Adapter{Name: "meshplay-nginx-sm", Location: "10010"}
+	Cilium    = Adapter{Name: "meshplay-cilium", Location: "10012"}
+	Nighthawk = Adapter{Name: "meshplay-nighthawk", Location: "10013"}
 )
 
-var ListAvailableAdapters = []Adapter{Istio, Linkerd, Consul, Kuma, NSM, Nginx, AWS, Cilium, Traefik}
+var ListAvailableAdapters = []Adapter{Istio, Linkerd, Consul, Kuma, NSM, Nginx, AppMesh, Cilium, Traefik, Nighthawk}
 
 // Adapter represents an adapter in Meshplay
 type Adapter struct {

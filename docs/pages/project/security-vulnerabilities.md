@@ -5,7 +5,7 @@ permalink: project/security-vulnerabilities
 abstract: How the Meshplay team handles security vulnerabilities.
 language: en
 type: project
-category: none
+category: project
 list: include
 ---
 
@@ -50,7 +50,7 @@ To make a report, send an email to the private
 [security@meshplay.dev](mailto:security@meshplay.dev)
 mailing list with the vulnerability details. For normal product bugs
 unrelated to latent security vulnerabilities, please head to
-the appropriate repository and submit a [new issue](https://github.com/khulnasoft/meshplay/issues/new/choose).
+the appropriate repository and submit a [new issue](https://github.com/meshplay/meshplay/issues/new/choose).
 
 ### When to report a security vulnerability?
 
@@ -69,7 +69,7 @@ Don't send a vulnerability report if:
 - You need help applying security related updates.
 - Your issue is not security related.
 
-Instead, join the community [Slack](https://slack.khulnasoft.com/) and ask questions.
+Instead, join the community [Slack](https://slack.meshplay.io/) and ask questions.
 
 ### Evaluation
 
@@ -103,9 +103,9 @@ branches.
 - Meshplay team ensures all necessary binaries are promptly built and published.
 
 - Once the binaries are available, an announcement is sent out on the following channels:
-  - The [Meshplay blog](https://khulnasoft.com/blog/)
+  - The [Meshplay blog](https://meshplay.io/blog/)
   - The [Meshplay Twitter feed](https://twitter.com/meshplayio)
-  - The [#announcements](https://khulnasoft.slack.com/archives/CSF3PSZT9) channel on community [Slack](https://slack.khulnasoft.com/)
+  - The [#announcements](https://khulnasoft.slack.com/archives/CSF3PSZT9) channel on community [Slack](https://slack.meshplay.io/)
 
 As much as possible this announcement will be actionable, and include any mitigating steps customers can take prior to upgrading to a fixed version.
 

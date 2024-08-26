@@ -31,7 +31,7 @@ Use Minikube in GitHub Codespace to setup your development environment for Meshp
   - [Installation: Using `meshplayctl`](#installation-using-meshplayctl)
   - [Installation: Using Helm](#installation-using-helm)
   - [Installation: Manual Steps](#installation-manual-steps)
-  - [Access Meshplay UI](#access-meshplay-ui)
+- [Post-Installation Steps](#post-installation-steps)
 
 # In-cluster Installation
 
@@ -119,12 +119,14 @@ _Note_: Make sure _current-context_ is set to _minikube_.
 <br />
 Meshplay should now be connected with your managed Kubernetes instance. Take a look at the [Meshplay guides]({{ site.baseurl }}/guides) for advanced usage tips.
 
-## Access Meshplay UI
+# Post-Installation Steps
 
-To access Meshplay's UI, please refer to the [instruction](/tasks/accessing-meshplay-ui) for detailed guidance.
+Otionally, you can verify the health of your Meshplay deployment, using <a href='/reference/meshplayctl/system/check'>meshplayctl system check</a>.
+
+You're ready to use Meshplay! Open your browser and navigate to the Meshplay UI.
+
+{% include_cached installation/accessing-meshplay-ui.md %}
 
 For further information to access meshplay-ui/port-forwarding in Github Codespace, read the [docs](https://docs.github.com/en/codespaces/developing-in-a-codespace/forwarding-ports-in-your-codespace?tool=vscode)
-
-{% include suggested-reading.html language="en" %}
 
 {% include related-discussions.html tag="meshplay" %}

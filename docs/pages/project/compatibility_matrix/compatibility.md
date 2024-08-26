@@ -4,7 +4,6 @@ title: Compatibility Matrix
 permalink: installation/compatibility-matrix
 redirect_from: 
  - project/compatibility-matrix/
- - installation/compatibility-matrix/
 abstract: An installation compatibility matrix and project test status dashboard.
 language: en
 display-title: "false"
@@ -30,7 +29,6 @@ type: "installation"
         let stable = document.getElementsByClassName("stable")
         let stable_box = document.getElementById("checkbox_stable")
         for(let i = 0; i <e.length;i++){
-            console.log(e[i].classList)
             if(e[i].classList.contains("edge_visible") ){
                 e[i].classList.remove("edge_visible")
                 if(!stable_box.checked){
@@ -47,7 +45,6 @@ type: "installation"
         let e = document.getElementsByClassName("stable")
         let edge_box = document.getElementById("checkbox_edge")
         for(let i = 0; i <e.length;i++){
-            console.log(typeof(e[i].classList["1"]))
             if(e[i].classList.contains("stable_visible")){
                 e[i].classList.remove("stable_visible")
                 if(!edge_box.checked){
@@ -56,7 +53,6 @@ type: "installation"
                 }
         }
         else{
-          console.log("stable")
                 e[i].classList.add("stable_visible")
         }
         }
@@ -147,7 +143,7 @@ background-color: #8dbdd8;
 Meshplay Server and Meshplay Adapters are tested daily for their compatibility with the infrastructure they manage and the platforms Meshplay deploys on (Kubernetes and Docker). End-to-end test results are automatically posted to the following compatibility matrix.
 
 
-{%include compatibilityMatrix.md k8s_tests_group=k8s_tests_group %}
+{%include compatibility/compatibilityMatrix.md k8s_tests_group=k8s_tests_group %}
 
 ## Integration Tests
 
@@ -170,8 +166,8 @@ As a key aspect of Meshplay, its integrations with other systems are routinely t
         <th style="text-align: center;" ><span class="sort-by"> Meshplay Component  </span> </th>
         <th style="text-align: center;" ><span class="sort-by"> Meshplay Component Version </span> </th>
         <th style="text-align: center;" ><span class="sort-by"> Meshplay Server Version </span> </th>
-        <th style="text-align: center;" > <span class="sort-by"> Service Mesh </span> </th>
-        <th style="text-align: center;" ><span class="sort-by"> Service Mesh Version </span></th>
+        <th style="text-align: center;" > <span class="sort-by"> Infrastructure </span> </th>
+        <th style="text-align: center;" ><span class="sort-by"> Infrastructure Version </span></th>
   </thead>
   <tbody>
     {% for group in sorted_tests_group %}

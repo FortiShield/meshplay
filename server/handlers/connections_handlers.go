@@ -16,7 +16,7 @@ import (
 	"github.com/khulnasoft/meshplay/server/models"
 	"github.com/khulnasoft/meshplay/server/models/connections"
 	"github.com/khulnasoft/meshkit/models/events"
-	"github.com/khulnasoft/meshkit/models/meshmodel/core/v1alpha1"
+	regv1beta1 "github.com/khulnasoft/meshkit/models/meshmodel/registry/v1beta1"
 )
 
 type connectionStatusPayload map[uuid.UUID]connections.ConnectionStatus
@@ -91,19 +91,19 @@ func (h *Handler) handleProcessTermination(w http.ResponseWriter, req *http.Requ
 }
 
 func (h *Handler) handleRegistrationInitEvent(w http.ResponseWriter, req *http.Request, payload *models.ConnectionPayload) {
-	compFilter := &v1alpha1.ComponentFilter{
+	compFilter := &regv1beta1.ComponentFilter{
 		Name:  fmt.Sprintf("%sConnection", payload.Kind),
 		Limit: 1,
 	}
 	schema := make(map[string]interface{}, 1)
-	connectionComponent, _, _ := h.registryManager.GetEntities(compFilter)
+	connectionComponent, _, _, _ := h.registryManager.GetEntities(compFilter)
 	if len(connectionComponent) == 0 {
 		http.Error(w, "Unable to register resource as connection. No matching connection definition found in the registry", http.StatusInternalServerError)
 		return
 	}
 
 	schema["connection"] = connectionComponent[0]
-	credential, _, _ := h.registryManager.GetEntities(&v1alpha1.ComponentFilter{
+	credential, _, _, _ := h.registryManager.GetEntities(&regv1beta1.ComponentFilter{
 		Name:  fmt.Sprintf("%sCredential", payload.Kind),
 		Limit: 1,
 	})
@@ -118,7 +118,7 @@ func (h *Handler) handleRegistrationInitEvent(w http.ResponseWriter, req *http.R
 
 	err := json.NewEncoder(w).Encode(&schema)
 	if err != nil {
-		h.log.Error(ErrWriteResponse)
+		h.log.Error(ErrWriteResponse(err))
 	}
 }
 
@@ -197,8 +197,15 @@ func (h *Handler) GetConnections(w http.ResponseWriter, req *http.Request, prefO
 	page, _ := strconv.Atoi(q.Get("page"))
 	order := q.Get("order")
 	search := q.Get("search")
-	pageSize, _ := strconv.Atoi(q.Get("pagesize"))
+	pageSizeStr := q.Get("pagesize")
 	filter := q.Get("filter")
+
+	var pageSize int
+	if pageSizeStr == "all" {
+		pageSize = 100
+	} else {
+		pageSize, _ = strconv.Atoi(pageSizeStr)
+	}
 
 	if pageSize > 50 {
 		pageSize = 50
@@ -595,6 +602,6 @@ func (h *Handler) DeleteConnection(w http.ResponseWriter, req *http.Request, _ *
 	_ = provider.PersistEvent(event)
 	go h.config.EventBroadcaster.Publish(userID, event)
 
-	h.log.Info("connection deleted successfully")
+	h.log.Info("connection deleted.")
 	w.WriteHeader(http.StatusOK)
 }

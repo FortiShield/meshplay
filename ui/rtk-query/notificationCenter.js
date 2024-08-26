@@ -85,7 +85,7 @@ export const notificationCenterApi = api
   .injectEndpoints({
     endpoints: (builder) => ({
       getEvents: builder.query({
-        query: ({ page = 1, filters = {} }) => {
+        query: ({ page = 0, filters = {} }) => {
           const parsedFilters = parseFilters(filters);
           return {
             url: `v2/events`,
@@ -94,7 +94,7 @@ export const notificationCenterApi = api
               page: page,
               sort: 'created_at',
               order: 'desc',
-              page_size: 15,
+              pagesize: 15,
             },
           };
         },
@@ -103,7 +103,7 @@ export const notificationCenterApi = api
       getEventsSummary: builder.query({
         query: () => {
           return {
-            url: `v2/events?page=$1&page_size=1`,
+            url: `v2/events?page=$1&pagesize=1`,
           };
         },
         transformResponse: (response) => {

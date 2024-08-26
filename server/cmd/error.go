@@ -3,21 +3,27 @@ package main
 import "github.com/khulnasoft/meshkit/errors"
 
 // Please reference the following before contributing an error code:
-// https://docs.khulnasoft.com/project/contributing/contributing-error
-// https://github.com/khulnasoft/meshkit/blob/master/errors/errors.go
+// https://docs-meshplay.khulnasoft.com/project/contributing/contributing-error
+// https://github.com/meshplay/meshkit/blob/master/errors/errors.go
 const (
-	ErrCreatingUUIDInstanceCode                   = "1001"
-	ErrRegisteringMeshplayOAMTraitsCode            = "1002"
-	ErrRegisteringMeshplayOAMWorkloadsCode         = "1003"
-	ErrRetrievingUserHomeDirectoryCode            = "1004"
-	ErrCreatingUserDataDirectoryCode              = "1005"
-	ErrCreatingMapPreferencePersisterInstanceCode = "1006"
-	ErrDatabaseAutoMigrationCode                  = "1008"
-	ErrInvalidURLSkippingProviderCode             = "1009"
-	ErrListenAndServeCode                         = "1010"
-	ErrCleaningUpLocalProviderCode                = "1011"
-	ErrClosingDatabaseInstanceCode                = "1012"
-	ErrInitializingRegistryManagerCode            = "1013"
+	ErrCreatingUUIDInstanceCode                   = "meshplay-server-1001"
+	ErrRegisteringMeshplayOAMTraitsCode            = "meshplay-server-1002"
+	ErrRegisteringMeshplayOAMWorkloadsCode         = "meshplay-server-1003"
+	ErrRetrievingUserHomeDirectoryCode            = "meshplay-server-1004"
+	ErrCreatingUserDataDirectoryCode              = "meshplay-server-1005"
+	ErrCreatingMapPreferencePersisterInstanceCode = "meshplay-server-1006"
+	ErrDatabaseAutoMigrationCode                  = "meshplay-server-1007"
+	ErrInvalidURLSkippingProviderCode             = "meshplay-server-1008"
+	ErrListenAndServeCode                         = "meshplay-server-1009"
+	ErrCleaningUpLocalProviderCode                = "meshplay-server-1010"
+	ErrClosingDatabaseInstanceCode                = "meshplay-server-1011"
+	ErrInitializingRegistryManagerCode            = "meshplay-server-1012"
+	ErrInitializingKeysRegistrationCode           = "meshplay-server-1013"
+	ErrCreatingOPAInstanceCode                    = "meshplay-server-1323"
+)
+
+var (
+	ErrCreatingOPAInstance = errors.New(ErrCreatingOPAInstanceCode, errors.Alert, []string{"Error creating OPA Instance."}, []string{"Unable to create OPA instance, policies will not be evaluated."}, []string{}, []string{})
 )
 
 func ErrInitializingRegistryManager(err error) error {
@@ -66,4 +72,8 @@ func ErrCleaningUpLocalProvider(err error) error {
 
 func ErrClosingDatabaseInstance(err error) error {
 	return errors.New(ErrClosingDatabaseInstanceCode, errors.Alert, []string{"Error closing database instance"}, []string{"Error closing database instance: ", err.Error()}, []string{}, []string{})
+}
+
+func ErrInitializingKeysRegistration(err error) error {
+	return errors.New(ErrInitializingKeysRegistrationCode, errors.Fatal, []string{"could not initialize keys registry manager"}, []string{err.Error()}, []string{"could not migrate tables into the database"}, []string{"make sure the database instance passed is not nil"})
 }

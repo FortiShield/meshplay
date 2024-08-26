@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,13 +19,15 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/app"
+	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/adapter"
+	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/components"
 	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/config"
 	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/experimental"
 	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/filter"
-	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/mesh"
+	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/model"
 	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/pattern"
 	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/perf"
+	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/registry"
 	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/system"
 	"github.com/khulnasoft/meshplay/meshplayctl/pkg/utils"
 	log "github.com/sirupsen/logrus"
@@ -48,7 +50,7 @@ var RootCmd = &cobra.Command{
 	Use:   "meshplayctl",
 	Short: "Meshplay Command Line tool",
 	Long: `As a self-service engineering platform, Meshplay enables collaborative design and operation of cloud native infrastructure.
-Find more information at: https://docs.khulnasoft.com/reference/meshplayctl#command-reference`,
+Find more information at: https://docs-meshplay.khulnasoft.com/reference/meshplayctl#command-reference`,
 	Example: `
 // Base command:
 meshplayctl
@@ -108,10 +110,12 @@ func init() {
 		system.SystemCmd,
 		pattern.PatternCmd,
 		perf.PerfCmd,
-		mesh.MeshCmd,
-		app.AppCmd,
+		adapter.AdapterCmd,
 		experimental.ExpCmd,
 		filter.FilterCmd,
+		registry.RegistryCmd,
+		components.ComponentsCmd,
+		model.ModelCmd,
 	}
 
 	RootCmd.AddCommand(availableSubcommands...)
@@ -196,5 +200,6 @@ func setVerbose() {
 }
 
 func setupLogger() {
-	utils.SetupMeshkitLogger(verbose, nil)
+	utils.Log = utils.SetupMeshkitLogger("meshplayctl", verbose, os.Stdout)
+	utils.LogError = utils.SetupMeshkitLogger("meshplayctl-error", verbose, os.Stderr)
 }

@@ -14,7 +14,7 @@ jobs:
           organization: khulnasoft
           label: issue/invite
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          comment: "We are sending you an invitation to join the Khulnasoft GitHub Organization. :partying_face: <b>Welcome to the community! 🎉</b><br /><br />&nbsp;&nbsp;&nbsp;Be sure to :star: [star the projects](../stargazers), if you haven't already.<br />"
+          comment: "We are sending you an invitation to join the KhulnaSoft GitHub Organization. :partying_face: <b>Welcome to the community! 🎉</b><br /><br />&nbsp;&nbsp;&nbsp;Be sure to :star: [star the projects](../stargazers), if you haven't already.<br />"
         env:
           INVITE_TOKEN: ${{ secrets.RELEASEDRAFTER_PAT }}
 

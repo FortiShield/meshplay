@@ -1,10 +1,11 @@
-import { Checkbox, FormControlLabel, IconButton, useTheme } from '@material-ui/core';
+import { FormControlLabel, IconButton, useTheme } from '@material-ui/core';
 import { labelValue, schemaRequiresTrueValue } from '@rjsf/utils';
 import React from 'react';
 import { CustomTextTooltip } from '../CustomTextTooltip';
 import HelpOutlineIcon from '../../../../assets/icons/HelpOutlineIcon';
 import { iconSmall } from '../../../../css/icons.styles';
-import { getHyperLinkDiv } from '../helper';
+import { UsesSistent } from '@/components/SistentWrapper';
+import { Checkbox } from '@khulnasoft/sistent';
 
 export const CustomCheckboxWidget = (props) => {
   const {
@@ -28,24 +29,25 @@ export const CustomCheckboxWidget = (props) => {
     <>
       <FormControlLabel
         control={
-          <Checkbox
-            id={id}
-            name={id}
-            checked={typeof value === 'undefined' ? false : Boolean(value)}
-            required={required}
-            disabled={disabled || readonly}
-            autoFocus={autofocus}
-            onChange={_onChange}
-          />
+          <UsesSistent>
+            <Checkbox
+              id={id}
+              name={id}
+              checked={typeof value === 'undefined' ? false : Boolean(value)}
+              required={required}
+              disabled={disabled || readonly}
+              autoFocus={autofocus}
+              onChange={_onChange}
+            />
+          </UsesSistent>
         }
         label={
           <>
             {labelValue(label, hideLabel, required)}
             {schema.description && (
               <CustomTextTooltip
-                backgroundColor="#3C494F"
                 flag={props?.formContext?.overrideFlag}
-                title={getHyperLinkDiv(schema?.description)}
+                title={schema?.description}
                 interactive={true}
               >
                 <IconButton component="span" size="small">

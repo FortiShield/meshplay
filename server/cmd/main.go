@@ -12,15 +12,16 @@ import (
 	"github.com/fsnotify/fsnotify"
 
 	"github.com/gofrs/uuid"
+	"github.com/khulnasoft/meshplay/meshplayctl/pkg/constants"
 	"github.com/khulnasoft/meshplay/server/handlers"
 	"github.com/khulnasoft/meshplay/server/helpers"
-	mhelpers "github.com/khulnasoft/meshplay/server/machines/helpers"
 	"github.com/khulnasoft/meshplay/server/helpers/utils"
 	"github.com/khulnasoft/meshplay/server/internal/graphql"
 	"github.com/khulnasoft/meshplay/server/internal/store"
 	"github.com/khulnasoft/meshplay/server/machines"
-	meshmodelhelper "github.com/khulnasoft/meshplay/server/meshmodel"
+	mhelpers "github.com/khulnasoft/meshplay/server/machines/helpers"
 	"github.com/khulnasoft/meshplay/server/models"
+	"github.com/khulnasoft/meshplay/server/models/connections"
 	meshplaymeshmodel "github.com/khulnasoft/meshplay/server/models/meshmodel"
 	"github.com/khulnasoft/meshplay/server/router"
 	"github.com/khulnasoft/meshkit/broker/nats"
@@ -33,9 +34,8 @@ import (
 	meshsyncmodel "github.com/khulnasoft/meshsync/pkg/model"
 	"github.com/spf13/viper"
 
+	"github.com/meshplay/schemas/models/v1beta1"
 	"github.com/sirupsen/logrus"
-	"github.com/vmihailenco/taskq/v3"
-	"github.com/vmihailenco/taskq/v3/memqueue"
 )
 
 var (
@@ -48,8 +48,8 @@ var (
 const (
 	// DefaultProviderURL is the provider url for the "none" provider
 	DefaultProviderURL = "https://meshplay.khulnasoft.com"
-	PoliciesPath       = "../meshmodel/kubernetes/policies"
-	RelationshipsPath  = "../meshmodel/kubernetes/relationships"
+	PoliciesPath       = "../meshmodel/kubernetes/v1.25.2/v1.0.0/policies"
+	RelationshipsPath  = "../meshmodel/kubernetes/"
 )
 
 func main() {
@@ -59,7 +59,8 @@ func main() {
 
 	viper.AutomaticEnv()
 
-	viper.SetConfigFile("./runtime_logs_config.env")
+	// Meshplay Server configuration
+	viper.SetConfigFile("./server-config.env")
 	viper.WatchConfig()
 
 	err := viper.ReadInConfig()
@@ -82,7 +83,7 @@ func main() {
 	}
 
 	viper.OnConfigChange(func(event fsnotify.Event) {
-		logrus.Info("received change for", event.Name)
+		log.Info("received change for", event.Name)
 		log.SetLevel(logrus.Level(viper.GetInt("LOG_LEVEL")))
 	})
 
@@ -108,7 +109,7 @@ func main() {
 	viper.SetDefault("COMMITSHA", commitsha)
 	viper.SetDefault("RELEASE_CHANNEL", releasechannel)
 	viper.SetDefault("INSTANCE_ID", &instanceID)
-	viper.SetDefault("PROVIDER", "")
+	viper.SetDefault(constants.ProviderENV, "")
 	viper.SetDefault("REGISTER_STATIC_K8S", true)
 	viper.SetDefault("SKIP_DOWNLOAD_CONTENT", false)
 	viper.SetDefault("SKIP_COMP_GEN", false)
@@ -134,6 +135,20 @@ func main() {
 		log.Error(ErrCreatingUserDataDirectory(viper.GetString("USER_DATA_FOLDER")))
 		os.Exit(1)
 	}
+	logDir := path.Join(home, ".meshplay", "logs", "registry")
+	errDir = os.MkdirAll(logDir, 0755)
+	if errDir != nil {
+		logrus.Fatalf("Error creating user data directory: %v", err)
+	}
+
+	// Create or open the log file
+	logFilePath := path.Join(logDir, "registry-logs.log")
+	logFile, err := os.Create(logFilePath)
+	if err != nil {
+		logrus.Fatalf("Could not create log file: %v", err)
+	}
+	defer logFile.Close()
+	viper.Set("REGISTRY_LOG_FILE", logFilePath)
 
 	log.Info("Meshplay Database is at: ", viper.GetString("USER_DATA_FOLDER"))
 	if viper.GetString("KUBECONFIG_FOLDER") == "" {
@@ -144,7 +159,7 @@ func main() {
 		viper.SetDefault("KUBECONFIG_FOLDER", path.Join(home, ".kube"))
 	}
 	log.Info("Using kubeconfig at: ", viper.GetString("KUBECONFIG_FOLDER"))
-	logrus.Info("Log level: ", log.GetLevel())
+	log.Info("Log level: ", log.GetLevel())
 
 	adapterURLs := viper.GetStringSlice("ADAPTER_URLS")
 
@@ -155,11 +170,6 @@ func main() {
 	// fileSessionStore := sessions.NewFilesystemStore("", []byte(uuid.NewV4().Bytes()))
 	// fileSessionStore := sessions.NewFilesystemStore("", []byte("Meshplay"))
 	// fileSessionStore.MaxLength(0)
-
-	QueueFactory := memqueue.NewFactory()
-	mainQueue := QueueFactory.RegisterQueue(&taskq.QueueOptions{
-		Name: "loadTestReporterQueue",
-	})
 
 	provs := map[string]models.Provider{}
 
@@ -197,6 +207,12 @@ func main() {
 		models.K8sContext{},
 		models.Organization{},
 		models.Key{},
+		connections.Connection{},
+		v1beta1.Environment{},
+		v1beta1.EnvironmentConnectionMapping{},
+		v1beta1.Workspace{},
+		v1beta1.WorkspacesEnvironmentsMapping{},
+		v1beta1.WorkspacesDesignsMapping{},
 		_events.Event{},
 	)
 	if err != nil {
@@ -217,6 +233,9 @@ func main() {
 		MeshplayPatternResourcePersister: &models.PatternResourcePersister{DB: dbHandler},
 		MeshplayK8sContextPersister:      &models.MeshplayK8sContextPersister{DB: dbHandler},
 		OrganizationPersister:           &models.OrganizationPersister{DB: dbHandler},
+		ConnectionPersister:             &models.ConnectionPersister{DB: dbHandler},
+		EnvironmentPersister:            &models.EnvironmentPersister{DB: dbHandler},
+		WorkspacePersister:              &models.WorkspacePersister{DB: dbHandler},
 		KeyPersister:                    &models.KeyPersister{DB: dbHandler},
 		EventsPersister:                 &models.EventsPersister{DB: dbHandler},
 		GenericPersister:                dbHandler,
@@ -232,15 +251,13 @@ func main() {
 		AdapterTracker:         adapterTracker,
 		QueryTracker:           queryTracker,
 
-		Queue: mainQueue,
-
 		KubeConfigFolder: viper.GetString("KUBECONFIG_FOLDER"),
 
-		GrafanaClient:         models.NewGrafanaClient(),
-		GrafanaClientForQuery: models.NewGrafanaClientWithHTTPClient(&http.Client{Timeout: time.Second}),
+		GrafanaClient:         models.NewGrafanaClient(&log),
+		GrafanaClientForQuery: models.NewGrafanaClientWithHTTPClient(&http.Client{Timeout: time.Second}, &log),
 
-		PrometheusClient:         models.NewPrometheusClient(),
-		PrometheusClientForQuery: models.NewPrometheusClientWithHTTPClient(&http.Client{Timeout: time.Second}),
+		PrometheusClient:         models.NewPrometheusClient(&log),
+		PrometheusClientForQuery: models.NewPrometheusClientWithHTTPClient(&http.Client{Timeout: time.Second}, &log),
 
 		ApplicationChannel:        models.NewBroadcaster(),
 		PatternChannel:            models.NewBroadcaster(),
@@ -252,18 +269,30 @@ func main() {
 		K8scontextChannel: models.NewContextHelper(),
 		OperatorTracker:   models.NewOperatorTracker(viper.GetBool("DISABLE_OPERATOR")),
 	}
-	krh := models.NewKeysRegistrationHelper(dbHandler, log)
+	krh, err := models.NewKeysRegistrationHelper(dbHandler, log)
+	if err != nil {
+		log.Error(ErrInitializingKeysRegistration(err))
+		os.Exit(1)
+	}
 	//seed the local meshmodel components
-	ch := meshmodelhelper.NewEntityRegistrationHelper(hc, regManager, log)
+	rego := policies.Rego{}
 	go func() {
-		ch.SeedComponents()
+		models.SeedComponents(log, hc, regManager)
+		r, err := policies.NewRegoInstance(PoliciesPath, regManager)
+		if err != nil {
+			log.Warn(ErrCreatingOPAInstance)
+		} else {
+			rego = *r
+		}
+		
 		krh.SeedKeys(viper.GetString("KEYS_PATH"))
-		go hc.MeshModelSummaryChannel.Publish()
+		hc.MeshModelSummaryChannel.Publish()
 	}()
 
 	lProv.SeedContent(log)
 	provs[lProv.Name()] = lProv
 
+	providerEnvVar := viper.GetString(constants.ProviderENV)
 	RemoteProviderURLs := viper.GetStringSlice("PROVIDER_BASE_URLS")
 	for _, providerurl := range RemoteProviderURLs {
 		parsedURL, err := url.Parse(providerurl)
@@ -283,6 +312,7 @@ func main() {
 			GenericPersister:           dbHandler,
 			EventsPersister:            &models.EventsPersister{DB: dbHandler},
 			Log:                        log,
+			CookieDuration:             24 * time.Hour,
 		}
 
 		cp.Initialize()
@@ -292,6 +322,14 @@ func main() {
 		provs[cp.Name()] = cp
 	}
 
+	// verifies if the provider specified in the "PROVIDER" environment variable is from one of the supported providers.
+	// If it is one of the supported providers, the server gets configured to auto select the specified provider,
+	// else the provider specified in the environment variable is ignored and  each time user logs in they need to select a provider.
+	isProviderEnvVarValid := models.VerifyMeshplayProvider(providerEnvVar, provs)
+	if !isProviderEnvVarValid {
+		providerEnvVar = ""
+	}
+
 	operatorDeploymentConfig := models.NewOperatorDeploymentConfig(adapterTracker)
 	mctrlHelper := models.NewMeshplayControllersHelper(log, operatorDeploymentConfig, dbHandler)
 	connToInstanceTracker := machines.ConnectionToStateMachineInstanceTracker{
@@ -299,14 +337,10 @@ func main() {
 	}
 
 	k8sComponentsRegistrationHelper := models.NewComponentsRegistrationHelper(log)
-	rego, err := policies.NewRegoInstance(PoliciesPath, RelationshipsPath)
-	if err != nil {
-		logrus.Warn("error creating rego instance, policies will not be evaluated")
-	}
 
 	models.InitMeshSyncRegistrationQueue()
 	mhelpers.InitRegistrationHelperSingleton(dbHandler, log, &connToInstanceTracker, hc.EventBroadcaster)
-	h := handlers.NewHandlerInstance(hc, meshsyncCh, log, brokerConn, k8sComponentsRegistrationHelper, mctrlHelper, dbHandler, events.NewEventStreamer(), regManager, viper.GetString("PROVIDER"), rego, &connToInstanceTracker)
+	h := handlers.NewHandlerInstance(hc, meshsyncCh, log, brokerConn, k8sComponentsRegistrationHelper, mctrlHelper, dbHandler, events.NewEventStreamer(), regManager, providerEnvVar, &rego, &connToInstanceTracker)
 
 	b := broadcast.NewBroadcaster(100)
 	defer b.Close()

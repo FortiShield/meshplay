@@ -1,20 +1,20 @@
 ---
-layout: enhanced
+layout: default
 title: Workspaces
 permalink: concepts/logical/workspaces
 type: concepts
-abstract: "Meshplay Workspaces act as central collaboration points for teams"
+abstract: "Meshplay Workspaces act as central collaboration point for teams."
 language: en
 list: include
+redirect_from:
+- concepts/workspaces
 ---
 
-Meshplay Workspaces serve as a virtual space for your team-based work. Create a Workspace to organize your work and to serve as the central point of collaboration for you and your teams and a central point of access control to Environments and their resources.
+Like a Google Drive, Meshplay Workspaces serve as a virtual space for your team-based work. Create a Workspace to organize your work and to serve as the central point of collaboration for you and your teams and a central point of access control to Environments and their resources.
 
 You may create Workspaces to organize project-based work or to create domains of responsibility for your teams or segregate Designs and Environments and track team activity.
 
-## Summary
-
-Workspaces facilitate collaboration between you and your teams, allow you to control access to resources, and track activity and report on related events.
+{% include alert.html type="dark" title="Your team collaboration point" content="Workspaces facilitate collaboration between you and your teams, allow you to control access to resources, and track activity and report on related events." %}
 
 ## Key Features
 

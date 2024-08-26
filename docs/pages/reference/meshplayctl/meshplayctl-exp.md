@@ -16,7 +16,7 @@ Experimental commands for meshplayctl
 
 ## Synopsis
 
-List of experimental commands for testing and evaluation purpose.
+Commands under the Experimental group are for testing and evaluation prior to promotion to general availability. Experimental commands are subject to change.
 <pre class='codeblock-pre'>
 <div class='codeblock'>
 meshplayctl exp [flags]

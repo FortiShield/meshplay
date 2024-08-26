@@ -3,7 +3,6 @@ package utils
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"math/rand"
@@ -14,15 +13,19 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/briandowns/spinner"
+	"github.com/eiannone/keyboard"
+	"github.com/fatih/color"
 	"github.com/khulnasoft/meshplay/meshplayctl/internal/cli/root/config"
+	"github.com/khulnasoft/meshplay/meshplayctl/pkg/constants"
 	"github.com/khulnasoft/meshplay/server/models"
+	"github.com/khulnasoft/meshkit/encoding"
 	"github.com/khulnasoft/meshkit/logger"
-	"github.com/khulnasoft/meshkit/utils"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/browser"
 	"github.com/pkg/errors"
@@ -47,44 +50,67 @@ const (
 	MeshsyncURL   = baseConfigURL + "samples/meshplay_v1alpha1_meshsync.yaml"
 
 	// Documentation URLs
-	docsBaseURL       = "https://docs.khulnasoft.com/"
-	rootUsageURL      = docsBaseURL + "reference/meshplayctl"
-	perfUsageURL      = docsBaseURL + "reference/meshplayctl/perf"
-	systemUsageURL    = docsBaseURL + "reference/meshplayctl/system"
-	systemStopURL     = docsBaseURL + "reference/meshplayctl/system/stop"
-	systemUpdateURL   = docsBaseURL + "reference/meshplayctl/system/update"
-	systemResetURL    = docsBaseURL + "reference/meshplayctl/system/reset"
-	systemStatusURL   = docsBaseURL + "reference/meshplayctl/system/status"
-	systemRestartURL  = docsBaseURL + "reference/meshplayctl/system/restart"
-	meshUsageURL      = docsBaseURL + "reference/meshplayctl/mesh"
-	expUsageURL       = docsBaseURL + "reference/meshplayctl/exp"
-	filterUsageURL    = docsBaseURL + "reference/meshplayctl/filter"
-	filterImportURL   = docsBaseURL + "reference/meshplayctl/filter/import"
-	filterDeleteURL   = docsBaseURL + "reference/meshplayctl/filter/delete"
-	filterListURL     = docsBaseURL + "reference/meshplayctl/filter/list"
-	filterViewURL     = docsBaseURL + "reference/meshplayctl/filter/view"
-	patternUsageURL   = docsBaseURL + "reference/meshplayctl/pattern"
-	patternViewURL    = docsBaseURL + "reference/meshplayctl/pattern/view"
-	appUsageURL       = docsBaseURL + "reference/meshplayctl/app"
-	appViewURL        = docsBaseURL + "reference/meshplayctl/app/view"
-	contextDeleteURL  = docsBaseURL + "reference/meshplayctl/system/context/delete"
-	contextViewURL    = docsBaseURL + "reference/meshplayctl/system/context/view"
-	contextCreateURL  = docsBaseURL + "reference/meshplayctl/system/context/create"
-	contextUsageURL   = docsBaseURL + "reference/meshplayctl/system/context"
-	channelUsageURL   = docsBaseURL + "reference/meshplayctl/system/channel"
-	channelSetURL     = docsBaseURL + "reference/meshplayctl/system/channel/set"
-	channelSwitchURL  = docsBaseURL + "reference/meshplayctl/system/channel/switch"
-	channelViewURL    = docsBaseURL + "reference/meshplayctl/system/channel/view"
-	providerUsageURL  = docsBaseURL + "reference/meshplayctl/system/provider"
-	providerViewURL   = docsBaseURL + "reference/meshplayctl/system/provider/view"
-	providerListURL   = docsBaseURL + "reference/meshplayctl/system/provider/list"
-	providerSetURL    = docsBaseURL + "reference/meshplayctl/system/provider/set"
-	providerResetURL  = docsBaseURL + "reference/meshplayctl/system/provider/reset"
-	providerSwitchURL = docsBaseURL + "reference/meshplayctl/system/provider/switch"
-	tokenUsageURL     = docsBaseURL + "reference/meshplayctl/system/token"
-	modelUsageURL     = docsBaseURL + "reference/meshplayctl/system/model"
-	modelListURL      = docsBaseURL + "reference/meshplayctl/system/model/list"
-	modelViewURL      = docsBaseURL + "reference/meshplayctl/system/model/view"
+	docsBaseURL                    = "https://docs-meshplay.khulnasoft.com/"
+	rootUsageURL                   = docsBaseURL + "reference/meshplayctl"
+	perfUsageURL                   = docsBaseURL + "reference/meshplayctl/perf"
+	systemUsageURL                 = docsBaseURL + "reference/meshplayctl/system"
+	systemStopURL                  = docsBaseURL + "reference/meshplayctl/system/stop"
+	systemUpdateURL                = docsBaseURL + "reference/meshplayctl/system/update"
+	systemResetURL                 = docsBaseURL + "reference/meshplayctl/system/reset"
+	systemStatusURL                = docsBaseURL + "reference/meshplayctl/system/status"
+	systemRestartURL               = docsBaseURL + "reference/meshplayctl/system/restart"
+	meshUsageURL                   = docsBaseURL + "reference/meshplayctl/mesh"
+	expUsageURL                    = docsBaseURL + "reference/meshplayctl/exp"
+	filterUsageURL                 = docsBaseURL + "reference/meshplayctl/filter"
+	filterImportURL                = docsBaseURL + "reference/meshplayctl/filter/import"
+	filterDeleteURL                = docsBaseURL + "reference/meshplayctl/filter/delete"
+	filterListURL                  = docsBaseURL + "reference/meshplayctl/filter/list"
+	filterViewURL                  = docsBaseURL + "reference/meshplayctl/filter/view"
+	patternUsageURL                = docsBaseURL + "reference/meshplayctl/pattern"
+	patternViewURL                 = docsBaseURL + "reference/meshplayctl/pattern/view"
+	patternExportURL               = docsBaseURL + "reference/meshplayctl/pattern/export"
+	contextDeleteURL               = docsBaseURL + "reference/meshplayctl/system/context/delete"
+	contextViewURL                 = docsBaseURL + "reference/meshplayctl/system/context/view"
+	contextCreateURL               = docsBaseURL + "reference/meshplayctl/system/context/create"
+	contextUsageURL                = docsBaseURL + "reference/meshplayctl/system/context"
+	channelUsageURL                = docsBaseURL + "reference/meshplayctl/system/channel"
+	channelSetURL                  = docsBaseURL + "reference/meshplayctl/system/channel/set"
+	channelSwitchURL               = docsBaseURL + "reference/meshplayctl/system/channel/switch"
+	channelViewURL                 = docsBaseURL + "reference/meshplayctl/system/channel/view"
+	providerUsageURL               = docsBaseURL + "reference/meshplayctl/system/provider"
+	providerViewURL                = docsBaseURL + "reference/meshplayctl/system/provider/view"
+	providerListURL                = docsBaseURL + "reference/meshplayctl/system/provider/list"
+	providerSetURL                 = docsBaseURL + "reference/meshplayctl/system/provider/set"
+	providerResetURL               = docsBaseURL + "reference/meshplayctl/system/provider/reset"
+	providerSwitchURL              = docsBaseURL + "reference/meshplayctl/system/provider/switch"
+	tokenUsageURL                  = docsBaseURL + "reference/meshplayctl/system/token"
+	modelUsageURL                  = docsBaseURL + "reference/meshplayctl/system/model"
+	modelListURL                   = docsBaseURL + "reference/meshplayctl/system/model/list"
+	modelImportURl                 = docsBaseURL + "reference/meshplayctl/system/model/import"
+	modelViewURL                   = docsBaseURL + "reference/meshplayctl/system/model/view"
+	registryUsageURL               = docsBaseURL + "reference/meshplayctl/system/registry"
+	relationshipUsageURL           = docsBaseURL + "reference/meshplayctl/relationships"
+	cmdRelationshipGenerateDocsURL = docsBaseURL + "reference/meshplayctl/relationships/generate"
+	relationshipViewURL            = docsBaseURL + "reference/meshplayctl/relationships/view"
+	workspaceUsageURL              = docsBaseURL + "reference/meshplayctl/exp/workspace"
+	workspaceCreateURL             = docsBaseURL + "reference/meshplayctl/exp/workspace/create"
+	workspaceListURL               = docsBaseURL + "reference/meshplayctl/exp/workspace/list"
+	environmentUsageURL            = docsBaseURL + "reference/meshplayctl/exp/environment"
+	environmentCreateURL           = docsBaseURL + "reference/meshplayctl/exp/environment/create"
+	environmentDeleteURL           = docsBaseURL + "reference/meshplayctl/exp/environment/delete"
+	environmentListURL             = docsBaseURL + "reference/meshplayctl/exp/environment/list"
+	environmentViewURL             = docsBaseURL + "reference/meshplayctl/exp/environment/view"
+	componentUsageURL              = docsBaseURL + "reference/meshplayctl/exp/components"
+	componentListURL               = docsBaseURL + "reference/meshplayctl/exp/components/list"
+	componentSearchURL             = docsBaseURL + "reference/meshplayctl/exp/components/search"
+	componentViewURL               = docsBaseURL + "reference/meshplayctl/exp/components/view"
+	connectionUsageURL             = docsBaseURL + "reference/meshplayctl/exp/connections"
+	connectionDeleteURL            = docsBaseURL + "reference/meshplayctl/exp/connections/delete"
+	connectionListURL              = docsBaseURL + "reference/meshplayctl/exp/connections/list"
+	expRelationshipUsageURL        = docsBaseURL + "reference/meshplayctl/exp/relationship"
+	expRelationshipGenerateURL     = docsBaseURL + "reference/meshplayctl/exp/relationship/generate"
+	expRelationshipViewURL         = docsBaseURL + "reference/meshplayctl/exp/relationship/view"
+	expRelationshipListURL         = docsBaseURL + "reference/meshplayctl/exp/relationship/list"
 
 	// Meshplay Server Location
 	EndpointProtocol = "http"
@@ -93,47 +119,73 @@ const (
 type cmdType string
 
 const (
-	cmdRoot           cmdType = "root"
-	cmdPerf           cmdType = "perf"
-	cmdMesh           cmdType = "mesh"
-	cmdSystem         cmdType = "system"
-	cmdSystemStop     cmdType = "system stop"
-	cmdSystemUpdate   cmdType = "system update"
-	cmdSystemReset    cmdType = "system reset"
-	cmdSystemStatus   cmdType = "system status"
-	cmdSystemRestart  cmdType = "system restart"
-	cmdExp            cmdType = "exp"
-	cmdFilter         cmdType = "filter"
-	cmdFilterImport   cmdType = "filter import"
-	cmdFilterDelete   cmdType = "filter delete"
-	cmdFilterList     cmdType = "filter list"
-	cmdFilterView     cmdType = "filter view"
-	cmdPattern        cmdType = "pattern"
-	cmdPatternView    cmdType = "pattern view"
-	cmdApp            cmdType = "app"
-	cmdAppView        cmdType = "app view"
-	cmdContext        cmdType = "context"
-	cmdContextDelete  cmdType = "delete"
-	cmdContextCreate  cmdType = "create"
-	cmdContextView    cmdType = "context view"
-	cmdChannel        cmdType = "channel"
-	cmdChannelSet     cmdType = "channel set"
-	cmdChannelSwitch  cmdType = "channel switch"
-	cmdChannelView    cmdType = "channel view"
-	cmdProvider       cmdType = "provider"
-	cmdProviderSet    cmdType = "provider set"
-	cmdProviderSwitch cmdType = "provider switch"
-	cmdProviderView   cmdType = "provider view"
-	cmdProviderList   cmdType = "provider list"
-	cmdProviderReset  cmdType = "provider reset"
-	cmdToken          cmdType = "token"
-	cmdModel          cmdType = "model"
-	cmdModelList      cmdType = "model list"
-	cmdModelView      cmdType = "model view"
+	cmdRoot                     cmdType = "root"
+	cmdPerf                     cmdType = "perf"
+	cmdMesh                     cmdType = "mesh"
+	cmdSystem                   cmdType = "system"
+	cmdSystemStop               cmdType = "system stop"
+	cmdSystemUpdate             cmdType = "system update"
+	cmdSystemReset              cmdType = "system reset"
+	cmdSystemStatus             cmdType = "system status"
+	cmdSystemRestart            cmdType = "system restart"
+	cmdExp                      cmdType = "exp"
+	cmdFilter                   cmdType = "filter"
+	cmdFilterImport             cmdType = "filter import"
+	cmdFilterDelete             cmdType = "filter delete"
+	cmdFilterList               cmdType = "filter list"
+	cmdFilterView               cmdType = "filter view"
+	cmdPattern                  cmdType = "pattern"
+	cmdPatternView              cmdType = "pattern view"
+	cmdPatternExport            cmdType = "pattern export"
+	cmdContext                  cmdType = "context"
+	cmdContextDelete            cmdType = "delete"
+	cmdContextCreate            cmdType = "create"
+	cmdContextView              cmdType = "context view"
+	cmdChannel                  cmdType = "channel"
+	cmdChannelSet               cmdType = "channel set"
+	cmdChannelSwitch            cmdType = "channel switch"
+	cmdChannelView              cmdType = "channel view"
+	cmdProvider                 cmdType = "provider"
+	cmdProviderSet              cmdType = "provider set"
+	cmdProviderSwitch           cmdType = "provider switch"
+	cmdProviderView             cmdType = "provider view"
+	cmdProviderList             cmdType = "provider list"
+	cmdProviderReset            cmdType = "provider reset"
+	cmdToken                    cmdType = "token"
+	cmdModel                    cmdType = "model"
+	cmdModelList                cmdType = "model list"
+	cmdModelImport              cmdType = "model import"
+	cmdModelView                cmdType = "model view"
+	cmdRegistryPublish          cmdType = "registry publish"
+	cmdRegistry                 cmdType = "regisry"
+	cmdConnection               cmdType = "connection"
+	cmdConnectionList           cmdType = "connection list"
+	cmdConnectionDelete         cmdType = "connection delete"
+	cmdRelationships            cmdType = "relationships"
+	cmdRelationshipGenerateDocs cmdType = "relationships generate docs"
+	cmdRelationshipView         cmdType = "relationship view"
+	cmdRelationshipSearch       cmdType = "relationship search"
+	cmdRelationshipList         cmdType = "relationship list"
+	cmdWorkspace                cmdType = "workspace"
+	cmdWorkspaceList            cmdType = "workspace list"
+	cmdWorkspaceCreate          cmdType = "workspace create"
+	cmdEnvironment              cmdType = "environment"
+	cmdEnvironmentCreate        cmdType = "environment create"
+	cmdEnvironmentDelete        cmdType = "environment delete"
+	cmdEnvironmentList          cmdType = "environment list"
+	cmdEnvironmentView          cmdType = "environment view"
+	cmdComponent                cmdType = "component"
+	cmdComponentList            cmdType = "component list"
+	cmdComponentSearch          cmdType = "component search"
+	cmdComponentView            cmdType = "component view"
+	cmdExpRelationship          cmdType = "exp relationship"
+	cmdExpRelationshipGenerate  cmdType = "exp relationship generate"
+	cmdExpRelationshipView      cmdType = "exp relationship view"
+	cmdExpRelationshipList      cmdType = "exp relationship list"
 )
 
 const (
-	HelmChartURL          = "https://khulnasoft.com/charts/"
+	HelmChartURL          = "https://meshplay.khulnasoft.com/charts/"
 	HelmChartName         = "meshplay"
 	HelmChartOperatorName = "meshplay-operator"
 )
@@ -162,10 +214,10 @@ var (
 	// MeshplayNamespace is the namespace to which Meshplay is deployed in the Kubernetes cluster
 	MeshplayNamespace = "meshplay"
 	// MeshplayDeployment is the name of a Kubernetes manifest file required to setup Meshplay
-	// check https://github.com/khulnasoft/meshplay/tree/master/install/deployment_yamls/k8s
+	// check https://github.com/meshplay/meshplay/tree/master/install/deployment_yamls/k8s
 	MeshplayDeployment = "meshplay-deployment.yaml"
 	// MeshplayService is the name of a Kubernetes manifest file required to setup Meshplay
-	// check https://github.com/khulnasoft/meshplay/tree/master/install/deployment_yamls/k8s
+	// check https://github.com/meshplay/meshplay/tree/master/install/deployment_yamls/k8s
 	MeshplayService = "meshplay-service.yaml"
 	//MeshplayOperator is the file for default Meshplay operator
 	//check https://github.com/khulnasoft/meshplay-operator/blob/master/config/manifests/default.yaml
@@ -177,7 +229,7 @@ var (
 	//check https://github.com/khulnasoft/meshplay-operator/blob/master/config/samples/meshplay_v1alpha1_meshsync.yaml
 	MeshplayOperatorMeshsync = "meshplay_v1alpha1_meshsync.yaml"
 	// ServiceAccount is the name of a Kubernetes manifest file required to setup Meshplay
-	// check https://github.com/khulnasoft/meshplay/tree/master/install/deployment_yamls/k8s
+	// check https://github.com/meshplay/meshplay/tree/master/install/deployment_yamls/k8s
 	ServiceAccount = "service-account.yaml"
 	// To upload with param name
 	ParamName = "k8sfile"
@@ -200,6 +252,10 @@ var (
 	TokenFlag = "Not Set"
 	// global logger variable
 	Log logger.Handler
+	// Color for the whiteboard printer
+	whiteBoardPrinter = color.New(color.FgHiBlack, color.BgWhite, color.Bold)
+	//global logger error variable
+	LogError logger.Handler
 )
 
 var CfgFile string
@@ -537,6 +593,20 @@ func PrintToTableWithFooter(header []string, data [][]string, footer []string) {
 	table.Render() // Render the table
 }
 
+// ClearLine clears the last line from output
+func ClearLine() {
+	clearCmd := exec.Command("clear") // for UNIX-like systems
+	if runtime.GOOS == "windows" {
+		clearCmd = exec.Command("cmd", "/c", "cls") // for Windows
+	}
+	clearCmd.Stdout = os.Stdout
+	err := clearCmd.Run()
+	if err != nil {
+		Log.Error(ErrClearLine(err))
+		return
+	}
+}
+
 // StringContainedInSlice returns the index in which a string is a substring in a list of strings
 func StringContainedInSlice(str string, slice []string) int {
 	for index, ele := range slice {
@@ -579,7 +649,7 @@ func GetID(meshplayServerUrl, configuration string) ([]string, error) {
 		return idList, ErrReadResponseBody(err)
 	}
 	var dat map[string]interface{}
-	if err = json.Unmarshal(body, &dat); err != nil {
+	if err = encoding.Unmarshal(body, &dat); err != nil {
 		return idList, ErrUnmarshal(errors.Wrap(err, "failed to unmarshal response body"))
 	}
 	if dat == nil {
@@ -615,7 +685,7 @@ func GetName(meshplayServerUrl, configuration string) (map[string]string, error)
 		return nameIdMap, ErrReadResponseBody(err)
 	}
 	var dat map[string]interface{}
-	if err = json.Unmarshal(body, &dat); err != nil {
+	if err = encoding.Unmarshal(body, &dat); err != nil {
 		return nameIdMap, ErrUnmarshal(errors.Wrap(err, "failed to unmarshal response body"))
 	}
 	if dat == nil {
@@ -712,7 +782,7 @@ func AskForInput(prompt string, allowed []string) string {
 // ParseURLGithub checks URL and returns raw repo, path, error
 func ParseURLGithub(URL string) (string, string, error) {
 	// GitHub URL:
-	// - https://github.com/khulnasoft/meshplay/blob/master/.goreleaser.yml
+	// - https://github.com/meshplay/meshplay/blob/master/.goreleaser.yml
 	// - https://raw.githubusercontent.com/khulnasoft/meshplay/master/.goreleaser.yml
 	parsedURL, err := url.Parse(URL)
 	if err != nil {
@@ -791,7 +861,7 @@ func GetSessionData(mctlCfg *config.MeshplayCtlConfig) (*models.Preference, erro
 	}
 
 	prefs := &models.Preference{}
-	err = utils.Unmarshal(string(body), prefs)
+	err = encoding.Unmarshal(body, prefs)
 	if err != nil {
 		return nil, errors.New("Failed to process JSON data. Please sign into Meshplay")
 	}
@@ -1034,7 +1104,7 @@ func ConvertMapInterfaceMapString(v interface{}) interface{} {
 }
 
 // SetOverrideValues returns the value overrides based on current context to install/upgrade helm chart
-func SetOverrideValues(ctx *config.Context, meshplayImageVersion string) map[string]interface{} {
+func SetOverrideValues(ctx *config.Context, meshplayImageVersion, callbackURL, providerURL string) map[string]interface{} {
 	// first initialize all the components' "enabled" field to false
 	// this matches to the components listed in install/kubernetes/helm/meshplay/values.yaml
 	valueOverrides := map[string]interface{}{
@@ -1084,7 +1154,19 @@ func SetOverrideValues(ctx *config.Context, meshplayImageVersion string) map[str
 	// set the provider
 	if ctx.GetProvider() != "" {
 		valueOverrides["env"] = map[string]interface{}{
-			"PROVIDER": ctx.GetProvider(),
+			constants.ProviderENV: ctx.GetProvider(),
+		}
+	}
+
+	if callbackURL != "" {
+		valueOverrides["env"] = map[string]interface{}{
+			constants.CallbackURLENV: callbackURL,
+		}
+	}
+
+	if providerURL != "" {
+		valueOverrides["env"] = map[string]interface{}{
+			constants.ProviderURLsENV: providerURL,
 		}
 	}
 
@@ -1110,4 +1192,90 @@ func CheckFileExists(name string) (bool, error) {
 		return false, fmt.Errorf("%s does not exist", name)
 	}
 	return false, errors.Wrap(err, fmt.Sprintf("Failed to read/fetch the file %s", name))
+}
+
+func Contains(key string, col []string) int {
+	for i, n := range col {
+		if n == key {
+			return i
+		}
+	}
+	return -1
+}
+
+// HandlePagination handles interactive pagination and prints the content in the terminal.
+// It takes the page size, data to paginate, header for the data table, and an optional footer.
+// If no footer is provided, it will be omitted.
+// Pagination allows users to navigate through the data using Enter or ↓ to continue,
+// Esc or Ctrl+C (Ctrl+Cmd for OS users) to exit.
+func HandlePagination(pageSize int, component string, data [][]string, header []string, footer ...[]string) error {
+
+	startIndex := 0
+	endIndex := min(len(data), startIndex+pageSize)
+	for {
+		// Clear the entire terminal screen
+		ClearLine()
+
+		// Print number of filter files and current page number
+		whiteBoardPrinter.Print("Total number of ", component, ":", len(data))
+		fmt.Println()
+		whiteBoardPrinter.Print("Page: ", startIndex/pageSize+1)
+		fmt.Println()
+
+		whiteBoardPrinter.Println("Press Enter or ↓ to continue. Press Esc or Ctrl+C to exit.")
+
+		if len(footer) > 0 {
+			PrintToTableWithFooter(header, data[startIndex:endIndex], footer[0])
+		} else {
+			PrintToTable(header, data[startIndex:endIndex])
+		}
+		keysEvents, err := keyboard.GetKeys(10)
+		if err != nil {
+			return err
+		}
+
+		defer func() {
+			_ = keyboard.Close()
+		}()
+
+		event := <-keysEvents
+		if event.Err != nil {
+			Log.Error(fmt.Errorf("unable to capture keyboard events"))
+			break
+		}
+
+		if event.Key == keyboard.KeyEsc || event.Key == keyboard.KeyCtrlC {
+			break
+		}
+
+		if event.Key == keyboard.KeyEnter || event.Key == keyboard.KeyArrowDown {
+			startIndex += pageSize
+			endIndex = min(len(data), startIndex+pageSize)
+		}
+
+		if startIndex >= len(data) {
+			break
+		}
+	}
+	return nil
+}
+
+func FindInSlice(key string, items []string) (int, bool) {
+	for idx, item := range items {
+		if item == key {
+			return idx, true
+		}
+	}
+	return -1, false
+}
+
+func DisplayCount(component string, count int64) {
+	whiteBoardPrinter.Println("Total number of ", component, ":", count)
+}
+
+func GetPageQueryParameter(cmd *cobra.Command, page int) string {
+	if !cmd.Flags().Changed("page") {
+		return "pagesize=all"
+	}
+	return fmt.Sprintf("page=%d", page)
 }

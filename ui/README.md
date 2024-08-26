@@ -1,3 +1,13 @@
+# <a name="contributing">Contributing Overview</a>
+
+Please do! Thank you for your help in improving Meshplay! :balloon:
+
+---
+
+<details>
+
+  <summary><h3>Find the complete set of contributor guides at https://docs-meshplay.khulnasoft.com/project/contributing</h3></summary>
+
 # Contributor Guide for UI component
 
 This guide is specific to the Meshplay UI component and involves steps/methods one need to follow while working on issues related to Meshplay UI.
@@ -9,7 +19,7 @@ Meshplay UI can be built and run in different ways. You will choose one of the t
 #### 1. User Build:
 
 For general usage, one can run Meshplay UI using Meshplay's command client `meshplayctl`, by simply running the `meshplayctl system start` command.
-If you don't have the `meshplayctl` tool installed already, you can follow the [meshplayctl installation docs](https://docs.khulnasoft.com/installation/meshplayctl) to install `meshplayctl` using various `package management` tools supported.
+If you don't have the `meshplayctl` tool installed already, you can follow the [meshplayctl installation docs](https://docs-meshplay.khulnasoft.com/installation/meshplayctl) to install `meshplayctl` using various `package management` tools supported.
 
 #### 2. Development Build:
 
@@ -20,7 +30,7 @@ For purposes of actively developing Meshplay UI, you first need to ensure you ha
    > **NOTE:** Please run the steps in order to avoid issues, as Meshplay server should be running and logged-in before accessing the development server
    > on 3000 port.
 
-   > **NOTE:** Its strongly recommended to use either [Node Version Manager](https://github.com/nvm-sh/nvm#node-version-manager---) in linux/mac os systems or [NVM for Windows](https://github.com/coreybutler/nvm-windows#nvm-for-windows) on Windows systems so single `nvm use` / `nvm install` simplifies installing and using correct node version locallly **(v18)**, see [NVM Intro](https://github.com/nvm-sh/nvm#intro) for details. Otherwise, you might experience issues during local `npm i` similar to [4674](https://github.com/khulnasoft/meshplay/issues/4674) due to how optional dependencies are resolved in npm v6.
+   > **NOTE:** Its strongly recommended to use either [Node Version Manager](https://github.com/nvm-sh/nvm#node-version-manager---) in linux/mac os systems or [NVM for Windows](https://github.com/coreybutler/nvm-windows#nvm-for-windows) on Windows systems so single `nvm use` / `nvm install` simplifies installing and using correct node version locallly **(v18)**, see [NVM Intro](https://github.com/nvm-sh/nvm#intro) for details. Otherwise, you might experience issues during local `npm i` similar to [4674](https://github.com/meshplay/meshplay/issues/4674) due to how optional dependencies are resolved in npm v6.
 
 1. **`make server`** - Alternatively, build all of Meshplay UI's components upfront before serving the UI. Do this in two steps:
 
@@ -41,3 +51,34 @@ For reference and easy code search, the components are named accordingly followi
 involved in rendering the Results page of Meshplay UI are named as 'MeshplayResults.js', 'MeshplayResultDialog.js', 'MeshplaySMIResults.js'. Please follow this convention if you are creating a new component.
 
 <p style="text-align: center"><em>If you'll like to go to the main Meshplay Contributor guide <a href="../CONTRIBUTING.md">click here</a></em></p>
+
+## Testing
+
+- Meshplay UI uses Playwright for end-to-end testing. The tests are written in JavaScript and are located in the `ui/tests` directory.
+
+- Install the dependencies by running the following command:
+
+```bash
+
+npm install
+
+npx playwright install --with-deps
+
+```
+
+- To run the tests, you can use the following command:
+
+```bash
+
+// for running the whole test suite with all browsers
+npm run test:e2e
+
+// for running only on chromium
+npm run test:e2e:chromium
+
+// for only running fast tests
+npm run test:e2e:fast
+
+```
+
+</details>

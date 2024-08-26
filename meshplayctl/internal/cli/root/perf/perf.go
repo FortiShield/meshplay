@@ -1,4 +1,4 @@
-// Copyright 2023 Khulnasoft, Inc.
+// Copyright Meshplay Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ var PerfCmd = &cobra.Command{
 	Use:   "perf",
 	Short: "Performance Management",
 	Long: `Performance Management & Benchmarking.
-Find more information at: https://docs.khulnasoft.com/reference/meshplayctl#command-reference`,
+Find more information at: https://docs-meshplay.khulnasoft.com/reference/meshplayctl#command-reference`,
 	Example: `
 // Run performance test:
 meshplayctl perf apply test-3 --name "a quick stress test" --url http://192.168.1.15/productpage --qps 300 --concurrent-requests 2 --duration 30s

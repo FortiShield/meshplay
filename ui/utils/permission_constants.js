@@ -275,7 +275,7 @@ export const keys = {
   },
   VIEW_MESHPLAY_USER_PREFERENCES: {
     subject: 'View Meshplay User Preferences',
-    action: 'eb1d8db3-e110-41b9-9f5f-cd271f7fc4a9',
+    action: 'cdec6212-bbbf-4cab-b10d-76d12bee7e56',
   },
   VIEW_SETTINGS: {
     subject: 'View Settings',
@@ -405,5 +405,9 @@ export const keys = {
   VIEW_PERFORMANCE_PROFILES: {
     subject: 'View performance profiles',
     action: '6593ac26-820b-4e87-be32-64ee740ea204',
+  },
+  RESET_DATABASE: {
+    subject: 'Reset database',
+    action: '84fc402c-f33e-4a21-a0e3-e14f9e20b125',
   },
 };

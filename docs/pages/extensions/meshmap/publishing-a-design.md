@@ -1,6 +1,7 @@
 ---
-layout: enhanced
+layout: default
 title: Publishing a Design
+abstract: Publishing a design lets you make your content visible to any anonymous visitor with the link.
 permalink: extensions/publishing-a-design
 language: en
 display-title: "false"
@@ -11,7 +12,7 @@ category: meshmap
 
 # Publishing a Design
 
-Publishing a design lets you make your content visible to any anonymous visitor of khulnasoft.com/catalog and any Meshplay Cloud user. Anyone with the link can view the design.
+Publishing a design lets you make your content visible to any anonymous visitor of meshplay.io/catalog and any Meshplay Cloud user. Anyone with the link can view the design.
 
 You can publish design into Meshplay's Catalog using Extensions. Let's discuss the process below.
 

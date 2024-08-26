@@ -8,7 +8,7 @@ Meshplay Operator chart.
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Khulnasoft Authors | <community@khulnasoft.com> |  |
+| KhulnaSoft Authors | <community@khulnasoft.com> |  |
 | aisuko | <urakiny@gmail.com> |  |
 | leecalcote | <leecalcote@gmail.com> |  |
 

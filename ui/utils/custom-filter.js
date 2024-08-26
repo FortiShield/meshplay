@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Popper } from '@mui/material';
-import FilterIcon from '../assets/icons/filter';
 import {
   Button,
   Card,
@@ -8,10 +7,11 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Tooltip,
   IconButton,
 } from '@material-ui/core';
+import { CustomTooltip } from '@khulnasoft/sistent';
 import { withStyles } from '@material-ui/core/styles';
+import { FilterIcon } from '@khulnasoft/sistent';
 
 const styles = (theme) => ({
   epaper: {
@@ -27,7 +27,7 @@ const styles = (theme) => ({
     }`,
   },
   icon: {
-    color: theme.palette.secondary.iconMain,
+    fill: theme.palette.secondary.iconMain,
   },
 });
 
@@ -74,7 +74,7 @@ const UniversalFilter = ({
 
   return (
     <div>
-      <Tooltip title="Filter" arrow>
+      <CustomTooltip title="Filter">
         <IconButton
           onClick={handleClick}
           sx={{
@@ -87,9 +87,9 @@ const UniversalFilter = ({
           }}
           disableRipple
         >
-          <FilterIcon />
+          <FilterIcon className={classes.icon} />
         </IconButton>
-      </Tooltip>
+      </CustomTooltip>
       <Popper
         //
         id={id}

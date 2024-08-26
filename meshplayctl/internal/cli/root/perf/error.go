@@ -7,24 +7,24 @@ import (
 )
 
 // Please reference the following before contributing an error code:
-// https://docs.khulnasoft.com/project/contributing/contributing-error
-// https://github.com/khulnasoft/meshkit/blob/master/errors/errors.go
+// https://docs-meshplay.khulnasoft.com/project/contributing/contributing-error
+// https://github.com/meshplay/meshkit/blob/master/errors/errors.go
 const (
-	ErrReadFilepathCode             = "1118"
-	ErrNoProfileNameCode            = "1119"
-	ErrNoTestURLCode                = "1120"
-	ErrNotValidURLCode              = "1121"
-	ErrFailMarshalCode              = "1122"
-	ErrFailUnmarshalCode            = "1123"
-	ErrNoProfileFoundCode           = "1124"
-	ErrInvalidOutputChoiceCode      = "1125"
-	ErrUnauthenticatedCode          = "1126"
-	ErrFailUnmarshalFileCode        = "1127"
-	ErrInvalidTestConfigFileCode    = "1128"
-	ErrArgumentOverflowCode         = "1129"
-	ErrInvalidJSONFileCode          = "1130"
-	ErrHealthCheckerCode            = "1131"
-	ErrPerformanceProfileResultCode = "1132"
+	ErrReadFilepathCode             = "meshplayctl-1040"
+	ErrNoProfileNameCode            = "meshplayctl-1041"
+	ErrNoTestURLCode                = "meshplayctl-1042"
+	ErrNotValidURLCode              = "meshplayctl-1043"
+	ErrFailMarshalCode              = "meshplayctl-1044"
+	ErrFailUnmarshalCode            = "meshplayctl-1045"
+	ErrNoProfileFoundCode           = "meshplayctl-1046"
+	ErrInvalidOutputChoiceCode      = "meshplayctl-1047"
+	ErrUnauthenticatedCode          = "meshplayctl-1048"
+	ErrFailUnmarshalFileCode        = "meshplayctl-1049"
+	ErrInvalidTestConfigFileCode    = "meshplayctl-1050"
+	ErrArgumentOverflowCode         = "meshplayctl-1051"
+	ErrInvalidJSONFileCode          = "meshplayctl-1052"
+	ErrHealthCheckerCode            = "meshplayctl-1053"
+	ErrPerformanceProfileResultCode = "meshplayctl-1054"
 )
 
 func ErrReadFilepath(err error) error {
@@ -80,7 +80,7 @@ func ErrNoProfileFound() error {
 		[]string{"No profile found"},
 		[]string{"No profile found with given name"},
 		[]string{"Invalid profile name or no profile name provided"},
-		[]string{"Ensure a valid profile name is inputted. See https://docs.khulnasoft.com/reference/meshplayctl/perf/apply for more details"})
+		[]string{"Ensure a valid profile name is inputted. See https://docs-meshplay.khulnasoft.com/reference/meshplayctl/perf/apply for more details"})
 }
 
 func ErrInvalidOutputChoice() error {
@@ -105,11 +105,11 @@ func ErrInvalidTestConfigFile() error {
 		[]string{"Invalid config file"},
 		[]string{"Invalid test configuration file"},
 		[]string{"The test configuration is outdated or incorrect"},
-		[]string{"See https://docs.khulnasoft.com/guides/performance-management#running-performance-benchmarks-through-meshplayctl for a valid configuration file"})
+		[]string{"See https://docs-meshplay.khulnasoft.com/guides/performance-management#running-performance-benchmarks-through-meshplayctl for a valid configuration file"})
 }
 
 func formatErrorWithReference() string {
-	baseURL := "https://docs.khulnasoft.com/reference/meshplayctl/perf"
+	baseURL := "https://docs-meshplay.khulnasoft.com/reference/meshplayctl/perf"
 	switch cmdUsed {
 	case "apply":
 		return fmt.Sprintf("\nSee %s for usage details\n", baseURL+"/apply")
@@ -144,7 +144,7 @@ func ErrHealthChecker(err error) error {
 		[]string{"Healthchecks Failed"},
 		[]string{err.Error()},
 		[]string{"Failed to initialize healthchecker"},
-		[]string{"Ensure Meshplayctl is running and has the right configurations. See https://docs.khulnasoft.com/reference/meshplayctl/system/check for checking Meshplay components"})
+		[]string{"Ensure Meshplayctl is running and has the right configurations. See https://docs-meshplay.khulnasoft.com/reference/meshplayctl/system/check for checking Meshplay components"})
 }
 
 func ErrPerformanceProfileResult(err error) error {

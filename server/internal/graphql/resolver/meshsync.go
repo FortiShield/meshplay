@@ -9,10 +9,10 @@ import (
 	"github.com/khulnasoft/meshplay/server/internal/graphql/model"
 	"github.com/khulnasoft/meshplay/server/models"
 	"github.com/khulnasoft/meshkit/broker"
-	"github.com/khulnasoft/meshkit/models/meshmodel/core/v1alpha1"
 	"github.com/khulnasoft/meshkit/models/meshmodel/registry"
 	"github.com/khulnasoft/meshkit/utils"
 	meshsyncmodel "github.com/khulnasoft/meshsync/pkg/model"
+	"github.com/spf13/viper"
 )
 
 // Global singleton instance of k8s connection tracker to map Each K8sContext to a unique Broker URL
@@ -101,22 +101,27 @@ func (r *Resolver) resyncCluster(ctx context.Context, provider models.Provider, 
 				&models.PerformanceTestConfig{},
 				&models.SmiResultWithID{},
 				&models.K8sContext{},
-
-				// Registries
-				&registry.Registry{},
-				&registry.Host{},
-				&v1alpha1.ComponentDefinitionDB{},
-				&v1alpha1.RelationshipDefinitionDB{},
-				&v1alpha1.PolicyDefinitionDB{},
-				&v1alpha1.ModelDB{},
-				&v1alpha1.CategoryDB{},
 			)
 			if err != nil {
 				r.Log.Error(err)
 				return "", err
 			}
 
-			r.Log.Info("Hard reset successfully completed")
+			krh, err := models.NewKeysRegistrationHelper(dbHandler, r.Log)
+			if err != nil {
+				return "", err
+			}
+
+			rm, err := registry.NewRegistryManager(dbHandler)
+			if err != nil {
+				return "", err
+			}
+
+			go func() {
+				models.SeedComponents(r.Log, r.Config, rm)
+				krh.SeedKeys(viper.GetString("KEYS_PATH"))
+			}()
+			r.Log.Info("Hard reset complete.")
 		} else { //Delete meshsync objects coming from a particular cluster
 			k8sctxs, ok := ctx.Value(models.AllKubeClusterKey).([]models.K8sContext)
 			if !ok || len(k8sctxs) == 0 {
@@ -174,75 +179,4 @@ func (r *Resolver) resyncCluster(ctx context.Context, provider models.Provider, 
 		}
 	}
 	return model.StatusProcessing, nil
-}
-
-func (r *Resolver) connectToBroker(ctx context.Context, provider models.Provider, ctxID string) error {
-	status, err := r.getOperatorStatus(ctx, provider, ctxID)
-	if err != nil {
-		return err
-	}
-	var currContext *models.K8sContext
-	var newContextFound bool
-	if ctxID == "" {
-		currContexts, ok := ctx.Value(models.KubeClustersKey).([]models.K8sContext)
-		if !ok || len(currContexts) == 0 {
-			r.Log.Error(ErrNilClient)
-			return ErrNilClient
-		}
-		currContext = &currContexts[0]
-	} else {
-		allContexts, ok := ctx.Value(models.AllKubeClusterKey).([]models.K8sContext)
-		if !ok || len(allContexts) == 0 {
-			r.Log.Error(ErrNilClient)
-			return ErrNilClient
-		}
-		for _, ctx := range allContexts {
-			if ctx.ID == ctxID {
-				currContext = &ctx
-				break
-			}
-		}
-	}
-	if currContext == nil {
-		r.Log.Error(ErrNilClient)
-		return ErrNilClient
-	}
-	if connectionTrackerSingleton.Get(currContext.ID) == "" {
-		newContextFound = true
-	}
-	kubeclient, err := currContext.GenerateKubeHandler()
-	if err != nil {
-		r.Log.Error(ErrNilClient)
-		return ErrNilClient
-	}
-	if (r.BrokerConn.IsEmpty() || newContextFound) && status != nil && status.Status == model.MeshplayControllerStatus(model.StatusEnabled) {
-		endpoint, err := model.SubscribeToBroker(provider, kubeclient, r.brokerChannel, r.BrokerConn, connectionTrackerSingleton)
-		if err != nil {
-			r.Log.Error(ErrAddonSubscription(err))
-			return err
-		}
-		r.Log.Info("Connected to broker at:", endpoint)
-		connectionTrackerSingleton.Set(currContext.ID, endpoint)
-		connectionTrackerSingleton.Log(r.Log)
-		return nil
-	}
-
-	if r.BrokerConn.Info() == broker.NotConnected {
-		return ErrBrokerNotConnected
-	}
-
-	return nil
-}
-
-func (r *Resolver) deployMeshsync(_ context.Context, _ models.Provider, _ string) (model.Status, error) {
-	//err := model.RunMeshSync(r.Config.KubeClient, false)
-	return model.StatusProcessing, nil
-}
-
-func (r *Resolver) connectToNats(ctx context.Context, provider models.Provider, k8scontextID string) (model.Status, error) {
-	err := r.connectToBroker(ctx, provider, k8scontextID)
-	if err != nil {
-		return model.StatusDisabled, err
-	}
-	return model.StatusConnected, nil
 }

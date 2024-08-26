@@ -335,7 +335,7 @@
         Value: 0.25260920050000213
     RequestedDuration: 30s
     StartTime: "2021-08-25T14:48:45.0420998Z"
-    URL: https://github.com/khulnasoft/meshplay/issues/3972
+    URL: https://github.com/meshplay/meshplay/issues/3972
     load-generator: fortio
   server_metrics: null
   test_start_time: "2021-08-25T14:48:45.0421Z"

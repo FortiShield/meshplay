@@ -585,11 +585,6 @@ type possibleTransitions struct {
 	Body map[string]map[connections.ConnectionStatus][]connections.ConnectionStatus
 }
 
-type relationshipPolicyEvalPayloadWrapper struct {
-	//in: body
-	relationshipPolicyEvalPayload relationshipPolicyEvalPayload
-}
-
 // Returns all orgs
 // swagger:response orgsResponseWrapper
 type orgsResponseWrapper struct {
@@ -609,4 +604,10 @@ type meshplayPatternSourceContentResponseWrapper struct {
 type meshsyncResourcesKindsResponseWrapper struct {
 	// in: body
 	Body *models.MeshSyncResourcesKindsAPIResponse
+}
+
+// Payload for meshplay pattern file deploy handler idPostDeployPattern idDeleteDeployPattern
+type meshplayPatternFileDeployPayloadWrapper struct {
+	// in: body
+	Body *models.MeshplayPatternFileDeployPayload
 }

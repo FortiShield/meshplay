@@ -1,6 +1,8 @@
 ---
-layout: enhanced
+layout: default
+abstract: Import your existing designs into Meshplay.
 title: Merging Designs
+abstract: Treat other designs as templates or building blocks and combine your designs with others and power-up your designs.
 permalink: extensions/merging-design
 language: en
 display-title: "false"
@@ -47,6 +49,6 @@ Click <b>Merge</b> to confirm the merge operation.
 
 <div class="alert alert-dark" role="alert">
 <h4 class="alert-heading">Discussion Forum</h4>
-Not finding what you're looking for? Ask on the <a href="http://discuss.khulnasoft.com">Discussion Forum</a>.
+Not finding what you're looking for? Ask on the <a href="http://discuss.meshplay.io">Discussion Forum</a>.
 </div>
 

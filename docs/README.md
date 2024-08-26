@@ -1,14 +1,16 @@
 # Meshplay Docs
 
-![assets/img/docs-screenshot.png](assets/img/docs-screenshot.png)
-_Check out the [Meshplay Docs](https://docs.khulnasoft.com/)!_
-Detailed documentation on contributing to Meshplay docs is available here - [https://docs.khulnasoft.com/project/contributing/contributing-docs](https://docs.khulnasoft.com/project/contributing/contributing-docs).
+<h2>Contributing to the Meshplay Documentation</h2>
 
-## Contributing to the Meshplay Documentation
+Please do! Thank you for your help in improving [Meshplay Docs](https://docs-meshplay.khulnasoft.com)! :balloon:
 
-Before contributing, please review the [Documentation Contribution Flow](https://github.com/khulnasoft/meshplay/blob/master/CONTRIBUTING.md#documentation-contribution-flow). In the following steps you will set up your development environment, fork and clone the repository, run the site locally, and finally commit, sign-off, and push any changes made for review.
+<details>
+<summary>
+Find the complete set of Meshplay Docs contributor guides at https://docs-meshplay.khulnasoft.com/project/contributing/contributing-docs</summary>
 
-### 1. Set up your development environment
+Before contributing, please review the [Documentation Contribution Flow](https://github.com/meshplay/meshplay/blob/master/CONTRIBUTING.md#documentation-contribution-flow). In the following steps you will set up your development environment, fork and clone the repository, run the site locally, and finally commit, sign-off, and push any changes made for review.
+
+<h3>1. Set up your development environment</h3>
 
 - _The Meshplay Docs site is built using Jekyll - a simple static site generator! You can learn more about Jekyll and setting up your development environment in the [Jekyll Docs](https://jekyllrb.com/docs/)._
 
@@ -22,7 +24,7 @@ Alternatively, if you are running Windows 10, you may install the Windows Subsys
 
 ### 2. Get the code
 
-- Fork and then clone the [Meshplay repository](https://github.com/khulnasoft/meshplay)
+- Fork and then clone the [Meshplay repository](https://github.com/meshplay/meshplay)
   ```bash
   $ git clone https://github.com/YOUR-USERNAME/meshplay
   ```
@@ -35,7 +37,7 @@ Alternatively, if you are running Windows 10, you may install the Windows Subsys
   $ bundle install
   ```
 
-### 3. Serve the site
+<h3>3. Serve the site</h3>
 
 - Serve the code locally
   ```bash
@@ -53,25 +55,26 @@ Alternatively, if you are running Windows 10, you may install the Windows Subsys
   ```bash
   $ git push origin <branch-name>
   ```
-- Then on Github, navigate to the [Meshplay repository](https://github.com/khulnasoft/meshplay) and create a pull request from your recently pushed changes!
+- Then on Github, navigate to the [Meshplay repository](https://github.com/meshplay/meshplay) and create a pull request from your recently pushed changes!
 
 ---
 
 - _See the [Meshplay Documentation Google Doc](https://docs.google.com/document/d/17guuaxb0xsfutBCzyj2CT6OZiFnMu9w4PzoILXhRXSo/edit) for additional reference._
 - Theme - https://github.com/vsoch/docsy-jekyll
+</details>
 
-# Meshplay Documentation Stucture
+# Meshplay Documentation Structure
 
-## High-Level Outline & Information Architecture for Meshplay Documentation
+<details>
+<summary>High-Level Outline & Information Architecture for Meshplay Documentation</summary>
 
 **Goal:** Offer comprehensive, organized, and accessible documentation for diverse audiences, from new users to expert contributors.
-
 **Target Audience:**
-
 - **Personas:** Beginners, developers, admins, operators, security specialists, contributors, users of all experience levels.
 - **Needs:** Varied - learning fundamentals, managing tasks, understanding advanced concepts, contributing code.
 
-**Information Architecture:**
+
+## High-Level Outline
 
 ### Overview and Installation (User Persona)
 
@@ -154,3 +157,4 @@ A component tool reference page shows the description and flag options output fo
 - **FAQ:** Answers to frequently asked questions.
 
 This high-level outline provides a comprehensive framework for structuring the Meshplay documentation, catering to diverse user needs while ensuring information is readily accessible and actionable. By further refining each section with specific content recommendations and considering the needs of specific personas, the documentation can effectively serve as a valuable resource for everyone interacting with Meshplay.
+</details>

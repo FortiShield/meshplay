@@ -1,7 +1,7 @@
 apiVersion: v2
 name: meshplay
 description: Meshplay chart for deploying Meshplay and Meshplay's adapters.
-icon: https://khulnasoft.com/images/logos/meshplay-logo.png
+icon: https://meshplay.io/images/logos/meshplay-logo.png
 kubeVersion:
 keywords:
   - meshplay
@@ -13,6 +13,7 @@ keywords:
   - meshplay-traefik-mesh
   - meshplay-nginx-sm
   - meshplay-app-mesh
+  - meshplay-nighthawk
 source:
   - https://github.com/khulnasoft/meshplay
 
@@ -65,11 +66,11 @@ dependencies:
   - name: meshplay-cilium
     version: 0.7.0
     condition: meshplay-cilium.enabled
-  - name: meshplay-perf
+  - name: meshplay-nighthawk
     version: 0.7.0
-    condition: meshplay-perf.enabled
+    condition: meshplay-nighthawk.enabled
 
 maintainers:
   - name: Meshplay Authors
-    email: maintainers@khulnasoft.com
+    email: maintainers@meshplay.io
 

@@ -5,7 +5,7 @@ metadata:
   namespace: meshplay
 spec:
   virtualhost:
-    fqdn: playground.khulnasoft.com
+    fqdn: playground.meshplay.io
     tls:
       secretName: tls-secret-meshplay
   routes:

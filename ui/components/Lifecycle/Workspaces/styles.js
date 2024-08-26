@@ -1,16 +1,18 @@
-import { Typography, Card, Checkbox, styled, Box, Button } from '@material-ui/core';
+import { Typography, Card, styled, Box, Button } from '@material-ui/core';
 import theme, { Colors } from '../../../themes/app';
+import { Checkbox } from '@khulnasoft/sistent';
 
-/** Card Styles */
-export const CardWrapper = styled(Card)({
+/** Workspace card wrapper */
+export const CardWrapper = styled(Card)(({ theme }) => ({
   width: '100%',
   display: 'flex',
   flexDirection: 'column',
+  backgroundColor: theme.palette.secondary.elevatedComponents,
   padding: '20px',
   '&:hover': {
     cursor: 'pointer',
   },
-});
+}));
 
 export const BulkSelectCheckbox = styled(Checkbox)({
   padding: 0,

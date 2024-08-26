@@ -49,6 +49,7 @@ meshplayctl system context create context-name --components meshplay-nsm --platf
   -a, --components stringArray   List of components
   -h, --help                     help for create
   -p, --platform string          Platform to deploy Meshplay
+      --provider string          Provider to use with the Meshplay server
   -s, --set                      Set as current context
   -u, --url string               Meshplay Server URL with Port
 

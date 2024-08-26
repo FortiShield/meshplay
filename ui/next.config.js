@@ -9,12 +9,13 @@ const nextConfig = removeImports({
     return {
       '/404': { page: '/404' },
       '/configuration/filters': { page: '/configuration/filters' },
+      '/configuration/catalog': { page: '/configuration/catalog' },
       '/configuration/designs': { page: '/configuration/designs' },
       '/configuration/designs/configurator': { page: '/configuration/designs/configurator' },
       '/extension/[...component]': { page: '/extension/[...component]' },
       '/extensions': { page: '/extensions' },
       '/': { page: '/', query: { __nextDefaultLocale: 'en' } },
-      '/management/service-mesh': { page: '/management/service-mesh' },
+      '/management/adapter': { page: '/management/adapter' },
       '/management/environments': { page: '/management/environments' },
       '/management/connections': { page: '/management/connections' },
       '/management/workspaces': { page: '/management/workspaces' },
@@ -50,3 +51,4 @@ const nextConfig = removeImports({
 })
 
 module.exports = nextConfig
+

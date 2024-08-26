@@ -29,13 +29,20 @@ func (da *DisconnectAction) Execute(ctx context.Context, machineCtx interface{},
 		return machines.NoOp, eventBuilder.Build(), err
 	}
 
-	k8sContexts := []models.K8sContext{machinectx.K8sContext}
-	machinectx.MeshplayCtrlsHelper.UndeployDeployedOperators(machinectx.OperatorTracker)
+	contextID := machinectx.K8sContext.ID
+	go func() {
+		machinectx.MeshplayCtrlsHelper.
+			UpdateOperatorsStatusMap(machinectx.OperatorTracker).
+			UndeployDeployedOperators(machinectx.OperatorTracker).
+			RemoveCtxControllerHandler(ctx, contextID)
+		machinectx.MeshplayCtrlsHelper.RemoveMeshSyncDataHandler(ctx, contextID)
+
+	}()
 
 	_ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
 	defer cancel()
 	context.AfterFunc(_ctx, func() {
-		machinectx.MeshplayCtrlsHelper.UpdateCtxControllerHandlers(k8sContexts)
+		// machinectx.MeshplayCtrlsHelper.UpdateOperatorsStatusMap(machinectx.OperatorTracker)
 	})
 
 	return machines.NoOp, nil, nil

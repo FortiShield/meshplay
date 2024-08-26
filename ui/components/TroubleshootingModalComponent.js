@@ -284,10 +284,9 @@ const TroubleshootingModal = (props) => {
                 <Typography>
                   <li className={classes.troubleshootListitem}>
                     <b>Building</b>: Ensure that <code>go.mod</code> in the{' '}
-                    <code>khulnasoft/meshplay</code> repository is identical to the{' '}
-                    <code>go.mod</code> in the{' '}
-                    <code>khulnasoft-lab/meshplay-extensions-packages</code> repository are
-                    identical.
+                    <code>meshplay/meshplay</code> repository is identical to the{' '}
+                    <code>go.mod</code> in the <code>khulnasofts/meshplay-extensions</code>{' '}
+                    repository are identical.
                   </li>
                   <li className={classes.troubleshootListitem}>
                     <b>Loading</b>: Confirm that the <code>plugin</code> version offered by Meshplay
@@ -334,7 +333,7 @@ const TroubleshootingModal = (props) => {
                     {' '}
                     <a
                       className={classes.troubleshootHelpLink}
-                      href="http://discuss.khulnasoft.com/t/what-are-some-troubleshooting-tips-for-meshmap"
+                      href="http://discuss.meshplay.khulnasoft.com/t/what-are-some-troubleshooting-tips-for-meshmap"
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -359,7 +358,7 @@ const TroubleshootingModal = (props) => {
               or{' '}
               <a
                 className={classes.contactHelpLink}
-                href="http://discuss.khulnasoft.com"
+                href="http://discuss.meshplay.khulnasoft.com"
                 target="_blank"
                 rel="noreferrer"
               >

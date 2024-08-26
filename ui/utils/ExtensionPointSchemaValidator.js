@@ -107,7 +107,6 @@ function UserPrefsExtensionSchemaDecoder(content) {
  * @returns {CollaboratorSchema[]}
  */
 function CollaboratorExtensionSchemaDecoder(content) {
-  console.log('content', content);
   if (Array.isArray(content)) {
     return content.map((item) => {
       return { component: item.component || '' };
@@ -133,6 +132,7 @@ function AccountExtensionSchemaDecoder(content) {
         show: !!item.show,
         children: AccountExtensionSchemaDecoder(item.children),
         full_page: item.full_page,
+        isHtmlLink: item.link,
       };
     });
   }

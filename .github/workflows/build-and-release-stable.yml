@@ -8,12 +8,12 @@ jobs:
 
   update-rest-api-docs:
     name: Update REST API Documentation
-    if: github.repository == 'khulnasoft/meshplay'
+    if: github.repository == 'meshplay/meshplay'
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Check if handlers were modified
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v3
         id: changes
         with:
           filters: |
@@ -32,8 +32,12 @@ jobs:
         if: steps.changes.outputs.modified == 'true'
         run: |
           make swagger-docs-build
+
+      - name: Pull changes from remote
+        run: git pull origin master
+
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: docs
           commit_user_name: l5io
@@ -44,7 +48,7 @@ jobs:
 
   update-graphql-docs:
     name: Update GraphQL API Documentation
-    if: github.repository == 'khulnasoft/meshplay'
+    if: github.repository == 'meshplay/meshplay'
     runs-on: ubuntu-22.04
     steps:
       - name: Check out code
@@ -52,7 +56,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Check if schema was modified
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
@@ -69,8 +73,12 @@ jobs:
         run: |
           cd docs; bundle install; cd ..; \
           make graphql-docs-build
+
+      - name: Pull changes from remote
+        run: git pull origin master
+
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: docs
           commit_user_name: l5io
@@ -81,7 +89,7 @@ jobs:
 
   build:
     name: Docker build and push
-    if: github.repository == 'khulnasoft/meshplay'
+    if: github.repository == 'meshplay/meshplay'
     env:
       RELEASE_CHANNEL: "stable"
     runs-on: ubuntu-22.04
@@ -120,7 +128,7 @@ jobs:
       #     DOCKERHUB_REPOSITORY: ${{ secrets.IMAGE_NAME }}
   ctlrelease:
     name: Meshplayctl build & release
-    if: github.repository == 'khulnasoft/meshplay' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'patch') && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') && !contains(github.ref, 'rc')
+    if: github.repository == 'meshplay/meshplay' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'patch') && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') && !contains(github.ref, 'rc')
     runs-on: macos-latest
     steps:
       - name: Check out code
@@ -143,7 +151,7 @@ jobs:
         uses: mislav/bump-homebrew-formula-action@v3
         with:
           formula-name: meshplayctl
-          download-url: https://github.com/khulnasoft/meshplay.git
+          download-url: https://github.com/meshplay/meshplay.git
         env:
           COMMITTER_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
   call-dde-release-workflow:
@@ -151,18 +159,18 @@ jobs:
       - build
       - ctlrelease
     name: Build and Release Docker Extension
-    uses: khulnasoft/meshplay/.github/workflows/build-and-release-dde.yml@master
+    uses: meshplay/meshplay/.github/workflows/build-and-release-dde.yml@master
     secrets: inherit
   call-helm-chart-releaser:
     needs:
       - build
     name: Release Helm Charts
-    uses: khulnasoft/meshplay/.github/workflows/helm-chart-releaser.yml@master
+    uses: meshplay/meshplay/.github/workflows/helm-chart-releaser.yml@master
     secrets: inherit
   # call-aks-playground-deploy-workflow:
   #   needs: build
   #   name: Deploy Meshplay Playground
-  #   uses: khulnasoft/meshplay/.github/workflows/deploy-meshplay-playground.yml@master
+  #   uses: meshplay/meshplay/.github/workflows/deploy-meshplay-playground.yml@master
   #   secrets: inherit
   email-meshplay-release-notes-workflow:
     needs:
@@ -171,19 +179,19 @@ jobs:
       - call-helm-chart-releaser
       - call-dde-release-workflow
     name: Email Meshplay Release Notes
-    uses: khulnasoft-lab/meshplay-extensions-packages-packages/.github/workflows/notify-email.yml@master
+    uses: khulnasofts/meshplay-extensions-packages/.github/workflows/notify-email.yml@master
     secrets:
       token: ${{ secrets.GH_ACCESS_TOKEN }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
     with:
       release-tag: ${{github.ref_name}}
-      to: developers@khulnasoft.com
+      to: developers@meshplay.io
   call-cncf-playground-rollout:
     needs:
       - build
     name: Deploy CNCF Playground
-    uses: khulnasoft/meshplay/.github/workflows/cncf-playground-deploy-meshplay.yaml@master
+    uses: meshplay/meshplay/.github/workflows/cncf-playground-deploy-meshplay.yaml@master
     secrets: inherit
 
   email-on-failure:

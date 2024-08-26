@@ -8,7 +8,7 @@ Meshplay Adapter for NGINX Service Mesh.
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Khulnasoft Authors | <community@khulnasoft.com> |  |
+| KhulnaSoft Authors | <community@khulnasoft.com> |  |
 | darrenlau | <panyuenlau@gmail.com> |  |
 | leecalcote | <lee.calcote@khulnasoft.com> |  |
 
