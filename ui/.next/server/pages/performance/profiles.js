@@ -14427,18 +14427,18 @@ function generateColumnsForDisplay(sortOrder, setSelectedProfileIdxForChart, set
                     className: classes.paper,
                     children: [/*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx(react_share__WEBPACK_IMPORTED_MODULE_24__.TwitterShareButton, {
                       className: classes.socialIcon,
-                      url: 'https://meshplay.io',
+                      url: 'https://meshplay.khulnasoft.com',
                       title: socialMessage,
                       hashtags: ['opensource'],
                       children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx(_assets_twitterIcon__WEBPACK_IMPORTED_MODULE_22__/* ["default"] */ .Z, {})
                     }), /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx(react_share__WEBPACK_IMPORTED_MODULE_24__.LinkedinShareButton, {
                       className: classes.socialIcon,
-                      url: 'https://meshplay.io',
+                      url: 'https://meshplay.khulnasoft.com',
                       summary: socialMessage,
                       children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx(_assets_linkedinIcon__WEBPACK_IMPORTED_MODULE_21__/* ["default"] */ .Z, {})
                     }), /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx(react_share__WEBPACK_IMPORTED_MODULE_24__.FacebookShareButton, {
                       className: classes.socialIcon,
-                      url: 'https://meshplay.io',
+                      url: 'https://meshplay.khulnasoft.com',
                       quote: socialMessage,
                       hashtag: '#opensource',
                       children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx(_assets_facebookIcon__WEBPACK_IMPORTED_MODULE_20__/* ["default"] */ .Z, {})

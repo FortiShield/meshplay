@@ -8,7 +8,7 @@ Meshplay chart for deploying Meshplay
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Meshplay Authors | <maintainers@meshplay.io> |  |
+| Meshplay Authors | <maintainers@meshplay.khulnasoft.com> |  |
 
 ## Values
 
@@ -90,7 +90,7 @@ Meshplay chart for deploying Meshplay
 ## Setup Repo Info
 
 ```console
-helm repo add meshplay meshplay https://meshplay.io/charts/
+helm repo add meshplay meshplay https://meshplay.khulnasoft.com/charts/
 helm repo update
 ```
 

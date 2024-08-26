@@ -1088,7 +1088,7 @@ function ConnectionStatsChart({
           children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx(_components_MeshplayMeshInterface_PatternService_CustomTextTooltip__WEBPACK_IMPORTED_MODULE_9__/* .CustomTextTooltip */ .y, {
             interactive: true,
             variant: "standard",
-            title: `Meshplay Connections are managed and unmanaged resources that either through discovery or manual entry can be assigned to one or more Environments. [Learn More](https://docs.meshplay.io/concepts/logical/connections)`,
+            title: `Meshplay Connections are managed and unmanaged resources that either through discovery or manual entry can be assigned to one or more Environments. [Learn More](https://docs.meshplay.khulnasoft.com/concepts/logical/connections)`,
             placement: "left",
             children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__.IconButton, {
               disableRipple: true,
@@ -2229,7 +2229,7 @@ function MeshModelContructs({
             placement: "left",
             interactive: true,
             variant: "standard",
-            title: `The Meshplay Registry is a critical component acting as the central repository for all capabilities known to Meshplay. [Learn More](https://docs.meshplay.io/concepts/logical/registry)`,
+            title: `The Meshplay Registry is a critical component acting as the central repository for all capabilities known to Meshplay. [Learn More](https://docs.meshplay.khulnasoft.com/concepts/logical/registry)`,
             children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__.IconButton, {
               disableRipple: true,
               disableFocusRipple: true,
@@ -2343,7 +2343,7 @@ function MeshModelCategories({
             return e.stopPropagation();
           },
           children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx(_components_MeshplayMeshInterface_PatternService_CustomTextTooltip__WEBPACK_IMPORTED_MODULE_9__/* .CustomTextTooltip */ .y, {
-            title: `Meshplay Models represent the fundamental building blocks of your infrastructure. Models are categorized by their function. For example, a model for Prometheus belongs in the "Observability and Analysis" category. [Learn More](https://docs.meshplay.io/concepts/logical/models)`,
+            title: `Meshplay Models represent the fundamental building blocks of your infrastructure. Models are categorized by their function. For example, a model for Prometheus belongs in the "Observability and Analysis" category. [Learn More](https://docs.meshplay.khulnasoft.com/concepts/logical/models)`,
             placement: "left",
             variant: "standard",
             interactive: true,
@@ -3306,7 +3306,7 @@ function MeshplayConfigurationChart({
             placement: "left",
             interactive: true,
             variant: "standard",
-            title: `Meshplay Designs are descriptive, declarative characterizations of how your Kubernetes infrastructure should be configured. [Learn more](https://docs.meshplay.io/concepts/logical/designs)`,
+            title: `Meshplay Designs are descriptive, declarative characterizations of how your Kubernetes infrastructure should be configured. [Learn more](https://docs.meshplay.khulnasoft.com/concepts/logical/designs)`,
             children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_16__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__.IconButton, {
               disableRipple: true,
               disableFocusRipple: true,

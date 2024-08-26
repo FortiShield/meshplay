@@ -1470,7 +1470,7 @@ const Adapters = ({
               fontStyle: 'italic'
             },
             children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx("a", {
-              href: "https://docs.meshplay.io/concepts/architecture/adapters",
+              href: "https://docs.meshplay.khulnasoft.com/concepts/architecture/adapters",
               target: "_blank",
               rel: "noreferrer",
               className: classes.link,
@@ -4822,7 +4822,7 @@ const Extensions = ({
                 fontStyle: 'italic'
               },
               children: ["Explore the", ' ', /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx("a", {
-                href: "https://meshplay.io/catalog",
+                href: "https://meshplay.khulnasoft.com/catalog",
                 target: "_blank",
                 rel: "noreferrer",
                 className: classes.link,

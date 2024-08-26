@@ -6543,7 +6543,7 @@ const Environments = ({
       options: ['DELETE', 'CANCEL'],
       showInfoIcon: `Deleting an environment does not delete any resources (e.g. connections) currently contained with the environment.
       Resources that belong to others environments will continue to belong to those other environments.
-      Learn more about the behavior of [lifecycle of environments and their resources](https://docs.meshplay.io/concepts/logical/environments) in Meshplay Docs.`,
+      Learn more about the behavior of [lifecycle of environments and their resources](https://docs.meshplay.khulnasoft.com/concepts/logical/environments) in Meshplay Docs.`,
       variant: _PromptComponent__WEBPACK_IMPORTED_MODULE_20__/* .PROMPT_VARIANTS.DANGER */ .k.DANGER
     }));
     cov_4551j17gh().s[90]++;

@@ -23530,7 +23530,7 @@ const MeshplayTreeView = ({
             }), /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_25__.jsx(_MeshplayMeshInterface_PatternService_CustomTextTooltip__WEBPACK_IMPORTED_MODULE_13__/* .CustomTextTooltip */ .y, {
               placement: "right",
               interactive: true,
-              title: `View all duplicate entries of ${lodash__WEBPACK_IMPORTED_MODULE_15___default().toLower(view)}. Entries with identical name and version attributes are considered duplicates. [Learn More](https://docs.meshplay.io/concepts/logical/models#models)`,
+              title: `View all duplicate entries of ${lodash__WEBPACK_IMPORTED_MODULE_15___default().toLower(view)}. Entries with identical name and version attributes are considered duplicates. [Learn More](https://docs.meshplay.khulnasoft.com/concepts/logical/models#models)`,
               children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_25__.jsx(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__.IconButton, {
                 color: "primary",
                 children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_25__.jsx((_material_ui_icons_InfoOutlined__WEBPACK_IMPORTED_MODULE_14___default()), {

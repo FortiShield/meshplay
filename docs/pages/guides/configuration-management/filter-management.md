@@ -15,7 +15,7 @@ Meshplay offers powerful features that simplify the management of Envoy WASM fil
 ### Meshplay UI and CLI Integration
 
 - **Import WASM Envoy Filters**: Easily import your WebAssembly Envoy filters into Meshplay using the intuitive UI or the command-line interface ([CLI](https://docs-meshplay.khulnasoft.com/reference/meshplayctl#data-plane-intelligence)).
-- **Publish and Clone Filters**: Share your filters with the community by publishing them in the [Meshplay Catalog](https://meshplay.io/catalog) and make it effortless for others to clone them.
+- **Publish and Clone Filters**: Share your filters with the community by publishing them in the [Meshplay Catalog](https://meshplay.khulnasoft.com/catalog) and make it effortless for others to clone them.
 - **Download WASM Binaries**: Access and download WebAssembly binaries directly from your Remote Provider like [KhulnaSoft Cloud](https://meshplay.khulnasoft.com/).
 - **Efficient Data Plane Design**: Seamlessly design and deploy Istio and Envoy data planes using extensions like [MeshMap](https://khulnasoft.com/cloud-native-management/meshmap).
 - **Contribute to Open Source**: Get involved with the cloud native community by contributing to any of the open source [wasm-filters](https://github.com/khulnasoft/wasm-filters) developed by the Meshplay community.

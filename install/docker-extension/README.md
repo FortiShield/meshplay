@@ -17,15 +17,15 @@
   <img src="https://img.shields.io/github/workflow/status/meshplay/meshplay/Meshplay%20Build%20and%20Releaser%20(edge)" /></a>
 <a href="https://bestpractices.coreinfrastructure.org/projects/3564" alt="CLI Best Practices">
   <img src="https://bestpractices.coreinfrastructure.org/projects/3564/badge" /></a>
-<a href="http://discuss.meshplay.io" alt="Discuss Users">
+<a href="http://discuss.meshplay.khulnasoft.com" alt="Discuss Users">
   <img src="https://img.shields.io/discourse/users?label=discuss&logo=discourse&server=https%3A%2F%2Fdiscuss.khulnasoft.com" /></a>
-<a href="https://slack.meshplay.io" alt="Join Slack">
+<a href="https://slack.meshplay.khulnasoft.com" alt="Join Slack">
   <img src="https://img.shields.io/badge/Slack-@khulnasoft.svg?logo=slack"></a>
 <a href="https://twitter.com/intent/follow?screen_name=meshplayio" alt="Twitter Follow">
   <img src="https://img.shields.io/twitter/follow/meshplayio.svg?label=Follow+Meshplay&style=social" /></a>
 </p>
 
-[Meshplay](https://meshplay.io) is the cloud native management plane offering lifecycle, configuration, and performance management of Kubernetes, service meshes, and your workloads.
+[Meshplay](https://meshplay.khulnasoft.com) is the cloud native management plane offering lifecycle, configuration, and performance management of Kubernetes, service meshes, and your workloads.
 
 <p align="center">
 Meshplay is a Cloud Native Computing Foundation project.
@@ -89,5 +89,5 @@ docker extension update meshplay/docker-extension-meshplay:edge-latest
 <a href ="https://khulnasoft.com/community"><img alt="MeshMates" src="https://docs-meshplay.khulnasoft.com/assets/img/readme/khulnasoft-community-sign.png" style="margin-right:10px; margin-bottom:7px;" width="28%" align="center" /></a>
 </p>
 <p style="text-align:center; width:100%;" align="center">
-<h3 style="text-align:center;" align="center"><em>Have questions? Need help?</em> <strong>Ask in the <a href="http://discuss.meshplay.io">Community Forum</a></strong>.</h3></p>
+<h3 style="text-align:center;" align="center"><em>Have questions? Need help?</em> <strong>Ask in the <a href="http://discuss.meshplay.khulnasoft.com">Community Forum</a></strong>.</h3></p>
 

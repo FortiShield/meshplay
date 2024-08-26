@@ -1,5 +1,5 @@
 
-<p style="text-align:center;" align="center"><a href="https://meshplay.io"><picture>
+<p style="text-align:center;" align="center"><a href="https://meshplay.khulnasoft.com"><picture>
  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/meshplay/meshplay/master/.github/assets/images/readme/meshplay-logo-light-text-side.svg">
  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/meshplay/meshplay/master/.github/assets/images/readme/meshplay-logo-dark-text-side.svg">
 <img src="https://raw.githubusercontent.com/meshplay/meshplay/master/.github/assets/images/readme/meshplay-logo-dark-text-side.svg"
@@ -19,9 +19,9 @@ alt="Meshplay Logo" width="70%" /></picture></a><br /><br /></p>
   <img src="https://img.shields.io/github/actions/workflow/status/meshplay/meshplay/release-drafter.yml" /></a>
 <a href="https://bestpractices.coreinfrastructure.org/projects/3564" alt="CLI Best Practices">
   <img src="https://bestpractices.coreinfrastructure.org/projects/3564/badge" /></a>
-<a href="http://discuss.meshplay.io" alt="Discuss Users">
+<a href="http://discuss.meshplay.khulnasoft.com" alt="Discuss Users">
   <img src="https://img.shields.io/discourse/users?label=discuss&logo=discourse&server=https%3A%2F%2Fdiscuss.khulnasoft.com" /></a>
-<a href="https://slack.meshplay.io" alt="Join Slack">
+<a href="https://slack.meshplay.khulnasoft.com" alt="Join Slack">
   <img src="https://img.shields.io/badge/Slack-@khulnasoft.svg?logo=slack" /></a>
 <a href="https://twitter.com/intent/follow?screen_name=meshplayio" alt="Twitter Follow">
   <img src="https://img.shields.io/twitter/follow/meshplayio.svg?label=Follow+Meshplay&style=social" /></a>
@@ -43,14 +43,14 @@ MESHPLAY IS A CLOUD NATIVE COMPUTING FOUNDATION PROJECT
 </div>
 <br />
 <p align="center">
-A self-service engineering platform, <a href="https://meshplay.io">Meshplay</a>, is the open source, cloud native manager that enables the design and management of all Kubernetes-based infrastructure and applications (multi-cloud). Among other features,  As an extensible platform, Meshplay offers visual and collaborative GitOps, freeing you from the chains of YAML while managing Kubernetes multi-cluster deployments.
+A self-service engineering platform, <a href="https://meshplay.khulnasoft.com">Meshplay</a>, is the open source, cloud native manager that enables the design and management of all Kubernetes-based infrastructure and applications (multi-cloud). Among other features,  As an extensible platform, Meshplay offers visual and collaborative GitOps, freeing you from the chains of YAML while managing Kubernetes multi-cluster deployments.
 </p>
 <br />
 
-<!-- [Meshplay](https://meshplay.io) is the cloud native management plane offering lifecycle, configuration, and performance management of Kubernetes, service meshes, and your workloads. -->
+<!-- [Meshplay](https://meshplay.khulnasoft.com) is the cloud native management plane offering lifecycle, configuration, and performance management of Kubernetes, service meshes, and your workloads. -->
 <div align="center" width="100%">
-<!-- <a href="https://youtu.be/Do7htKrRzDA"><img src="https://play.meshplay.io/static/media/meshplay-playground-meshmap.5242722a8cd9c3855f42.png" width="800px" /></a> -->
- <br />Try Meshplay in the <a href="https://play.meshplay.io">Cloud Native Playground</a> (<a href="https://youtu.be/Do7htKrRzDA">teaser video</a>)
+<!-- <a href="https://youtu.be/Do7htKrRzDA"><img src="https://play.meshplay.khulnasoft.com/static/media/meshplay-playground-meshmap.5242722a8cd9c3855f42.png" width="800px" /></a> -->
+ <br />Try Meshplay in the <a href="https://play.meshplay.khulnasoft.com">Cloud Native Playground</a> (<a href="https://youtu.be/Do7htKrRzDA">teaser video</a>)
 </div>
 
 <br />
@@ -64,12 +64,12 @@ A self-service engineering platform, <a href="https://meshplay.io">Meshplay</a>,
     - [License](#license)
 -->
 <!-- <p style="clear:both;">&nbsp;</p>
-<a href="https://meshplay.io"><picture>
+<a href="https://meshplay.khulnasoft.com"><picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/meshplay/meshplay/master/.github/assets/images/readme/meshplay-logo-light-text-side.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/meshplay/meshplay/master/.github/assets/images/readme/meshplay-logo-dark-text-side.svg">
   <img alt="Meshplay - the Cloud Native Manager" src="https://raw.githubusercontent.com/meshplay/meshplay/master/.github/assets/images/readme/meshplay-logo-dark-text-side.svg" align="left" width="45%">
   </picture></a> 
-<a href="https://meshplay.io">
+<a href="https://meshplay.khulnasoft.com">
 <h3 style="margin:auto;"><br /><br />
   <a href="https://docs.google.com/presentation/d/14kxjwYSJ_FyE3K_6CDEd6oq2kqwn0OSE8RDJ4H-KlKU/edit?usp=sharing"><center><i>Project Overview Presentation</i></center></a>
   <br /><br /><br />
@@ -80,7 +80,7 @@ A self-service engineering platform, <a href="https://meshplay.io">Meshplay</a>,
 
 <p style="clear:both;">
 <h2>Cloud Native Lifecycle Management</h2>
-Meshplay manages the provisioning, configuration and operation of your Kubernetes clusters while supporting hundreds of different types of cloud native infrastructure integrations. Meshplay also offers a <a href="https://meshplay.io/catalog">catalog of curated design templates</a> filled with configuration best practices.
+Meshplay manages the provisioning, configuration and operation of your Kubernetes clusters while supporting hundreds of different types of cloud native infrastructure integrations. Meshplay also offers a <a href="https://meshplay.khulnasoft.com/catalog">catalog of curated design templates</a> filled with configuration best practices.
 
 Using a GitOps-centric approach, visually and collaboratively design and manage your infrastructure and microservices. Extend Meshplay as your self-service engineering platform by taking advantage of its [vast set of extensibility features](https://docs-meshplay.khulnasoft.com/extensibility), including gRPC adapters, hot-loadable Reactjs packages and Golang plugins, subscriptions on NATS topics, consumable _and_ extendable API interfaces via REST and GraphQL. 
 
@@ -91,7 +91,7 @@ Using a GitOps-centric approach, visually and collaboratively design and manage 
 <p style="clear:both;">
  
 <h2>Multi-Cluster Kubernetes, Multi-Cloud, and Cloud Native Configuration Management</h2>
-<p>Meshplay supports <a href="https://meshplay.io/integrations">250+ integrations</a>.</p>
+<p>Meshplay supports <a href="https://meshplay.khulnasoft.com/integrations">250+ integrations</a>.</p>
 
 <!-- 
 <h3><a name="iac"></a>Supported Cloud Native Infrastructure and Applications</h3>
@@ -256,12 +256,12 @@ Learn more about <a href="https://docs-meshplay.khulnasoft.com/architecture">Mes
 <!-- <img alt="Control Kubernetes and your workloads with meshplayctl" src=".github/assets/images/readme/meshplayctl.png"  style="margin-left:10px; margin-bottom:10px;" width="50%" align="right" /> -->
 <h3>Using `meshplayctl`</h3>
 <p>Meshplay runs as a set of containers inside or outside of your Kubernetes clusters.</p>
-<pre>curl -L https://meshplay.io/install | bash -</pre>
+<pre>curl -L https://meshplay.khulnasoft.com/install | bash -</pre>
 <p>Use the <a href="https://docs-meshplay.khulnasoft.com/installation/quick-start">quick start</a> guide.</p>
 <details>
   <summary><strong>See all supported platforms</strong></summary>
 
-See the [getting started](https://meshplay.io/#getting-started) section to quickly deploy Meshplay on any of these supported platforms:
+See the [getting started](https://meshplay.khulnasoft.com/#getting-started) section to quickly deploy Meshplay on any of these supported platforms:
 
 | Platform                                                                                                                                                                                                                             | Supported?  |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :---------: |
@@ -296,7 +296,7 @@ See the [getting started](https://meshplay.io/#getting-started) section to quick
 ## Join the Meshplay community!
 
 <a name="contributing"></a><a name="community"></a>
-Our projects are community-built and welcome collaboration. 👍 Be sure to see the <a href="https://khulnasoft.com/community/newcomers">Contributor Journey Map</a> and <a href="https://khulnasoft.com/community/handbook">Community Handbook</a> for a tour of resources available to you and the <a href="https://khulnasoft.com/community/handbook/repository-overview">Repository Overview</a> for a cursory description of repository by technology and programming language. Jump into community <a href="https://slack.meshplay.io">Slack</a> or <a href="http://discuss.meshplay.io">discussion forum</a> to participate.
+Our projects are community-built and welcome collaboration. 👍 Be sure to see the <a href="https://khulnasoft.com/community/newcomers">Contributor Journey Map</a> and <a href="https://khulnasoft.com/community/handbook">Community Handbook</a> for a tour of resources available to you and the <a href="https://khulnasoft.com/community/handbook/repository-overview">Repository Overview</a> for a cursory description of repository by technology and programming language. Jump into community <a href="https://slack.meshplay.khulnasoft.com">Slack</a> or <a href="http://discuss.meshplay.khulnasoft.com">discussion forum</a> to participate.
 
 <p style="clear:both;">
 <a href ="https://khulnasoft.com/community"><img alt="MeshMates" src=".github/assets/images/readme/khulnasoft-community-sign.png" style="margin-right:36px; margin-bottom:7px;" width="140px" align="left" /></a>
@@ -310,20 +310,20 @@ Find out more on the <a href="https://khulnasoft.com/community#meshmate">KhulnaS
 <br /><br />
 <div style="display: flex; justify-content: center; align-items:center;">
 <div>
-<a href="https://meshplay.io/community"><img alt="KhulnaSoft Cloud Native Community" src="https://docs-meshplay.khulnasoft.com/assets/img/readme/community.png" width="140px" style="margin-right:36px; margin-bottom:7px;" width="140px" align="left"/></a>
+<a href="https://meshplay.khulnasoft.com/community"><img alt="KhulnaSoft Cloud Native Community" src="https://docs-meshplay.khulnasoft.com/assets/img/readme/community.png" width="140px" style="margin-right:36px; margin-bottom:7px;" width="140px" align="left"/></a>
 </div>
 <div style="width:60%; padding-left: 16px; padding-right: 16px">
 <p>
-✔️ <em><strong>Join</strong></em> any or all of the weekly meetings on <a href="https://meshplay.io/calendar">community calendar</a>.<br />
+✔️ <em><strong>Join</strong></em> any or all of the weekly meetings on <a href="https://meshplay.khulnasoft.com/calendar">community calendar</a>.<br />
 ✔️ <em><strong>Watch</strong></em> community <a href="https://www.youtube.com/playlist?list=PL3A-A6hPO2IMPPqVjuzgqNU5xwnFFn3n0">meeting recordings</a>.<br />
 ✔️ <em><strong>Fill-in</strong></em> a <a href="https://khulnasoft.com/newcomers">community member form</a> to gain access to community resources.
 <br />
-✔️ <em><strong>Discuss</strong></em> in the <a href="http://discuss.meshplay.io">Community Forum</a>.<br />
+✔️ <em><strong>Discuss</strong></em> in the <a href="http://discuss.meshplay.khulnasoft.com">Community Forum</a>.<br />
 ✔️ <em><strong>Explore more</strong></em> in the <a href="https://khulnasoft.com/community/handbook">Community Handbook</a>.<br />
 </p>
 </div><br /><br />
 <div>
-<a href="https://slack.meshplay.io">
+<a href="https://slack.meshplay.khulnasoft.com">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/meshplay/meshplay/master/.github/assets/images/readme/slack.svg"  width="110px" />
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/meshplay/meshplay/master/.github/assets/images/readme/slack.svg" width="110px" />

@@ -729,7 +729,7 @@ const GRAFANA = (cov_yoj5svnjd().s[50]++, 'Grafana');
 const PROMETHEUS = (cov_yoj5svnjd().s[51]++, 'Prometheus');
 const INCLUSTER_CONFIG = (cov_yoj5svnjd().s[52]++, 'Inclusterconfig');
 const OUTCLUSTER_CONFIG = (cov_yoj5svnjd().s[53]++, 'Outclusterconfig');
-const ENDPOINTURL = (cov_yoj5svnjd().s[54]++, 'https://playground.meshplay.io/');
+const ENDPOINTURL = (cov_yoj5svnjd().s[54]++, 'https://playground.meshplay.khulnasoft.com/');
 
 /***/ })
 

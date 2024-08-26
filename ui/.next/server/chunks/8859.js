@@ -1804,7 +1804,7 @@ const NotFoundStateChip = ({
     })
   });
 }; // const HelpToolTip = ({ classes, value }) => {
-//   const url = `https://docs.meshplay.io/concepts/connections#${value}`;
+//   const url = `https://docs.meshplay.khulnasoft.com/concepts/connections#${value}`;
 //   const onClick = () => (e) => {
 //     e.preventDefault();
 //     e.stopPropagation();

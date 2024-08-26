@@ -417,7 +417,7 @@ function CustomErrorMessage() {
           children: ["Start a conversation at KhulnaSoft community", ' ', /*#__PURE__*/jsx_runtime_.jsx(core_.Link, {
             className: classes.discussionforumlink,
             underline: "none",
-            href: "http://discuss.meshplay.io/c/meshplay/5",
+            href: "http://discuss.meshplay.khulnasoft.com/c/meshplay/5",
             target: "_blank",
             children: "discussion forum"
           }), "."]

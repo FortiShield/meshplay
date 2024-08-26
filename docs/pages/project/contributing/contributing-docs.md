@@ -181,7 +181,7 @@ Meshplay documentation is built using the following components:
 
 - Use docs here [Jekyll installation](https://jekyllrb.com/docs/installation/macos/)
 
-{% include alert.html type="light" title="Note" content="In case of any installation issues, use the <a href='http://discuss.meshplay.io)'>discussion forum</a>." %}
+{% include alert.html type="light" title="Note" content="In case of any installation issues, use the <a href='http://discuss.meshplay.khulnasoft.com)'>discussion forum</a>." %}
 
 ### Get the code
 

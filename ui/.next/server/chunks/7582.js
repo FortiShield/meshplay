@@ -4322,7 +4322,7 @@ function MeshplayChart(props) {
               className: classes.paper,
               children: [/*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx(react_share__WEBPACK_IMPORTED_MODULE_5__.TwitterShareButton, {
                 className: classes.socialIcon,
-                url: 'https://meshplay.io',
+                url: 'https://meshplay.khulnasoft.com',
                 title: socialMessage,
                 hashtags: ['opensource'],
                 children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx(react_share__WEBPACK_IMPORTED_MODULE_5__.TwitterIcon, {
@@ -4330,14 +4330,14 @@ function MeshplayChart(props) {
                 })
               }), /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx(react_share__WEBPACK_IMPORTED_MODULE_5__.LinkedinShareButton, {
                 className: classes.socialIcon,
-                url: 'https://meshplay.io',
+                url: 'https://meshplay.khulnasoft.com',
                 summary: socialMessage,
                 children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx(react_share__WEBPACK_IMPORTED_MODULE_5__.LinkedinIcon, {
                   size: 32
                 })
               }), /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx(react_share__WEBPACK_IMPORTED_MODULE_5__.FacebookShareButton, {
                 className: classes.socialIcon,
-                url: 'https://meshplay.io',
+                url: 'https://meshplay.khulnasoft.com',
                 quote: socialMessage,
                 hashtag: '#opensource',
                 children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx(react_share__WEBPACK_IMPORTED_MODULE_5__.FacebookIcon, {

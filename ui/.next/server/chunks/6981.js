@@ -8518,7 +8518,7 @@ const infoloadGenerators = (cov_1d17zcaqaj().s[8]++, /*#__PURE__*/(0,react_jsx_r
       textDecoration: 'underline'
     },
     color: "inherit",
-    href: "https://docs.meshplay.io/functionality/performance-management",
+    href: "https://docs.meshplay.khulnasoft.com/functionality/performance-management",
     children: [' ', "Performance Management"]
   })]
 }));
@@ -9814,7 +9814,7 @@ const MeshplayPerformanceComponent = props => {
                       children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_35__.jsx((_material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_9___default()), {
                         id: "headers",
                         name: "headers",
-                        label: "Request Headers e.g. {\"host\":\"bookinfo.meshplay.io\"}",
+                        label: "Request Headers e.g. {\"host\":\"bookinfo.meshplay.khulnasoft.com\"}",
                         fullWidth: true,
                         value: headersState,
                         multiline: true,
@@ -9857,7 +9857,7 @@ const MeshplayPerformanceComponent = props => {
                       children: /*#__PURE__*/react_jsx_runtime__WEBPACK_IMPORTED_MODULE_35__.jsx((_material_ui_core_TextField__WEBPACK_IMPORTED_MODULE_9___default()), {
                         id: "cookies",
                         name: "cookies",
-                        label: "Request Body e.g. {\"method\":\"post\",\"url\":\"http://bookinfo.meshplay.io/test\"}",
+                        label: "Request Body e.g. {\"method\":\"post\",\"url\":\"http://bookinfo.meshplay.khulnasoft.com/test\"}",
                         fullWidth: true,
                         value: reqBodyState,
                         multiline: true,

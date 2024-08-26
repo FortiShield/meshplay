@@ -9,7 +9,7 @@ category: project
 list: include
 ---
 
-_Try out Meshplay Playground at [https://playground.meshplay.io/](https://playground.meshplay.io/)_
+_Try out Meshplay Playground at [https://playground.meshplay.khulnasoft.com/](https://playground.meshplay.khulnasoft.com/)_
 
 Meshplay Playground is a web-based, collaborative environment that provides you with the ability to explore not only Meshplay as a cloud native manager, but also all of the infrastructure that it manages, including multiple Kubernetes clusters, every CNCF project and application, service, or operator that runs on Kubernetes. Meshplay Playground provides a sandboxed environment to experiment with different infrastructure configurations and deployment options. Its multi-player plugins allow you to collaborate in real-time with your teammates on infrastructure design and operation.
 

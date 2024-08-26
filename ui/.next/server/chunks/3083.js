@@ -3381,7 +3381,7 @@ function useDesignLifecycle() {
   const [designJson, setDesignJson] = (cov_yiyjp3oy3().s[1]++, (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
     name: 'Untitled Design',
     components: [],
-    schemaVersion: 'designs.meshplay.io/v1beta1'
+    schemaVersion: 'designs.meshplay.khulnasoft.com/v1beta1'
   }));
   const [designYaml, setDesignyaml] = (cov_yiyjp3oy3().s[2]++, (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''));
   const {
@@ -3580,7 +3580,7 @@ function useDesignLifecycle() {
       setDesignJson({
         name: 'Untitled Design',
         components: [],
-        schemaVersion: 'designs.meshplay.io/v1beta1'
+        schemaVersion: 'designs.meshplay.khulnasoft.com/v1beta1'
       });
     } catch (err) {
       cov_yiyjp3oy3().s[34]++;

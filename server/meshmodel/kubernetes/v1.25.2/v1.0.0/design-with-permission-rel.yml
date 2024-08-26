@@ -3,13 +3,13 @@
 
 id: 00000000-0000-0000-0000-000000000000
 
-schemaVersion: designs.meshplay.io/v1beta1
+schemaVersion: designs.meshplay.khulnasoft.com/v1beta1
 version: 0.0.11
 
 name: GuestBook App
 
 components:
-- schemaVersion: components.meshplay.io/v1beta1
+- schemaVersion: components.meshplay.khulnasoft.com/v1beta1
   id: 9101-1213 
   component:
     kind: ClusterRoleBinding
@@ -36,7 +36,7 @@ components:
     published: false
   model:
     id: e99ea117-577b-e926-b7a9-0f3c44d97d6a
-    schemaVersion: models.meshplay.io/v1beta1
+    schemaVersion: models.meshplay.khulnasoft.com/v1beta1
     category:
       id: 70367036-8f86-4831-f4f6-354d3a93a7ba
       name: Orchestration & Management
@@ -49,7 +49,7 @@ components:
   status: enabled
   version: v1.0.0
 
-- schemaVersion: components.meshplay.io/v1beta1
+- schemaVersion: components.meshplay.khulnasoft.com/v1beta1
   id: 1122-3344
   component:
     kind: ServiceAccount
@@ -61,7 +61,7 @@ components:
     isAnnotation: false
     published: false
   model:
-    schemaVersion: models.meshplay.io/v1beta1
+    schemaVersion: models.meshplay.khulnasoft.com/v1beta1
     id: e99ea117-577b-e926-b7a9-0f3c44d97d6a
     category:
       id: 70367036-8f86-4831-f4f6-354d3a93a7ba
@@ -76,7 +76,7 @@ components:
   status: enabled
   version: v1.0.0
 
-- schemaVersion: components.meshplay.io/v1beta1
+- schemaVersion: components.meshplay.khulnasoft.com/v1beta1
   id: 1234-5678
   component:
     kind: ClusterRole
@@ -95,7 +95,7 @@ components:
     isAnnotation: false
     published: false
   model:
-    schemaVersion: models.meshplay.io/v1beta1
+    schemaVersion: models.meshplay.khulnasoft.com/v1beta1
     id: e99ea117-577b-e926-b7a9-0f3c44d97d6a
     category:
       id: 70367036-8f86-4831-f4f6-354d3a93a7ba
